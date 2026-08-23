@@ -33,6 +33,6 @@ public class Boss extends Enemy{
 	}
 
 	public void setDefeat() {
-		Main.player.getBosses()[bossID] = true;
+		
 	}
 }

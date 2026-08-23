@@ -345,7 +345,8 @@ public static void showItemStats(Main game, Item i) {
 			String msg;
 			game.invFont.getData().setScale(0.3f);
 			if(i == pos) {
-				game.invFont.draw(game.batch, ">", x-10, y);
+				game.mainFont.getData().setScale(0.3f);
+				game.mainFont.draw(game.batch, ">", x-10, y);
 			}
 			msg = items[i].getName();
 			game.invFont.draw(game.batch, msg, x, y);
@@ -528,7 +529,8 @@ public static void showItemStats(Main game, Item i) {
 		for(int i = 0; i < skills.length; i++) {
 			int x1 = 220;
 			if(i == pos) {
-				game.invFont.draw(game.batch, ">", x-10, y);
+				game.mainFont.getData().setScale(0.3f);
+				game.mainFont.draw(game.batch, ">", x-10, y);
 			}
 			System.out.println(skills[i]);
 			if(!skills[i].getMenu()) {

@@ -83,7 +83,7 @@ public class MenuScreen implements Screen {
     	
     	batch.begin();
     	
-    	Menu.showOptionsX(game, game.invFont, 0.4f, -100, 250, 140, null, pos[0], "INVENTARIO", "ARMAS", "ARMADURAS", "HABILIDADES");
+    	Menu.showOptionsX(game, game.mainFont, 0.4f, -100, 250, 140, null, pos[0], "INVENTARIO", "ARMAS", "ARMADURAS", "HABILIDADES");
     	if(pos[0] != 3) {
 	    	Menu.showItems(game, -100, 220, 10, pos[1], itemArray);
 	    	if(itemArray.length > 0) {

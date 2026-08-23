@@ -15,6 +15,9 @@ public class InputMan {
 	public static float[] movement(Screen lastScreen, Main game) {
 		float speed = 150f;
 		float[] floats = new float[2];
+		if(Gdx.input.isKeyPressed(Input.Keys.C)) {
+			speed = 200f;
+		}
 		if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
 			floats[1] = speed;
 		}else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {

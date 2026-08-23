@@ -2,6 +2,7 @@ package io.github.dungeon_slashers;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -37,6 +38,8 @@ public class Main extends Game {
 	public BitmapFont dialFont;
 	public BitmapFont titleFont;
 	
+	public Texture colBox;
+	
     @Override
     public void create() {
     	batch = new SpriteBatch();
@@ -45,6 +48,7 @@ public class Main extends Game {
 		titleFont = new BitmapFont(Gdx.files.internal("ui/fonts/title.fnt"));
 		invFont = new BitmapFont(Gdx.files.internal("ui/fonts/inventory.fnt"));
 		viewport = new FitViewport(320, 180);
+		colBox = new Texture("collision_box.png");
 		Menu.viewport = viewport;
 		Save.game = this;
 		InputMan.game = this;

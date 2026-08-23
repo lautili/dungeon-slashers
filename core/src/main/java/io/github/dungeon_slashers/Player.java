@@ -23,7 +23,7 @@ public class Player {
 	private Hero[] characters; //los personajes
 	public String currScreen;
 	public PlayerState state;
-	private boolean[] bossDefeat = new boolean[5]; // lista con los bosses que ya se vencieron
+	public boolean[] flags = new boolean[1]; // las flags
 	public int gold;
 	
 	//constructor
@@ -48,9 +48,6 @@ public class Player {
 	}
 	public Hero[] getCharacters() {
 		return this.characters;
-	}
-	public boolean[] getBosses() {
-		return bossDefeat;
 	}
 	
 	//cambiar armadura de un heroe
