@@ -3,7 +3,7 @@
 - Se creó toda la estructura del juego.
 - Se realizaron la mayoría de las clases necesarias para la funcionalidad del juego.
 
-## [0.l.1] 23-08-2026
+## [0.1.1] 23-08-2026
 ### Added
 - Se agregó un sistema de colisiones funcional.
 - Se agregó un sistema de flags para diferentes clases.
