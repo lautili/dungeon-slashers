@@ -68,7 +68,6 @@ public class MenuScreen implements Screen {
     		itemArray = Main.player.getArmors();
     		break;
     	case 3:
-    		System.out.println("Consiguiendo las skills de " + chars[pos[2]].getName());
     		skillArray = chars[pos[2]].getRealSkills();
     		for (int i = 0; i < skillArray.length; i++) {
         	    System.out.println(

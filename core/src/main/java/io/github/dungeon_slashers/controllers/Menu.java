@@ -157,6 +157,7 @@ public static void showHeroStats(Main game, Hero entity) {
 }
 //mostrar stats de un item
 public static void showItemStats(Main game, Item i) {
+	game.invFont.setColor(1, 1, 1, 1);
 	GlyphLayout layout = new GlyphLayout();
 	game.invFont.getData().setScale(0.5f);
 	game.invFont.draw(game.batch, i.getName(), 140, 222);
@@ -342,17 +343,19 @@ public static void showItemStats(Main game, Item i) {
 	
 	public static void showItems(Main game, float x, float y, float dif, int pos, Item[] items) {
 		for(int i = 0; i < items.length; i++) {
-			String msg;
-			game.invFont.getData().setScale(0.3f);
-			if(i == pos) {
-				game.mainFont.getData().setScale(0.3f);
-				game.mainFont.draw(game.batch, ">", x-10, y);
+			if(items[i] != null) {
+				String msg;
+				game.invFont.getData().setScale(0.3f);
+				if(i == pos) {
+					game.mainFont.getData().setScale(0.3f);
+					game.mainFont.draw(game.batch, ">", x-10, y);
+				}
+				msg = items[i].getName();
+				game.invFont.draw(game.batch, msg, x, y);
+				msg = (items[i].q > 1) ? "x" + items[i].q : "";
+				game.invFont.draw(game.batch, msg, x + 220, y);
+				y -= dif;
 			}
-			msg = items[i].getName();
-			game.invFont.draw(game.batch, msg, x, y);
-			msg = (items[i].q > 1) ? "x" + items[i].q : "";
-			game.invFont.draw(game.batch, msg, x + 220, y);
-			y -= dif;
 		}
 	}
 	
@@ -548,6 +551,30 @@ public static void showItemStats(Main game, Item i) {
 			}
 			game.invFont.setColor(1, 1, 1, 1);
 			y -= dif;
+		}
+	}
+
+	public static void showItemsStore(Main game, float x, float y, float dif, int[] pos, Item[] items) {
+		for(int i = 0; i < items.length; i++) {
+			if(items[i] != null) {
+				String msg;
+				game.invFont.setColor(1, 1, 1, 1);
+				game.invFont.getData().setScale(0.3f);
+				if(i == pos[1]) {
+					game.mainFont.getData().setScale(0.3f);
+					game.mainFont.draw(game.batch, ">", x-10, y);
+				}
+				if(pos[0] == 0) {
+					if(items[i].getCost() > Main.player.gold) {
+						game.invFont.setColor(0.6f, 0.6f, 0.6f, 1);
+					}
+				}
+				msg = items[i].getName();
+				game.invFont.draw(game.batch, msg, x, y);
+				msg = (pos[0] != 1) ? items[i].getCost() + "G" : (items[i].q > 1) ? "x" + items[i].q : "";
+				game.invFont.draw(game.batch, msg, x + 210, y);
+				y -= dif;
+			}
 		}
 	}
 

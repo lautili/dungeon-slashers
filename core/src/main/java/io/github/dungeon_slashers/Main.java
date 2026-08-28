@@ -21,6 +21,8 @@ import io.github.dungeon_slashers.item.Item;
 import io.github.dungeon_slashers.item.Weapon;
 import io.github.dungeon_slashers.screens.FirstScreen;
 import io.github.dungeon_slashers.screens.MainMenuScreen;
+import io.github.dungeon_slashers.screens.MenuScreen;
+import io.github.dungeon_slashers.screens.StoreScreen;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends Game {
@@ -39,6 +41,11 @@ public class Main extends Game {
 	public BitmapFont titleFont;
 	
 	public Texture colBox;
+	
+	//screens
+	public FirstScreen firstScreen;
+	public MenuScreen menuScreen;
+	public StoreScreen storeScreen;
 	
     @Override
     public void create() {
@@ -64,6 +71,10 @@ public class Main extends Game {
 		invFont.getData().setScale(viewport.getWorldHeight() / Gdx.graphics.getHeight() * 3);
     	
     	initializeGame();
+    	
+    	firstScreen = new FirstScreen(this);
+    	menuScreen = new MenuScreen(this);
+    	storeScreen = new StoreScreen(this);
     	
         setScreen(new MainMenuScreen(this));
     }

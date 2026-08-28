@@ -306,6 +306,5 @@ public class Player {
 			System.out.println(characters[i].getWeapon().getName());
 		}
 	}
-
 	
 }

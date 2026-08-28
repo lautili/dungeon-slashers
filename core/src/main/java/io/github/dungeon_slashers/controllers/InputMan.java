@@ -11,7 +11,6 @@ import io.github.dungeon_slashers.screens.MenuScreen;
 
 public class InputMan {
 	public static Main game;
-	private static MenuScreen menuScreen = new MenuScreen(game);
 	public static float[] movement(Screen lastScreen, Main game) {
 		float speed = 150f;
 		float[] floats = new float[2];
@@ -33,10 +32,15 @@ public class InputMan {
 		}
 		if(Gdx.input.isKeyJustPressed(Input.Keys.X)) {
 			Main.player.state = PlayerState.MENU;
-			menuScreen.lastScreen = lastScreen;
-			menuScreen.updateGame(game);
+			game.menuScreen.lastScreen = lastScreen;
+			game.menuScreen.updateGame(game);
 			lastScreen.pause();
-			game.setScreen(menuScreen);
+			game.setScreen(game.menuScreen);
+		}
+		if(Gdx.input.isKeyJustPressed(Input.Keys.C)) {
+			Main.player.state = PlayerState.MENU;
+			game.firstScreen.pause();
+			game.setScreen(game.storeScreen);
 		}
 		return floats;
 	}
@@ -98,14 +102,14 @@ public class InputMan {
 		}
 		
 		if(pos[0] > maxi) {
-			pos[0] = maxi;
-		}else if (pos[0] < 0) {
 			pos[0] = 0;
+		}else if (pos[0] < 0) {
+			pos[0] = maxi;
 		}
 		if(pos[1] > maxj) {
-			pos[1] = maxj;
-		}else if (pos[1] < 0) {
 			pos[1] = 0;
+		}else if (pos[1] < 0) {
+			pos[1] = maxj;
 		}
 		
 		return pos;
