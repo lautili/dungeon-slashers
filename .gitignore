@@ -13,6 +13,7 @@ gradle-app.setting
 /headless/build/
 /server/build/
 /shared/build/
+gradle/wrapper/gradle-9.6.1-bin.zip
 
 ## Java:
 *.class
