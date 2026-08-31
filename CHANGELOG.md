@@ -10,3 +10,8 @@
 ### Changed
 - Se cambio el inicio del primer dialogo de la firstscreen para que se active si su flag no está activa.
 - Se elimino el array de booleanos que indicaba los bosses eliminados en la clase player y fue remplazado por flags generales.
+
+## [0.1.2] 31-08-2026
+### Added
+- Se agregó una tienda de objetos funcional.
+- Se agregó el portrait de sage/curandero
