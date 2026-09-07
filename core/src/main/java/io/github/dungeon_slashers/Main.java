@@ -16,21 +16,25 @@ import io.github.dungeon_slashers.entities.Boss;
 import io.github.dungeon_slashers.entities.BossEvent;
 import io.github.dungeon_slashers.entities.Enemy;
 import io.github.dungeon_slashers.entities.Hero;
+import io.github.dungeon_slashers.floors.Floor;
 import io.github.dungeon_slashers.item.Armor;
 import io.github.dungeon_slashers.item.Item;
 import io.github.dungeon_slashers.item.Weapon;
+import io.github.dungeon_slashers.screens.CharSelectScreen;
 import io.github.dungeon_slashers.screens.FirstScreen;
 import io.github.dungeon_slashers.screens.MainMenuScreen;
 import io.github.dungeon_slashers.screens.MenuScreen;
 import io.github.dungeon_slashers.screens.StoreScreen;
+import io.github.dungeon_slashers.screens.floorScreen;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends Game {
 	
 	public static Player player = new Player();
-	static Battle[] battles;
-	static Enemy[] enemies;
-	static Item[] items;
+	public static Battle[] battles;
+	public static Enemy[] enemies;
+	public static Item[] items;
+	public static Hero[] characters = new Hero[5];
 	
 	public SpriteBatch batch;
 	public FitViewport viewport;
@@ -41,11 +45,27 @@ public class Main extends Game {
 	public BitmapFont titleFont;
 	
 	public Texture colBox;
+	public Texture intBox;
+	public Texture doorBox;
+	
+	public Texture roomDisc;
+	public Texture roomUnd;
+	public Texture roomCurr;
+	public Texture mapBackground;
 	
 	//screens
 	public FirstScreen firstScreen;
+	public CharSelectScreen charSelectScreen;
 	public MenuScreen menuScreen;
 	public StoreScreen storeScreen;
+	
+	public Floor firstFloor;
+	public floorScreen firstFloorScreen;
+	
+	public Floor secondFloor;
+	public Floor thirdFloor;
+	public Floor fourthFloor;
+	public Floor fifthFloor;
 	
     @Override
     public void create() {
@@ -56,6 +76,14 @@ public class Main extends Game {
 		invFont = new BitmapFont(Gdx.files.internal("ui/fonts/inventory.fnt"));
 		viewport = new FitViewport(320, 180);
 		colBox = new Texture("collision_box.png");
+		intBox = new Texture("interaction_box.png");
+		doorBox = new Texture("door_box.png");
+		
+		roomUnd = new Texture("ui/map/room_und.jpg");
+		roomDisc = new Texture("ui/map/room_disc.jpg");
+		roomCurr = new Texture("ui/map/room_curr.jpg");
+		mapBackground = new Texture("ui/map/map_background.png");
+		
 		Menu.viewport = viewport;
 		Save.game = this;
 		InputMan.game = this;
@@ -72,9 +100,14 @@ public class Main extends Game {
     	
     	initializeGame();
     	
+    	firstFloor = new Floor(15, 15, battles[0], 1, items[0], items[2]);
+    	firstFloorScreen = new floorScreen(this, firstFloor);
+    	
     	firstScreen = new FirstScreen(this);
     	menuScreen = new MenuScreen(this);
     	storeScreen = new StoreScreen(this);
+    	charSelectScreen = new CharSelectScreen(this);
+    	
     	
         setScreen(new MainMenuScreen(this));
     }
@@ -413,11 +446,11 @@ public class Main extends Game {
 						staThief, incant, silence, deaftones, toxicDust, bardSong, shadowSpell, godOffering, healingRitual, purification, vitalLust, revive,
 						divineEx, sacrifice);
 				
-				Hero[] chars = player.getCharacters();
-				chars[0] = warrior;
-				chars[1] = mage;
-				chars[2] = explorer;
-				chars[3] = sage;
+				characters[0] = warrior;
+				characters[1] = mage;
+				characters[2] = thief;
+				characters[3] = explorer;
+				characters[4] = sage;
 				
 				warrior.addSkills(charAtk, deepCut);
 				mage.addSkills(fireBall, windBurst, terrAttack, splatter);

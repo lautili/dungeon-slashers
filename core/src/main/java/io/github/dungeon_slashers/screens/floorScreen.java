@@ -13,20 +13,38 @@ import com.badlogic.gdx.utils.Array;
 import io.github.dungeon_slashers.Flags;
 import io.github.dungeon_slashers.Main;
 import io.github.dungeon_slashers.PlayerState;
+import io.github.dungeon_slashers.controllers.Battle;
 import io.github.dungeon_slashers.controllers.DialMan;
 import io.github.dungeon_slashers.controllers.InputMan;
 import io.github.dungeon_slashers.controllers.Save;
 import io.github.dungeon_slashers.entities.Hero;
+import io.github.dungeon_slashers.floors.Floor;
+import io.github.dungeon_slashers.floors.Room;
 
 /** Primera sala. */
-public class FirstScreen implements Screen {
+public class floorScreen implements Screen {
 	Hero[] chars;
     private OrthographicCamera camera;
     private FitViewport viewport;
     private float[] x;
     private float[] y;
     private Texture background;
+    private int level;
+    private Battle battle;
+    private int[] currPosition;
+    private boolean showMap;
+    
+    private Texture[] wallTextures = new Texture[4];
+    private Rectangle[] doorColliders = new Rectangle[4];
+    private boolean[] wallBooleans = new boolean[4];
+    
+    private final int WALL_DOWN = 0;
+    private final int WALL_UP = 1;
+    private final int WALL_LEFT = 2;
+    private final int WALL_RIGHT = 3;
+    
     private Main game;
+    private Floor floor;
     private boolean colboxes;
     Rectangle playerCol;
     Rectangle[] collisions;
@@ -39,54 +57,65 @@ public class FirstScreen implements Screen {
     			//Vector 2 es una clase que guarda dos posiciones x e y
     private int followDelay = 15; //el delay con el que lo seguiran
     
-	public FirstScreen(Main game) {
+	public floorScreen(Main game, Floor floor) {
 		this.game = game;
+		this.floor = floor;
+		level = floor.floorType;
+		battle = floor.battle;
 		x = new float[4];
 		y = new float[4];
 		chars = Main.player.getCharacters();
-		background = new Texture("sprites/background/background_firstScreen.jpg");
-		x[0] = 50;
-		y[0] = 50;
+		
+		background = new Texture("sprites/background/background_floor_" + level + ".jpg");
+		currPosition = floor.getRoomPosition(Room.ROOM_START);
+		wallTextures[WALL_DOWN] = new Texture("sprites/background/background_floor_" + level + "_wall_down.png");
+		wallTextures[WALL_UP] = new Texture("sprites/background/background_floor_" + level + "_wall_up.png");
+		wallTextures[WALL_LEFT] = new Texture("sprites/background/background_floor_" + level + "_wall_left.png");
+		wallTextures[WALL_RIGHT] = new Texture("sprites/background/background_floor_" + level + "_wall_right.png");
+		
+		doorColliders[WALL_UP] = new Rectangle(134, 148, 51, 32);
+		doorColliders[WALL_LEFT] = new Rectangle(0, 47, 20, 46);
+		doorColliders[WALL_RIGHT] = new Rectangle(299, 47, 20, 46);
+		doorColliders[WALL_DOWN] = new Rectangle(134, 0, 51, 15);
+		
+		x[0] = 90;
+		y[0] = 40;
 		colboxes = false;
 		playerCol = new Rectangle(x[0], y[0], 15, 15);
-		collisions = new Rectangle[6];
-		collisions[0] = new Rectangle(0, 148, 320, 32);
-		collisions[1] = new Rectangle(0, 0, 320, 12);
+		collisions = new Rectangle[8];
+		collisions[0] = new Rectangle(0, 148, 134, 32);
+		collisions[1] = new Rectangle(184, 148, 135, 32);
+		
 		collisions[2] = new Rectangle(0, 0, 20, 47);
-		collisions[3] = new Rectangle(0, 105, 20, 40);
-		collisions[4] = new Rectangle(295, 0, 25, 148);
-		collisions[5] = new Rectangle(152, 65, 15, 15);
+		collisions[3] = new Rectangle(0, 103, 20, 55);
+		
+		collisions[4] = new Rectangle(299, 0, 21, 47);
+		collisions[5] = new Rectangle(299, 103, 21, 55);
+		
+		collisions[6] = new Rectangle(0, 0, 134, 15);
+		collisions[7] = new Rectangle(185, 0, 135, 15);
+		
 		interactions = new Rectangle[1];
-		interactions[0] = new Rectangle(152, 65, 15, 15);
-		doors = new Rectangle[2];
-		doors[0] = new Rectangle(0, 47, 5, 55);
-		doors[1] = new Rectangle(148, 140, 25, 10);
+		
+		doors = new Rectangle[4];
+		doors[WALL_UP] = new Rectangle(134, 175, 51, 5);
+		doors[WALL_LEFT] = new Rectangle(0, 47, 5, 55);
+		doors[WALL_RIGHT] = new Rectangle(315, 47, 5, 55);
+		doors[WALL_DOWN] = new Rectangle(134, 0, 51, 5);
 	}
 	@Override
     public void show() {
         // Prepare your screen here.
 		this.resume();
+		showMap = false;
 		chars = Main.player.getCharacters();
-		if(Main.player.currScreen == "SHOP_SCREEN") { 
-			x[0] = 10;
-			chars[0].direction = "right";
-		}
-		Main.player.currScreen = "FIRST_SCREEN";
+		Main.player.currScreen = "FIRST_FLOOR_SCREEN";
 		camera = new OrthographicCamera();
 		viewport = game.viewport;
 		viewport.setCamera(camera);
 		camera.setToOrtho(false, 320, 180);
 		camera.zoom = 1f;
-		if(!Main.player.flags[Flags.FLAG_FIRSTSCREEN_DIALOGUE_START]) {
-			DialMan.addDialogue(0, 1, chars[0].getName(), chars[0].getPortrait(), "Esta es una prueba de dialogos. asjdaajsd s d d adoalalala lalalalaallala lolololololololo", 20);
-			DialMan.addDialogue(1, 2, chars[1].getName(), chars[1].getPortrait(), "Esta es una prueba de dialogos con otra foto. Hola", 60);
-			DialMan.addChoice(2, 20, "A quien preferis", new String[] {chars[0].getName(), chars[1].getName(), "Los 2", "Ninguno"}, new int[] {3, 4, 5, 6});
-			DialMan.addDialogue(3, -1, chars[0].getName(), chars[0].getPortrait(), "Gracias", 20);
-			DialMan.addDialogue(4, -1, chars[1].getName(), chars[1].getPortrait(), "Gracias", 20);
-			DialMan.addDialogue(5, -1, "Los 2", null, "Gracias", 20);
-			DialMan.addDialogue(6, -1, null, null, "Te miran con cara de culo", 20);
-			Main.player.flags[Flags.FLAG_FIRSTSCREEN_DIALOGUE_START] = true;
-		}
+		checkRoomBooleans();
 		
 		posHistory = new Array<>(); // inicializa el ArrayList
 		for(int i = 0; i < (chars.length * followDelay) + 5; i++) {
@@ -100,8 +129,7 @@ public class FirstScreen implements Screen {
             chars[i].direction = chars[0].direction; //pone a todos en la misma direccion
         }
 	}
-
-    @Override
+	@Override
     public void render(float delta) {
         // Draw your screen here. "delta" is the time since last render in seconds.
     	float[] floats = new float[2];
@@ -188,6 +216,15 @@ public class FirstScreen implements Screen {
 	    	playerCol.x = x[0]+2;
 	    	playerCol.y = y[0];
     	}
+    	if(InputMan.checkKey("M")) {
+    		if(showMap) {
+    			showMap = false;
+    			Main.player.state = PlayerState.IDLE;
+    		}else {
+    			showMap = true;
+    			Main.player.state = PlayerState.BUSY;
+    		}
+    	}
     	checkDoors(playerCol);
     	
     	ScreenUtils.clear(0, 0, 0, 1); //limpia el buffer de colores
@@ -195,10 +232,16 @@ public class FirstScreen implements Screen {
     	game.batch.setProjectionMatrix(camera.combined);
     	game.batch.begin();
     	game.batch.draw(background, 0, 0);
+    	for(int i = 0; i < wallTextures.length; i++) {
+    		if(wallBooleans[i]) {
+    			game.batch.draw(wallTextures[i], 0, 0);
+    		}
+    	}
     	game.batch.draw(chars[3].getCurrentFrame(), x[3], y[3]);
     	game.batch.draw(chars[2].getCurrentFrame(), x[2], y[2]);
     	game.batch.draw(chars[1].getCurrentFrame(), x[1], y[1]);
     	game.batch.draw(chars[0].getCurrentFrame(), x[0], y[0]);
+    	
     	if(colboxes) {
     		game.batch.draw(game.colBox, playerCol.x, playerCol.y, playerCol.width, playerCol.height);
     		for(int i = 0; i < collisions.length; i++) {
@@ -219,37 +262,71 @@ public class FirstScreen implements Screen {
     				game.batch.draw(game.doorBox, col.x, col.y, col.width, col.height);
     			}
     		}
+    		for(int i = 0; i < doorColliders.length; i++) {
+    			Rectangle col = doorColliders[i];
+    			if(col != null && wallBooleans[i]) {
+    				game.batch.draw(game.colBox, col.x, col.y, col.width, col.height);
+    			}
+    		}
     	}
     	int resp = DialMan.showDialogues(game, delta);
     	switch(resp) {
-    	case 30:
-    		for(int i = 0; i < chars.length; i++) {
-    			chars[i].hp = chars[i].maxhp;
-        		chars[i].sp = chars[i].maxsp;
-        		chars[i].mp = chars[i].maxmp;
-    		}
-    		Save.save();
-    		break;
+    	
     	}
     	
     	if(resp != -1) {
     		System.out.println(resp);
     	}
+    	
+    	
+    	if(showMap) {
+    		
+    		showMap();
+    	}
+    	
     	game.batch.end();
     }
     
-    private boolean checkInteraction(Rectangle player) {
-		for(Rectangle col : interactions) {
-			System.out.println("chequeando interacciones...");
-			if(col != null && player.overlaps(col)) {
-				System.out.println("se encontró interaccion");
-				if(col == interactions[0]) {
-                	DialMan.addDialogue(0, 1, null, null, "La fogata.", 20);
-                	DialMan.addChoice(1, 2, "Deseas guardar y recuperar salud?", new String[] {"Si", "No"},
-                			new int[] {30, 4});
-                	DialMan.addDialogue(30, -1, null, null, "Guardado.", 20);
-                	DialMan.addDialogue(4, -1, null, null, "No se ha guardado.", 20);
+    private void showMap() {
+    	game.batch.draw(game.mapBackground, 0, 0);
+    	int roomSize = 8;
+        int spacing = 2;
+
+        int mapWidth = floor.layout.length * (roomSize + spacing);
+        int mapHeight = floor.layout[0].length * (roomSize + spacing);
+
+        int startX = 320 - mapWidth - 5;
+        int startY = 180 - mapHeight - 5;
+
+        for(int i = 0; i < floor.layout.length; i++) {
+
+            for(int j = 0; j < floor.layout[0].length; j++) {
+
+                if(floor.layout[i][j] != null) {
+
+                    int roomX = startX + j * (roomSize + spacing);
+                    int roomY = startY + (floor.layout[0].length - 1 - i) * (roomSize + spacing);
+
+                    if(i == currPosition[0] && j == currPosition[1]) {
+
+                        // habitación actual
+                        game.batch.draw(game.roomCurr, roomX, roomY, roomSize, roomSize);
+
+                    } else if(floor.layout[i][j].discovered == Room.DISC_TOTAL) {
+                        // habitación descubierta
+                        game.batch.draw(game.roomDisc, roomX, roomY, roomSize, roomSize);
+
+                    } else if (floor.layout[i][j].discovered == Room.DISC_PART){
+                    	// habitación descubierta a la que no se entro
+                    	game.batch.draw(game.roomUnd, roomX, roomY, roomSize, roomSize);
+                    }
                 }
+            }
+        }
+	}
+	private boolean checkInteraction(Rectangle player) {
+		for(Rectangle col : interactions) {
+			if(col != null && player.overlaps(col)) {
 				return true;
 				
 			}
@@ -266,6 +343,14 @@ public class FirstScreen implements Screen {
             }
 
         }
+        
+        for (int i = 0; i < doorColliders.length; i++) {
+        	Rectangle col = doorColliders[i];
+            if (col != null && player.overlaps(col) && wallBooleans[i]) {
+            	return true;
+            }
+
+        }
 
         return false;
     }
@@ -275,14 +360,39 @@ public class FirstScreen implements Screen {
         for (Rectangle col : doors) { //usamos este metodo de for para mayor comodidad
 
             if (col != null && player.overlaps(col)) {
-            	if(col == doors[0]) {
-            		game.setScreen(game.storeScreen);
-            		this.pause();
+            	if(col == doors[WALL_LEFT]) {
+            		currPosition[1]--;
+            		x[0] = doors[WALL_RIGHT].x - 25;
+            		y[0] = doors[WALL_RIGHT].y + 5;
             	}
-            	if(col == doors[1]) {
-            		game.setScreen(game.firstFloorScreen);
-            		this.pause();
+            	if(col == doors[WALL_UP]) {
+            		currPosition[0]--;
+            		x[0] = doors[WALL_DOWN].x + 5;
+            		y[0] = doors[WALL_DOWN].y + 25;
             	}
+            	if(col == doors[WALL_DOWN]) {
+            		currPosition[0]++;
+            		x[0] = doors[WALL_UP].x + 5;
+            		y[0] = doors[WALL_UP].y - 25;
+            	}
+            	if(col == doors[WALL_RIGHT]) {
+            		currPosition[1]++;
+            		x[0] = doors[WALL_LEFT].x + 25;
+            		y[0] = doors[WALL_LEFT].y + 5;
+            	}
+            	floor.layout[currPosition[0]][currPosition[1]].discovered = Room.DISC_TOTAL;
+            	posHistory = new Array<>(); // inicializa el ArrayList
+        		for(int i = 0; i < (chars.length * followDelay) + 5; i++) {
+        			//mientras que i sea menor a la length de chars * la cantidad de frames...
+                    posHistory.add(new Vector2(x[0], y[0])); //añade un nuevo vector2 con las posiciones
+                    										 // del primer personaje
+                }
+        		for(int i = 1; i < chars.length; i++) {
+                    x[i] = x[0];	//pone las posiciones de cada personaje en 0
+                    y[i] = y[0];	
+                    chars[i].direction = chars[0].direction; //pone a todos en la misma direccion
+                }
+        		checkRoomBooleans();
             	return true;
             }
 
@@ -290,6 +400,41 @@ public class FirstScreen implements Screen {
 
         return false;
     }
+    
+    private void checkRoomBooleans() {
+    	//arriba
+		if(currPosition[0] - 1 < 0 || floor.layout[currPosition[0]-1][currPosition[1]] == null) {
+			wallBooleans[WALL_UP] = true;
+		}else {
+			if(floor.layout[currPosition[0]-1][currPosition[1]].discovered == Room.DISC_NOT)
+				floor.layout[currPosition[0]-1][currPosition[1]].discovered = Room.DISC_PART;
+			wallBooleans[WALL_UP] = false;
+		}
+		//abajo
+		if(currPosition[0] + 1 >= floor.layout.length || floor.layout[currPosition[0]+1][currPosition[1]] == null) {
+			wallBooleans[WALL_DOWN] = true;
+		}else {
+			if(floor.layout[currPosition[0]+1][currPosition[1]].discovered == Room.DISC_NOT)
+				floor.layout[currPosition[0]+1][currPosition[1]].discovered = Room.DISC_PART;
+			wallBooleans[WALL_DOWN] = false;
+		}
+		//izquierda
+		if(currPosition[1] - 1 < 0 || floor.layout[currPosition[0]][currPosition[1]-1] == null) {
+			wallBooleans[WALL_LEFT] = true;
+		}else {
+			if(floor.layout[currPosition[0]][currPosition[1]-1].discovered == Room.DISC_NOT)
+				floor.layout[currPosition[0]][currPosition[1]-1].discovered = Room.DISC_PART;
+			wallBooleans[WALL_LEFT] = false;
+		}
+		//derecha
+		if(currPosition[1] + 1 >= floor.layout[0].length || floor.layout[currPosition[0]][currPosition[1]+1] == null) {
+			wallBooleans[WALL_RIGHT] = true;
+		}else {
+			if(floor.layout[currPosition[0]][currPosition[1]+1].discovered == Room.DISC_NOT)
+				floor.layout[currPosition[0]][currPosition[1]+1].discovered = Room.DISC_PART;
+			wallBooleans[WALL_RIGHT] = false;
+		}
+	}
     
     @Override
     public void resize(int width, int height) {

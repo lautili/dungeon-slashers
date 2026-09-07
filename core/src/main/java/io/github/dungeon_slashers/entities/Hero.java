@@ -19,7 +19,7 @@ import io.github.dungeon_slashers.item.Weapon;
 
 public class Hero extends Entity{
 	
-	private String direction;
+	public String direction;
 	private transient Animation<TextureRegion> walkDown;
 	private transient Animation<TextureRegion> walkUp;
 	private transient Animation<TextureRegion> walkLeft;

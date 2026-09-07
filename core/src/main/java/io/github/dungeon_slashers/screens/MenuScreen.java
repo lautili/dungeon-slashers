@@ -47,6 +47,7 @@ public class MenuScreen implements Screen {
 		camera.setToOrtho(false, 320, 180);
 		camera.zoom = 2f;
 		batch = game.batch;
+		Main.player.state = PlayerState.MENU;
     }
 
     @Override

@@ -31,16 +31,10 @@ public class InputMan {
 			Save.save();
 		}
 		if(Gdx.input.isKeyJustPressed(Input.Keys.X)) {
-			Main.player.state = PlayerState.MENU;
 			game.menuScreen.lastScreen = lastScreen;
 			game.menuScreen.updateGame(game);
 			lastScreen.pause();
 			game.setScreen(game.menuScreen);
-		}
-		if(Gdx.input.isKeyJustPressed(Input.Keys.C)) {
-			Main.player.state = PlayerState.MENU;
-			game.firstScreen.pause();
-			game.setScreen(game.storeScreen);
 		}
 		return floats;
 	}

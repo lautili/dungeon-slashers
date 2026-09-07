@@ -15,7 +15,6 @@ import io.github.dungeon_slashers.item.Item;
 */
 
 public class Skill {
-	
 	//valores
 	private String shortName; //nombre corto, para hacer mas facil el switch del Use
 	private String name;

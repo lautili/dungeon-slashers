@@ -42,12 +42,14 @@ public class StoreScreen implements Screen {
     public void show() {
         // Prepare your screen here.
 		camera = new OrthographicCamera();
+		Main.player.currScreen = "SHOP_SCREEN";
 		viewport = game.viewport;
 		viewport.setCamera(camera);
 		camera.setToOrtho(false, 320, 180);
 		camera.zoom = 2f;
 		batch = game.batch;
 		updatePlayerItems();
+		Main.player.state = PlayerState.MENU;
     }
 
     @Override

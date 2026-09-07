@@ -44,7 +44,7 @@ public class MainMenuScreen implements Screen {
     	if(InputMan.checkKey("Z")) {
     		switch(sel) {
     		case 0:
-    			game.setScreen(new FirstScreen(game));
+    			game.setScreen(game.charSelectScreen);
     			dispose();
     			break;
     		case 1:

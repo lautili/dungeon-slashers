@@ -14,6 +14,7 @@ gradle-app.setting
 /server/build/
 /shared/build/
 gradle/wrapper/gradle-9.6.1-bin.zip
+CHANGELOG.MD
 
 ## Java:
 *.class

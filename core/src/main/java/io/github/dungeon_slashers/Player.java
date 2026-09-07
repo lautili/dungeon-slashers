@@ -31,7 +31,7 @@ public class Player {
 		this.inventory = new Item[0];
 		this.weapons = new Weapon[0];
 		this.armors = new Armor[0];
-		this.characters = new Hero[4];
+		this.setCharacters(new Hero[4]);
 		this.gold = 100;
 		state = PlayerState.IDLE;
 	}
@@ -305,6 +305,10 @@ public class Player {
 			characters[i].loadTextures();
 			System.out.println(characters[i].getWeapon().getName());
 		}
+	}
+
+	public void setCharacters(Hero[] characters) {
+		this.characters = characters;
 	}
 	
 }

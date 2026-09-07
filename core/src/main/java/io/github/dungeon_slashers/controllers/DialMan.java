@@ -55,10 +55,11 @@ public class DialMan {
 			next = showDialogue(game, cont, delta);
 			if(next == -1) {
 				Main.player.state = PlayerState.IDLE;
+				int id = events[cont].id;
 				events = new DialEvent[0];
 				cont = 0;
 				next = 0;
-				return 0;
+				return id;
 			}else {
 				cont = next;
 				return cont;
