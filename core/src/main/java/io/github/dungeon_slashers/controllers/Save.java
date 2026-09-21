@@ -25,7 +25,26 @@ public class Save {
 	public static Boolean load() {
 		if (saveFile.exists()) {
 		    String json = saveFile.readString();
-		    Main.player = gson.fromJson(json, Player.class);
+		    Player temp = gson.fromJson(json, Player.class);
+		    boolean[] oldFlags = temp.flags;
+		    boolean[] newFlags = new boolean[Main.player.flags.length];
+		    if(Main.player.flags.length > temp.flags.length) {
+		    	for(int i = 0; i < newFlags.length; i++) {
+		    		if(i >= oldFlags.length) {
+		    			continue;
+		    		}else {
+		    			newFlags[i] = oldFlags[i];
+		    		}
+		    	}
+		    }else if(Main.player.flags.length < temp.flags.length) {
+		    	for(int i = 0; i < newFlags.length; i++) {
+		    			newFlags[i] = oldFlags[i];
+		    	}
+		    }else {
+		    	newFlags = oldFlags;
+		    }
+		    Main.player = temp;
+		    Main.player.flags = newFlags;
 		    Main.player.loadCharacters();
 		    Main.updateArrays();
 		    game.setScreenFromSave(Main.player.currScreen);
