@@ -38,6 +38,7 @@ public class FirstScreen implements Screen {
     			//Array es una lista mejor que ArrayList
     			//Vector 2 es una clase que guarda dos posiciones x e y
     private int followDelay = 15; //el delay con el que lo seguiran
+    private float timer;
     
 	public FirstScreen(Main game) {
 		this.game = game;
@@ -55,9 +56,10 @@ public class FirstScreen implements Screen {
 		collisions[2] = new Rectangle(0, 0, 20, 47);
 		collisions[3] = new Rectangle(0, 105, 20, 40);
 		collisions[4] = new Rectangle(295, 0, 25, 148);
-		collisions[5] = new Rectangle(152, 65, 15, 15);
 		interactions = new Rectangle[1];
-		interactions[0] = new Rectangle(152, 65, 15, 15);
+		interactions[0] = new Rectangle(160 - 20 / 2, 75, 20, 20);
+		collisions[5] = new Rectangle(interactions[0].getX(), interactions[0].getY(),
+							interactions[0].getWidth(), interactions[0].getHeight());
 		doors = new Rectangle[2];
 		doors[0] = new Rectangle(0, 47, 5, 55);
 		doors[1] = new Rectangle(148, 140, 25, 10);
@@ -66,10 +68,37 @@ public class FirstScreen implements Screen {
     public void show() {
         // Prepare your screen here.
 		this.resume();
+		boolean temp = false;
+		timer = 0;
 		chars = Main.player.getCharacters();
+		Main.player.state = PlayerState.WAITING;
 		if(Main.player.currScreen == "SHOP_SCREEN") { 
 			x[0] = 10;
 			chars[0].direction = "right";
+		}else if(Main.player.currScreen == "FLOOR_SCREEN") {
+			x[0] = 150;
+			y[0] = 120;
+			chars[0].direction = "down";
+		}else if(Main.player.currScreen == "LOOSE") {
+			temp = true;
+			x[0] = 130;
+			y[0] = 65;
+			chars[0].direction = "right";
+			x[1] = 150;
+			y[1] = 35;
+			chars[1].direction = "up";
+			x[2] = 180;
+			y[2] = 35;
+			chars[2].direction = "up";
+			x[3] = 210;
+			y[3] = 65;
+			chars[3].direction = "left";
+			for(int i = 0; i < chars.length; i++) {
+    			chars[i].hp = chars[i].maxhp;
+        		chars[i].sp = chars[i].maxsp;
+        		chars[i].mp = chars[i].maxmp;
+    		}
+    		Save.save();
 		}
 		Main.player.currScreen = "FIRST_SCREEN";
 		camera = new OrthographicCamera();
@@ -95,15 +124,24 @@ public class FirstScreen implements Screen {
             										 // del primer personaje
         }
 		for(int i = 1; i < chars.length; i++) {
-            x[i] = x[0];	//pone las posiciones de cada personaje en 0
-            y[i] = y[0];	
-            chars[i].direction = chars[0].direction; //pone a todos en la misma direccion
+			if(!temp) {
+	            x[i] = x[0];	//pone las posiciones de cada personaje en 0
+	            y[i] = y[0];	
+	            chars[i].direction = chars[0].direction; //pone a todos en la misma direccion
+			}
         }
 	}
 
     @Override
     public void render(float delta) {
         // Draw your screen here. "delta" is the time since last render in seconds.
+    	if(Main.player.state == PlayerState.WAITING) {
+    		timer += delta;
+    		if(timer >= game.roomDelay) {
+    			Main.player.state = PlayerState.IDLE;
+    			timer = 0;
+    		}
+    	}
     	float[] floats = new float[2];
     	if(Main.player.state == PlayerState.IDLE) {
         	floats = InputMan.movement(this, game);
@@ -115,6 +153,18 @@ public class FirstScreen implements Screen {
     			colboxes = false;
     		}
     	}
+    	if(InputMan.checkKey("F2")) {
+			System.out.println("yendo a battlescreen");
+			game.setScreen(game.defBattleScreen);
+			game.defBattleScreen.lastScreen = this;
+			this.pause();
+		}
+    	if(InputMan.checkKey("F3")) {
+			System.out.println("yendo a battlescreen");
+			game.setScreen(game.firstBossFight);
+			game.firstBossFight.lastScreen = this;
+			this.pause();
+		}
     	float moveX = floats[0] * delta;
     	float moveY = floats[1] * delta;
     	
@@ -132,6 +182,7 @@ public class FirstScreen implements Screen {
             y[0] += moveY;
             if (moveY != 0) moved = true;
         }
+        playerCol.y = y[0];
         
         if (moved) { //si el personaje principal se movió
             posHistory.insert(0, new Vector2(x[0], y[0])); //inserta la posicion del chars[0]
@@ -195,6 +246,8 @@ public class FirstScreen implements Screen {
     	game.batch.setProjectionMatrix(camera.combined);
     	game.batch.begin();
     	game.batch.draw(background, 0, 0);
+    	game.batch.draw(game.workedFireplace, interactions[0].getX(), interactions[0].getY(),
+				interactions[0].getWidth(), interactions[0].getHeight());
     	game.batch.draw(chars[3].getCurrentFrame(), x[3], y[3]);
     	game.batch.draw(chars[2].getCurrentFrame(), x[2], y[2]);
     	game.batch.draw(chars[1].getCurrentFrame(), x[1], y[1]);
@@ -231,10 +284,6 @@ public class FirstScreen implements Screen {
     		Save.save();
     		break;
     	}
-    	
-    	if(resp != -1) {
-    		System.out.println(resp);
-    	}
     	game.batch.end();
     }
     
@@ -244,8 +293,8 @@ public class FirstScreen implements Screen {
 			if(col != null && player.overlaps(col)) {
 				System.out.println("se encontró interaccion");
 				if(col == interactions[0]) {
-                	DialMan.addDialogue(0, 1, null, null, "La fogata.", 20);
-                	DialMan.addChoice(1, 2, "Deseas guardar y recuperar salud?", new String[] {"Si", "No"},
+                	DialMan.addDialogue(0, 1, null, null, "La fogata. Esta apagada.", 20);
+                	DialMan.addChoice(1, 20, "Deseas guardar y recuperar salud?", new String[] {"Si", "No"},
                 			new int[] {30, 4});
                 	DialMan.addDialogue(30, -1, null, null, "Guardado.", 20);
                 	DialMan.addDialogue(4, -1, null, null, "No se ha guardado.", 20);
@@ -314,10 +363,12 @@ public class FirstScreen implements Screen {
     @Override
     public void hide() {
         // This method is called when another screen replaces this one.
+    	game.lastScreen = this;
     }
 
     @Override
     public void dispose() {
         // Destroy screen's assets here.
+    	game.lastScreen = this;
     }
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 
 import io.github.dungeon_slashers.Effect;
 import io.github.dungeon_slashers.Skill;
+import io.github.dungeon_slashers.controllers.DialMan;
 import io.github.dungeon_slashers.controllers.Menu;
 
 /*
@@ -130,9 +131,9 @@ public abstract class Entity {
 			effects[i] = null;
 		}
 	}
-	public void setEffect(Effect effect) {
+	public String setEffect(Effect effect) {
 		if(effects[0] != null && effects[0].getShortName().equals("DWN")) {
-			
+			return null;
 		}else {
 			System.out.println(name + effect.getMSG());
 			if(effect.getShortName() == "DWN") {
@@ -152,10 +153,11 @@ public abstract class Entity {
 						cont++;
 					}
 				}
-				if(cont == 3) {
+				if(cont == 6) {
 					effects[0] = effect;
 				}
 			}
+			return effect.getMSG();
 		}
 	}
 	public void clearEffect(String name) {
@@ -170,7 +172,6 @@ public abstract class Entity {
 			if(effects[i] != null) {
 				String name = effects[i].getShortName();
 				if(name != "BEN" && name != "DWN") {
-					Menu.atkMsg(name + effects[i].getEndMsg());
 					effects[i] = null;
 				}
 			}
@@ -178,23 +179,27 @@ public abstract class Entity {
 	}
 	
 	// actualiza los efectos y chequa que este en los turnos que deben estar
-	public void updateEffects() {
+	public int updateEffects(int cont) {
 		for(int i = 0; i < effects.length; i ++) {
 			Effect effect = effects[i];
 			if(effect != null) { //si hay efecto,
-				if(effect.getShortName() != "DWN") {  //si el efecto no es DWN,
+				if(!effect.getShortName().equals("DWN")) {  //si el efecto no es DWN,
+					
 					if(effect.checkTurns()) { //si el efecto termin�,
+						DialMan.addDialogue(cont, cont+1, null, null, name + effect.getEndMsg(), 20);
+						cont++;
 						effects[i] = null; //limpia el efecto
-						Menu.atkMsg(name + effect.getEndMsg()); //y lo imprime
 					}else { //si no termino
 						if(effect.getTurnMsg() != null) {
-							Menu.atkMsg(name + effect.getTurnMsg()); // imprime el mensaje de turno
+							DialMan.addDialogue(cont, cont+1, null, null, name + effect.getTurnMsg(), 20);
+							cont++;
 						}
 						effect.use(this); //y si es POS, BLE, BEN, ENC o TIR, hace lo que el efecto haria.
 					}
 				}
 			}
 		}
+		return cont;
 	}
 	public Skill[] getSkills() {
 		return skills;
@@ -280,5 +285,9 @@ public abstract class Entity {
 		
 	public String getBaseType() {
 		return baseType;
+	}
+	
+	public Texture getTexture() {
+		return texture;
 	}
 }

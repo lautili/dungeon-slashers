@@ -4,5 +4,6 @@ public enum PlayerState {
 	IDLE,
 	BUSY, 
 	MENU,
-	CHOICE
+	CHOICE, 
+	WAITING
 }

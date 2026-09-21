@@ -4,21 +4,59 @@ import java.util.Random;
 import io.github.dungeon_slashers.Flags;
 import io.github.dungeon_slashers.controllers.Battle;
 import io.github.dungeon_slashers.item.Item;
+import io.github.dungeon_slashers.screens.BattleScreen;
 
 public class Floor {
 	public Room[][] layout;
 	public int floorType;
-	public Battle battle;
+	public BattleScreen battle;
+	public BattleScreen bossBattle;
+	public int maxRooms;
+	public int minRooms;
 	public Item[] itemsPool;
-	public Random rand = new Random();
+	public int maxGld;
+	private Random rand = new Random();
 	
-	public Floor(int x, int y, Battle battle, int floorType, Item...items) {
+	public Floor(int x, int y, int maxRooms, int minRooms, BattleScreen battle, BattleScreen bossBattle, int floorType, int maxGld, Item...items) {
 		layout = new Room[x][y];
 		this.floorType = floorType;
 		this.battle = battle;
-		generateLayout();
-		generateBossRoom();
-		showDebugLayout();
+		this.bossBattle = bossBattle;
+		this.itemsPool = items;
+		this.maxGld = maxGld;
+		this.minRooms = minRooms;
+		this.maxRooms = maxRooms;
+		generateNewLayout();
+	}
+	private int countRooms() {
+		int q = 0;
+		for(int i = 0; i < layout.length; i++) {
+			for(int j = 0; j < layout[0].length; j++) {
+				if(layout[i][j] != null) {
+					q++;
+				}
+			}
+		}
+		return q;
+	}
+	public void generateNewLayout() {
+		do {
+			if(!exists(Room.ROOM_BOSS) || countRooms() < maxRooms) {
+				cleanLayout();
+				generateLayout();
+				generateBossRoom();
+				showDebugLayout();
+				continue;
+			}
+			return;
+		}while(true);
+	}
+	private void cleanLayout() {
+		for(int i = 0; i < layout.length; i++) {
+			for(int j = 0; j < layout[0].length; j++) {
+				layout[i][j] = null;
+			}
+		}
 	}
 	private void generateBossRoom() {
 		int x = (int) layout.length / 2;
@@ -29,7 +67,7 @@ public class Floor {
 		for(int i = 0; i < layout.length; i++) {
 			for(int j = 0; j < layout[0].length; j++) {
 				if(layout[i][j] != null) {
-					if(countAdjacentRooms(i, j) != 3) {
+					if(countAdjacentRooms(i, j) != 3 || i+1 >= layout.length || layout[i+1][j] == null) {
 						continue;
 					}
 					int distanceX = Math.abs(i - x);
@@ -43,16 +81,18 @@ public class Floor {
 				}
 			}
 		}
-		layout[furthestX][furthestY] = new Room(Room.ROOM_BOSS, Flags.FLAG_FIRSTBOSS_DEFEATED);
+		if(layout[furthestX][furthestY] != null) {
+			layout[furthestX][furthestY] = new Room(Room.ROOM_BOSS, Flags.FLAG_FIRSTBOSS_DEFEATED);
+		}
 	}
-	public void generateLayout() {
+	private void generateLayout() {
 		int x = (int) layout.length / 2;
 		int y = (int) layout[0].length / 2;
 		layout[x][y] = new Room(Room.ROOM_START);
 		generateRooms(x, y);
 	}
 	private void generateRooms(int x, int y) {
-		if(countAdjacentRooms(x, y) == 0) {
+		if(countAdjacentRooms(x, y) == 0 || countRooms() >= maxRooms) {
 			return;
 		}
 		int rooms = rand.nextInt(countAdjacentRooms(x, y)) + 1;
@@ -163,7 +203,6 @@ public class Floor {
 				layout[x][y] = new Room(Room.ROOM_NORMAL);
 			}
 		}
-		System.out.println("Creada habitacion en x " + x + " y " + y);
 	}
 	
 	public void showDebugLayout() {
@@ -223,5 +262,21 @@ public class Floor {
 			}
 		}
 		return null;
+	}
+	public Item getRandomItem() {
+		do {
+		int num = rand.nextInt(itemsPool.length);
+		if(itemsPool[num] == null) {
+			continue;
+		}
+		return itemsPool[num];
+		}while(true);
+	}
+	public void removeFromPool(Item item) {
+		for(Item item1 : itemsPool) {
+			if (item1 == item) {
+				item1 = null;
+			}
+		}
 	}
 }

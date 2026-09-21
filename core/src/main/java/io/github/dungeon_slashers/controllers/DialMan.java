@@ -36,6 +36,18 @@ public class DialMan {
 		temp = null;
 		dialogue = null;
 	}
+	public static void addDialogue(int id, int idnext) {
+		Dialogue dialogue = new Dialogue(id, null, null, null, time);
+		DialEvent[] temp = events.clone();
+		events = new DialEvent[temp.length + 1];
+		for(int i = 0; i < temp.length; i++) {
+			events[i] = temp[i];
+		}
+		events[temp.length] = dialogue; //inserta el dialogo
+		dialogue.next = idnext; //le pone el ID del dialogo al que saltara
+		temp = null;
+		dialogue = null;
+	}
 	
 	public static void addChoice(int id, float time, String msg, String[] choices, int[] ids) {
 		Choice choice = new Choice(id, msg, time, choices);
@@ -71,59 +83,155 @@ public class DialMan {
 			int i;
 			time += delta;
 			DialEvent event = events[next];
-			if(event instanceof Dialogue) {
-				Dialogue dial = (Dialogue) event;
-				Menu.showDialogue(game, dial);
-				if(!InputMan.checkKey("Z")){
-					if(!dial.currMsg.equals(dial.msg) && time > (dial.time / 1000)) {
-						dial.currMsg += dial.msg.charAt(dial.nextChar);
-						dial.nextChar++;
-						time = 0;
+				if(event instanceof Dialogue) {
+					if(event.msg == null) {
+						next = ((Dialogue) event).next;
+						if(next <= 0) {
+							return -1;
+						}
+						i = getEvent(next);
+						return i;
 					}
-					return next;	
-				}
-				if(!dial.currMsg.equals(dial.msg)) {
-					dial.currMsg = dial.msg;
-					return next;
-				}else {
-					if(events.length > 1) {
-						next = dial.next;
+					Dialogue dial = (Dialogue) event;
+					Menu.showDialogue(game, dial);
+					if(!InputMan.checkKey("Z")){
+						if(!dial.currMsg.equals(dial.msg) && time > (dial.time / 1000)) {
+							dial.currMsg += dial.msg.charAt(dial.nextChar);
+							dial.nextChar++;
+							time = 0;
+						}
+						return next;	
 					}else {
-						next = -1;
+						if(dial.currMsg.length() < 1) {
+							return next;
+						}
+						if(!dial.currMsg.equals(dial.msg)) {
+							dial.currMsg = dial.msg;
+							return next;
+						}else {
+							if(events.length > 1) {
+								next = dial.next;
+							}else {
+								next = -1;
+							}
+						}
 					}
-				}
-			}else {
-				Choice choice = (Choice) event;
-				Menu.showChoice(game, choice);
-				if(!InputMan.checkKey("Z")){
-					if(!choice.currMsg.equals(choice.msg) && time > (choice.time / 1000)) {
-						choice.currMsg += choice.msg.charAt(choice.nextChar);
-						choice.nextChar++;
-						time = 0;
-					}
-					if(choice.currMsg.equals(choice.msg)) {
-						Menu.showChoices(game, choice);
-						choice.currChoice = InputMan.scrollInt(MenuScrollType.VERTICAL, choice.getChoices().length, choice.currChoice);
-					}
-					return next;	
-				}
-				if(!choice.currMsg.equals(choice.msg)) {
-					choice.currMsg = choice.msg;
-					return next;
 				}else {
-					if(events.length > 1) {
-						next = choice.next[choice.currChoice];
+					Choice choice = (Choice) event;
+					Menu.showChoice(game, choice);
+					if(!InputMan.checkKey("Z")){
+						if(!choice.currMsg.equals(choice.msg) && time > (choice.time / 1000)) {
+							choice.currMsg += choice.msg.charAt(choice.nextChar);
+							choice.nextChar++;
+							time = 0;
+						}
+						if(choice.currMsg.equals(choice.msg)) {
+							Menu.showChoices(game, choice);
+							choice.currChoice = InputMan.scrollInt(MenuScrollType.VERTICAL, choice.getChoices().length, choice.currChoice);
+						}
+						return next;	
+					}
+					if(!choice.currMsg.equals(choice.msg)) {
+						choice.currMsg = choice.msg;
+						return next;
 					}else {
-						next = -1;
+						if(events.length > 1) {
+							next = choice.next[choice.currChoice];
+						}else {
+							next = -1;
+						}
 					}
 				}
-			}
-			if(next <= 0) {
-				return -1;
-			}
-			i = getEvent(next);
-			return i;
+				if(next <= 0) {
+					return -1;
+				}
+				i = getEvent(next);
+				return i;
 	}
+	
+	public static int showBDialogues(Main game, float delta) {
+		if(events.length > 0) {
+			next = showBDialogue(game, cont, delta);
+			if(next == -1) {
+				int id = events[cont].id;
+				events = new DialEvent[0];
+				cont = 0;
+				next = 0;
+				return id;
+			}else {
+				cont = next;
+				return cont;
+			}
+		} 
+		return -1;
+	}
+	private static int showBDialogue(Main game, int n, float delta) {
+			int i;
+			time += delta;
+			DialEvent event = events[n];
+			if(event.msg != null) {
+				if(event instanceof Dialogue) {
+					Dialogue dial = (Dialogue) event;
+					Menu.showBDialogue(game, dial);
+					if(!InputMan.checkKey("Z")){
+						if(!dial.currMsg.equals(dial.msg) && time > (dial.time / 1000)) {
+							dial.currMsg += dial.msg.charAt(dial.nextChar);
+							dial.nextChar++;
+							time = 0;
+						}
+						return next;	
+					}
+					if(!dial.currMsg.equals(dial.msg)) {
+						dial.currMsg = dial.msg;
+						return n;
+					}else {
+						if(events.length > 1) {
+							n = dial.next;
+						}else {
+							n = -1;
+						}
+					}
+				}else {
+					Choice choice = (Choice) event;
+					Menu.showChoice(game, choice);
+					if(!InputMan.checkKey("Z")){
+						if(!choice.currMsg.equals(choice.msg) && time > (choice.time / 1000)) {
+							choice.currMsg += choice.msg.charAt(choice.nextChar);
+							choice.nextChar++;
+							time = 0;
+						}
+						if(choice.currMsg.equals(choice.msg)) {
+							Menu.showChoices(game, choice);
+							choice.currChoice = InputMan.scrollInt(MenuScrollType.VERTICAL, choice.getChoices().length, choice.currChoice);
+						}
+						return n;	
+					}
+					if(!choice.currMsg.equals(choice.msg)) {
+						choice.currMsg = choice.msg;
+						return n;
+					}else {
+						if(events.length > 1) {
+							n = choice.next[choice.currChoice];
+						}else {
+							n = -1;
+						}
+					}
+				}
+				if(n <= 0) {
+					return -1;
+				}
+				i = getEvent(n);
+				return i;
+			}else {
+				n = ((Dialogue) event).next;
+				if(n <= 0) {
+					return -1;
+				}
+				i = getEvent(n);
+				return i;
+			}
+	}
+	
 	//para conseguir el evento al que se va a saltar en la lista
 	private static int getEvent(int id) {
 	    for(int i = 0; i < events.length; i++) {

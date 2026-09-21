@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import io.github.dungeon_slashers.Skill;
+import io.github.dungeon_slashers.controllers.DialMan;
 import io.github.dungeon_slashers.controllers.Menu;
 import io.github.dungeon_slashers.item.Armor;
 import io.github.dungeon_slashers.item.Weapon;
@@ -124,27 +125,31 @@ public class Hero extends Entity{
 	}
 	
 	//Verifica si la XP ya pasó el límite del nivel, y si lo hace sube el nivel y updatea las stats y las skills
-	public void checkLvl() {
+	public int checkLvl(int cont) {
 		if(xp >= nextXp) {
 			lvl++;
-			Menu.msg(name + " subio al nivel " + lvl + "!");
+			DialMan.addDialogue(cont, cont+1, null, null, name + " ha subido al nivel " + lvl + "!", 20);
+			cont++;
 			this.updateStats();
 			hp = maxhp;
 			mp = maxmp;
 			sp = maxsp;
-			this.updateSkills();
-			Menu.msg("\n");
+			cont = updateSkills(cont);
 			nextXp = (int) (100*lvl+(100*lvl*(0.1*lvl)));
 		}
+		return cont;
 	}
 	
-	private void updateSkills() { //Las skills por nivel
+	private int updateSkills(int cont) { //Las skills por nivel
 		for(int i = 0; i < posSkills.length; i++) {
 			if(posSkills[i].getLvl() == lvl) {
+				DialMan.addDialogue(cont, cont+1, null, null, 
+						name + " ha aprendido " + posSkills[i].getName() + "!", 20);
 				addSkill(posSkills[i]);
-				Menu.msg(name + " aprendio " + posSkills[i].getName() + "!");
+				cont++;
 			}
 		}
+		return cont;
 	}
 	
 	public Skill[] getRealSkills() {

@@ -14,7 +14,9 @@ gradle-app.setting
 /server/build/
 /shared/build/
 gradle/wrapper/gradle-9.6.1-bin.zip
-CHANGELOG.MD
+packr.jar
+packr-config.json
+compilegame.bat
 
 ## Java:
 *.class

@@ -2,6 +2,7 @@ package io.github.dungeon_slashers;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -20,6 +21,7 @@ import io.github.dungeon_slashers.floors.Floor;
 import io.github.dungeon_slashers.item.Armor;
 import io.github.dungeon_slashers.item.Item;
 import io.github.dungeon_slashers.item.Weapon;
+import io.github.dungeon_slashers.screens.BattleScreen;
 import io.github.dungeon_slashers.screens.CharSelectScreen;
 import io.github.dungeon_slashers.screens.FirstScreen;
 import io.github.dungeon_slashers.screens.MainMenuScreen;
@@ -38,6 +40,7 @@ public class Main extends Game {
 	
 	public SpriteBatch batch;
 	public FitViewport viewport;
+	public double roomDelay;
 	
 	public BitmapFont mainFont;
 	public BitmapFont invFont;
@@ -53,11 +56,35 @@ public class Main extends Game {
 	public Texture roomCurr;
 	public Texture mapBackground;
 	
+	public Texture battleBar;
+	public Texture HPbar;
+	public Texture MPbar;
+	public Texture SPbar;
+	public Texture behindCharactersBattle;
+	public Texture battleMenu;
+	
+	public Texture dialogueBox;
+	public Texture dialogueBBox;
+	public Texture nameBox;
+	public Texture nameBBox;
+	public Texture portraitBox;
+	public Texture choiceBox;
+	public Texture fightOrFleeBox;
+	
+	public Texture chestClosed;
+	public Texture chestOpen;
+	public Texture workedFireplace;
+	
 	//screens
 	public FirstScreen firstScreen;
 	public CharSelectScreen charSelectScreen;
 	public MenuScreen menuScreen;
 	public StoreScreen storeScreen;
+	
+	public BattleScreen defBattleScreen;
+	public BattleScreen firstBossFight;
+	
+	public Screen lastScreen;
 	
 	public Floor firstFloor;
 	public floorScreen firstFloorScreen;
@@ -66,6 +93,9 @@ public class Main extends Game {
 	public Floor thirdFloor;
 	public Floor fourthFloor;
 	public Floor fifthFloor;
+	
+	public Texture currentChar;
+	public Texture selection;
 	
     @Override
     public void create() {
@@ -84,6 +114,8 @@ public class Main extends Game {
 		roomCurr = new Texture("ui/map/room_curr.jpg");
 		mapBackground = new Texture("ui/map/map_background.png");
 		
+		roomDelay = 0.5;
+		
 		Menu.viewport = viewport;
 		Save.game = this;
 		InputMan.game = this;
@@ -100,14 +132,39 @@ public class Main extends Game {
     	
     	initializeGame();
     	
-    	firstFloor = new Floor(15, 15, battles[0], 1, items[0], items[2]);
-    	firstFloorScreen = new floorScreen(this, firstFloor);
+    	chestClosed = new Texture("sprites/objects/chest_closed.jpg");
+    	chestOpen = new Texture("sprites/objects/chest_open.png");
+    	workedFireplace = new Texture("sprites/objects/worked-fireplace.png");
+    	
+    	battleBar = new Texture("ui/battleBar.png");
+    	HPbar = new Texture("ui/HPbar.png");
+    	MPbar = new Texture("ui/MPbar.png");
+    	SPbar = new Texture("ui/SPbar.png");
+    	behindCharactersBattle = new Texture("ui/behindCharactersBattle.jpg");
+    	currentChar = new Texture("ui/currentCharBox.png");
+    	selection = new Texture("ui/selection.png");
+    	battleMenu = new Texture("ui/battle-menu.png");
+    	
+    	dialogueBox = new Texture("ui/box-dialogue.png");
+    	dialogueBBox = new Texture("ui/box-battle-dialogue.png");
+    	nameBox = new Texture("ui/box-name.png");
+    	nameBBox = new Texture("ui/box-battle-name.png");
+    	choiceBox = new Texture("ui/box-choice.png");
+    	portraitBox = new Texture("ui/box-portrait.png");
+    	fightOrFleeBox = new Texture("ui/box-fightorflee.png");
+    	
     	
     	firstScreen = new FirstScreen(this);
     	menuScreen = new MenuScreen(this);
     	storeScreen = new StoreScreen(this);
     	charSelectScreen = new CharSelectScreen(this);
     	
+    	firstFloor = new Floor(15, 15, 5, 6, defBattleScreen, firstBossFight, 1, 25, 
+    			getItem("minHPot"), getItem("minMPot"), getItem("minSPot"),
+    			getItem("minHPven"), getItem("minSPven"), getItem("minMPven"),
+    			getItem("ironSword"), getItem("woodenStaff"), 
+    			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"));
+    	firstFloorScreen = new floorScreen(this, firstFloor, firstScreen, firstScreen, Flags.FLAG_FIRSTBOSS_DIALOGUE);
     	
         setScreen(new MainMenuScreen(this));
     }
@@ -123,6 +180,15 @@ public class Main extends Game {
 		mainFont.dispose();
 		invFont.dispose();
 	}
+    
+    public Item getItem(String IDname) {
+    	for(Item item : items) {
+    		if (item.getIDName() == IDname) {
+    			return item;
+    		}
+    	}
+    	return null;
+    }
     
     
 	private void initializeGame() {
@@ -148,20 +214,25 @@ public class Main extends Game {
 				player.addWeapons(ironSword);
 				
 				//initialize items
-				Item minHPot = new Item("Pocion menor de salud", "minHPot", "Cura poca cantidad de salud.", 20, 3, false, true);
-				Item minMPot = new Item("Pocion menor de mana", "minMPot", "Cura una poca cantidad de mana.", 20, 3, false, true);
-				Item minSPot = new Item("Pocion menor de stamina", "minSPot", "Cura una poca cantidad de stamina.", 20, 3, false, true);
-				Item minHPven = new Item("Veneno menor de salud", "minHPven", "Quita una poca cantidad de salud.", 20, 1, false, false);
+				Item minHPot = new Item("Pocion menor de salud", "minHPot", "Cura poca cantidad de salud.", 20, 5, 3, false, true);
+				Item minMPot = new Item("Pocion menor de mana", "minMPot", "Cura una poca cantidad de mana.", 20, 5, 3, false, true);
+				Item minSPot = new Item("Pocion menor de stamina", "minSPot", "Cura una poca cantidad de stamina.", 5, 20, 3, false, true);
+				Item minHPven = new Item("Veneno menor de salud", "minHPven", "Quita una poca cantidad de salud.", 3, 20, 1, false, false);
+				Item minSPven = new Item("Veneno menor de stamina", "minSPven", "Quita una poca cantidad de stamina.", 2, 20, 1, false, false);
+				Item minMPven = new Item("Veneno menor de mana", "minMPven", "Quita una poca cantidad de mana.", 2, 20, 1, false, false);
 				
 				initItems(dullSword, dullDaggers, brokenStaff, oldBow, ironSword, woodenStaff,
 						
 						rags, leatherArmor, ironArmor, wizRobes,
 						
-						minHPot, minMPot, minSPot, minHPven);
+						minHPot, minMPot, minSPot, minHPven, minSPven, minMPven);
 				
 				player.addItems(minHPot, 5);
 				player.addItems(minMPot, 5);
 				player.addItems(minSPot, 5);
+				player.addItems(minHPven, 5);
+				player.addItems(minSPven, 5);
+				player.addItems(minMPven, 5);
 				
 				Store.addItems(minHPot, minMPot, minHPven, ironSword, woodenStaff, leatherArmor, ironArmor, wizRobes);
 				
@@ -171,46 +242,46 @@ public class Main extends Game {
 				Skill defend = new Skill("defend", "Defender", "Se protege de los proximos ataques.", "NONE", " se defiende.", 0, 999, false, 1);
 				
 				//guerrero
-				Skill charAtk = new Skill("charAtk", "Ataque cargado", "Inflige da o medio a un enemigo.", "PHY", 
+				Skill charAtk = new Skill("charAtk", "Ataque cargado", "Inflige daño medio a un enemigo.", "PHY", 
 						" lanza un ataque cargado a ",
 						1, 0, false, 1, 0, 30);
-				Skill deepCut = new Skill("deepCut", "Corte profundo", "Inflige da o bajo con chances de aplicar sangrado.", "PHY", 
+				Skill deepCut = new Skill("deepCut", "Corte profundo", "Inflige daño bajo con chances de aplicar sangrado.", "PHY", 
 						" corta profundamente a ",
 						1, 0, false, 1, 0, 30);
-				Skill knockout = new Skill("knockout", "Golpe de Gracia", "Inflinge da o bajo con bajas chances de aplicar confusion.", "PHY",
+				Skill knockout = new Skill("knockout", "Golpe de Gracia", "Inflinge daño bajo con bajas chances de aplicar confusion.", "PHY",
 						" le da un golpe de gracia a ", 
 						1, 0, false, 1, 0, 40, 2);
-				Skill crossCut = new Skill("crossCut", "Corte cruzado", "Inflinge da o bajo a todos los enemigos.", "PHY",
+				Skill crossCut = new Skill("crossCut", "Corte cruzado", "Inflinge daño bajo a todos los enemigos.", "PHY",
 						" corta a traves de los enemigos.", 
 						2, 5, false, 1, 0, 50, 2);
-				Skill skullCracker = new Skill("skullCracker", "Rompecraneos", "Inflinge da o medio a un enemigo con chances de confusion.", "PHY",
+				Skill skullCracker = new Skill("skullCracker", "Rompecraneos", "Inflinge daño medio a un enemigo con chances de confusion.", "PHY",
 						" le destruye el craneo a  ", 
 						1, 0, false, 1, 0, 45, 3);
-				Skill brutalBlow = new Skill("brutalBlow", "Golpe brutal", "Inflinge da o elevado a un enemigo.", "PHY",
+				Skill brutalBlow = new Skill("brutalBlow", "Golpe brutal", "Inflinge daño elevado a un enemigo.", "PHY",
 						" destruye a ", 
 						1, -10, false, 1, 0, 80, 4);
-				Skill moralDest = new Skill("moralDest", "Desestabilizador de Moral", "Inflinge da o medio a todos los enemigos con chances de atacar de vuelta.", "PHY",
+				Skill moralDest = new Skill("moralDest", "Desestabilizador de Moral", "Inflinge daño medio a todos los enemigos con chances de atacar de vuelta.", "PHY",
 						" desestabiliza a sus enemigos.", 
 						2, 0, false, 1, 0, 80, 4);
-				Skill lunge = new Skill("lunge", "Embestida", "Inflinge da o medio a un enemigo y lo confunde.", "PHY",
+				Skill lunge = new Skill("lunge", "Embestida", "Inflinge daño medio a un enemigo y lo confunde.", "PHY",
 						" embiste contra ", 
 						1, 5, false, 1, 0, 100, 5);
-				Skill heavyTackle = new Skill("heavyTackle", "Barrida contundente", "Inflinge da o medio a todos los enemigos con altas chances de aplicar cansancio.", "PHY",
+				Skill heavyTackle = new Skill("heavyTackle", "Barrida contundente", "Inflinge daño medio a todos los enemigos con altas chances de aplicar cansancio.", "PHY",
 						" Barre a los enemigos.", 
 						2, -10, false, 1, 60, 120, 6);
-				Skill hustle = new Skill("hustle", "Chicaneo", "Inflinge da o elevado a un enemigo con chances de aplicar Ira.", "PHY",
+				Skill hustle = new Skill("hustle", "Chicaneo", "Inflinge daño elevado a un enemigo con chances de aplicar Ira.", "PHY",
 						" hace un movimiento rastrero contra ", 
 						1, 5, false, 1, 50, 120, 7);
-				Skill backhand = new Skill("backhand", "Golpe del reves", "Inflinge da o medio a un enemigo y lo duerme.", "PHY",
+				Skill backhand = new Skill("backhand", "Golpe del reves", "Inflinge daño medio a un enemigo y lo duerme.", "PHY",
 						" Le pega con el pomo a ", 
 						1, 0, false, 1, 80, 120, 8);
-				Skill heavyLand = new Skill("heavyLand", "Impacto pesado", "Inflinge da o elevado a todos los enemigos con chance de confundirlos.", "PHY",
+				Skill heavyLand = new Skill("heavyLand", "Impacto pesado", "Inflinge daño elevado a todos los enemigos con chance de confundirlos.", "PHY",
 						" destruye a sus enemigos.", 
 						2, -15, false, 1, 40, 140, 8);
 				Skill warCry = new Skill("warCry", "Grito de batalla", "Aplica confusion, ira o silencio a todos los enemigos.", "NONE",
 						" Grita a todo pulmon. ", 
 						2, 0, false, 1, 80, 140, 9);
-				Skill crushAtk = new Skill("crushAtk", "Ataque Aplastante", "Inflinge da o elevado a todos los enemigos y aplica confusion y cansancio. ignora "
+				Skill crushAtk = new Skill("crushAtk", "Ataque Aplastante", "Inflinge daño elevado a todos los enemigos y aplica confusion y cansancio. ignora "
 						+ "debilidades y fortalezas.", "UNI",
 						" Acaba con los enemigos.", 
 						2, 0, false, 1, 150, 250, 10);
@@ -332,16 +403,16 @@ public class Main extends Game {
 						2, 50, false, 1, 200, 230, 10);
 				
 				//explorador
-				Skill deadShot = new Skill("deadShot", "Disparo certero", "Inflinge da o medio a un enemigo. ", "RAN", 
+				Skill deadShot = new Skill("deadShot", "Disparo certero", "Inflinge daño medio a un enemigo. ", "RAN", 
 						" le lanza una flecha poderosa a ",
 						1, 0, false, 1, 0, 30);
-				Skill fireArrow = new Skill("fireArrow", "Flecha Ignifuga", "Inflinge da o medio de fuego a un enemigo. ", "FIR", 
+				Skill fireArrow = new Skill("fireArrow", "Flecha Ignifuga", "Inflinge daño medio de fuego a un enemigo. ", "FIR", 
 						" le lanza una flecha en fuego a ",
 						1, 0, false, 1, 10, 25);
-				Skill iceArrow = new Skill("iceArrow", "Flecha Escarchada", "Inflinge da o medio de agua a un enemigo. ", "WAT", 
+				Skill iceArrow = new Skill("iceArrow", "Flecha Escarchada", "Inflinge daño medio de agua a un enemigo. ", "WAT", 
 						" le lanza una flecha congelada a ",
 						1, 0, false, 1, 10, 25);
-				Skill arrowRain = new Skill("arrowRain", "LLuvia de flechas", "Inflinge da o bajo a todos los enemigos. ", "RAN", 
+				Skill arrowRain = new Skill("arrowRain", "LLuvia de flechas", "Inflinge daño bajo a todos los enemigos. ", "RAN", 
 						" nubla el cielo de flechas.",
 						2, 0, false, 1, 0, 45, 2);
 				Skill calTrap = new Skill("calTrap", "Trampa de Abrojos", "Envenena a un enemigo. ", "NONE", 
@@ -353,7 +424,7 @@ public class Main extends Game {
 				Skill slimeDust = new Skill("slimeDust", "Polvo de Slime", "Aplica el estado Envenenado a todos los enemigos. ", "NONE", 
 						" lanza un polvo de slime a sus enemigos!",
 						2, 0, false, 1, 80, 80, 4);
-				Skill nailIt = new Skill("nailIt", "Tiro al Clavo", "Inflinge da o elevado a un enemigo. ", "RAN", 
+				Skill nailIt = new Skill("nailIt", "Tiro al Clavo", "Inflinge daño elevado a un enemigo. ", "RAN", 
 						" lanza una poderosa flecha cargada a ",
 						1, 0, false, 1, 10, 100, 4);
 				Skill expTorment = new Skill("expTorment", "Tormento del Explorador", "Aplica el estado confusion y cansancio a todos los enemigos. ", "NONE", 
@@ -362,7 +433,7 @@ public class Main extends Game {
 				Skill tarPit = new Skill("tarPit", "Trampa de Alquitran", "Aplica el estado envenenado y cansancio a todos los enemigos. ", "NONE", 
 						" prepara una fuerte pocima para sus enemigos!",
 						2, 0, false, 1, 110, 110, 6);
-				Skill debrisShower = new Skill("debrisShower", "LLuvia de Escombros", "Inflinge da o de tierra elevado a los enemigos. ", "EAR", 
+				Skill debrisShower = new Skill("debrisShower", "LLuvia de Escombros", "Inflinge daño de tierra elevado a los enemigos. ", "EAR", 
 						" hace que caigan los escombros.",
 						2, 0, false, 1, 100, 150, 6);
 				Skill worldRevolving = new Skill("worldRevolving", "Girando el mundo", "Aplica Ira a todos los enemigos. ", "NONE", 
@@ -374,7 +445,7 @@ public class Main extends Game {
 				Skill allyTotem = new Skill("allyTotem", "Totem Aliado", "Bendice a un aliado. ", "NONE", 
 						" le presta un totem a ",
 						3, 0, false, 1, 100, 180, 9);
-				Skill finalTrial = new Skill("finalTrial", "Flecha del Juicio Final", "Inflinge da o elevado universal a todos los enemigos y los hace sangrar. ", "UNI", 
+				Skill finalTrial = new Skill("finalTrial", "Flecha del Juicio Final", "Inflinge daño elevado universal a todos los enemigos y los hace sangrar. ", "UNI", 
 						" dispara una rafaga de flechas en todas las direcciones.",
 						2, 0, false, 1, 180, 220, 10);
 				
@@ -398,7 +469,7 @@ public class Main extends Game {
 						+ "con altas chances de aplicar envenenamiento", "NONE", 
 						" deja sordo a ",
 						1, 0, false, 1, 70, 0, 3);
-				Skill toxicDust = new Skill("toxicDust", "Polvo toxico", "Inflinge da o de viento medio a todos los enemigos"
+				Skill toxicDust = new Skill("toxicDust", "Polvo toxico", "Inflinge daño de viento medio a todos los enemigos"
 						+ " con altas chances de envenenamiento.", "WIN", 
 						" sopla un viento toxico a los enemigos.",
 						2, 0, false, 1, 120, 0, 4);
@@ -467,10 +538,10 @@ public class Main extends Game {
 				skeleton.addSkills(arrowRain, fireArrow);
 				Enemy mimic = new Enemy("Mimico", "mimic", "PHY", 180, 0, 0, 28, 25, 0, 10, 12, 50, 90, 5, 0.5, 0.5, 2.0, 0.5, 0.25, 1.0, defAtt, defend);
 				
-				Boss ogre = new Boss("Ogro", "ogre", "PHY", 950, 40, 220, 34, 24, 8, 18, 12, 180, 120, 0, 0.5, 1.0, 1.0, 0.25, 0.5, 1.5, defAtt, defend, 0);
+				Boss ogre = new Boss("Ogro", "ogre", "PHY", 950, 40, 220, 34, 24, 8, 18, 12, 180, 120, 0, 0.5, 1.0, 1.0, 0.25, 0.5, 1.5, defAtt, defend, Flags.FLAG_FIRSTBOSS_DEFEATED);
 				ogre.addSkills(charAtk, deepCut, crossCut);
 					ogre.setEvents(
-							new BossEvent(false, 0, "Muajajaja...", "Hola...", "Soy el ogro malvado...", "Tu primer desafio comienza aqui..."),
+							new BossEvent(false, 0, "Muajajaja...", "Soy el ogro malvado...", "Tu primer desafio comienza aqui..."),
 							new BossEvent(true, 50, crossCut, "De verdad creen que pueden derrotarme..?", "Les demostrare que se equivocan..."),
 							new BossEvent(true, 0, "Vaya...", "C-con que... me han derrotado...", "Heh... esta bien...", 
 									"S-Suerte...", "La...", "Necesitaran...")
@@ -494,6 +565,9 @@ public class Main extends Game {
 						boss1,
 						
 						practice);
+				
+				defBattleScreen = new BattleScreen(this, defBattle, new Texture("sprites/background/background_battle_1.jpg"));
+				firstBossFight = new BattleScreen(this, boss1, new Texture("sprites/background/background_battle_boss.jpg"));
 	}
 	private void initBattles(Battle... battles1) {
 		battles = battles1;

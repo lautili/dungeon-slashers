@@ -42,6 +42,12 @@ public class BossEvent {
 	public String[] getMsgs() {
 		return msgs;
 	}
+	public int getNum() {
+		return num;
+	}
+	public boolean getHP() {
+		return isHP;
+	}
 	
 	public boolean checkBossEvent(Main game, Boss boss, int turn, float delta) {
 		if(!check) {
@@ -49,16 +55,8 @@ public class BossEvent {
 				if( boss.hp <= (int) (boss.getHP() * ((double) (num) / 100))) { //checks para ver que tenga menos de num% de vida
 					check = true;
 					for(int i = 0; i < msgs.length; i++) {
-						int i2;
-						if(i+1 == msgs.length) {
-							i2 = 0;
-						}else {
-							i2 = i+1;
-						}
+						int i2 = i+1;
 						DialMan.addDialogue(i, i2, boss.name, null, msgs[i], 2); //codigo sencillo para hacer los dialogos
-					}
-					if(msgs.length > 0) {
-						DialMan.showDialogues(game, delta);
 					}
 					return true;
 				}
@@ -66,16 +64,8 @@ public class BossEvent {
 				if(turn == num) { //chequea que sea ese turno
 					check = true;
 					for(int i = 0; i < msgs.length; i++) {
-						int i2;
-						if(i+1 == msgs.length) {
-							i2 = 0;
-						}else {
-							i2 = i+1;
-						}
+						int i2 = i+1;
 						DialMan.addDialogue(i, i2, boss.name, null, msgs[i], 2);
-					}
-					if(msgs.length > 0) {
-						DialMan.showDialogues(game, delta);
 					}
 					return true;
 				}

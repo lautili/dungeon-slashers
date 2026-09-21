@@ -70,11 +70,7 @@ public class MenuScreen implements Screen {
     		break;
     	case 3:
     		skillArray = chars[pos[2]].getRealSkills();
-    		for (int i = 0; i < skillArray.length; i++) {
-        	    System.out.println(
-        	        i + ": " + skillArray[i] + 
-        	        " | " + (skillArray[i] != null ? skillArray[i].getName() : "NULL"));
-        	}
+    		
     		break;
     	}
     	
@@ -90,7 +86,6 @@ public class MenuScreen implements Screen {
 	    	Menu.showItemStats(game, itemArray[pos[1]]);
 	    	}
     	}else {
-    		System.out.println(skillArray);
     		Menu.showSkills(game, -100, 220, 10, pos[1], skillArray);
 	    	if(skillArray.length > 0) {
 	    	Menu.showSkillStats(game, skillArray[pos[1]]);
@@ -178,10 +173,12 @@ public class MenuScreen implements Screen {
     @Override
     public void hide() {
         // This method is called when another screen replaces this one.
+    	game.lastScreen = this;
     }
 
     @Override
     public void dispose() {
         // Destroy screen's assets here.
+    	game.lastScreen = this;
     }
 }

@@ -15,8 +15,6 @@ public class Room {
 	public int roomType;
 	
 	private boolean isTreasureOpen;
-	private int bossFlag;
-	
 	public int discovered;
 	
 	public Room(int roomType) {
@@ -32,10 +30,12 @@ public class Room {
 	}
 	public Room(int roomType, int bossFlag) {
 		this.roomType = roomType;
-		this.bossFlag = bossFlag;
 	}
 	
 	public boolean isTreasureOpen() {
 		return isTreasureOpen;
+	}
+	public void setTreasureOpen() {
+		isTreasureOpen = true;
 	}
 }

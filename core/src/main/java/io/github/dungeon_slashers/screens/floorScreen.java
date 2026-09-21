@@ -1,5 +1,7 @@
 package io.github.dungeon_slashers.screens;
 
+import java.util.Random;
+
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -17,26 +19,38 @@ import io.github.dungeon_slashers.controllers.Battle;
 import io.github.dungeon_slashers.controllers.DialMan;
 import io.github.dungeon_slashers.controllers.InputMan;
 import io.github.dungeon_slashers.controllers.Save;
+import io.github.dungeon_slashers.entities.Boss;
 import io.github.dungeon_slashers.entities.Hero;
 import io.github.dungeon_slashers.floors.Floor;
 import io.github.dungeon_slashers.floors.Room;
+import io.github.dungeon_slashers.item.Armor;
+import io.github.dungeon_slashers.item.Item;
+import io.github.dungeon_slashers.item.Weapon;
 
 /** Primera sala. */
 public class floorScreen implements Screen {
 	Hero[] chars;
     private OrthographicCamera camera;
     private FitViewport viewport;
+    private int dialogueFlag;
     private float[] x;
     private float[] y;
     private Texture background;
+    private int firstSteps;
+    private int steps;
     private int level;
-    private Battle battle;
+    private float timer;
+    private BattleScreen battle;
+    private BattleScreen bossBattle;
+    private Screen nextScreen;
     private int[] currPosition;
     private boolean showMap;
-    
+    private Random rand = new Random();
     private Texture[] wallTextures = new Texture[4];
     private Rectangle[] doorColliders = new Rectangle[4];
     private boolean[] wallBooleans = new boolean[4];
+    private Rectangle bossBattleActivation;
+    private Rectangle treasure;
     
     private final int WALL_DOWN = 0;
     private final int WALL_UP = 1;
@@ -48,7 +62,6 @@ public class floorScreen implements Screen {
     private boolean colboxes;
     Rectangle playerCol;
     Rectangle[] collisions;
-    Rectangle[] interactions;
     Rectangle[] doors;
     private Array<Vector2> posHistory; // Breadcrumb. un array de posiciones que se irá guardando
     								   // cada vez que el jugador se mueva y hará que el resto de 
@@ -57,15 +70,17 @@ public class floorScreen implements Screen {
     			//Vector 2 es una clase que guarda dos posiciones x e y
     private int followDelay = 15; //el delay con el que lo seguiran
     
-	public floorScreen(Main game, Floor floor) {
+	public floorScreen(Main game, Floor floor, Screen nextScreen, Screen prevScreen, int dialogueFlag) {
 		this.game = game;
 		this.floor = floor;
+		this.nextScreen = nextScreen;
 		level = floor.floorType;
 		battle = floor.battle;
+		bossBattle = floor.bossBattle;
+		this.dialogueFlag = dialogueFlag;
 		x = new float[4];
 		y = new float[4];
 		chars = Main.player.getCharacters();
-		
 		background = new Texture("sprites/background/background_floor_" + level + ".jpg");
 		currPosition = floor.getRoomPosition(Room.ROOM_START);
 		wallTextures[WALL_DOWN] = new Texture("sprites/background/background_floor_" + level + "_wall_down.png");
@@ -78,14 +93,14 @@ public class floorScreen implements Screen {
 		doorColliders[WALL_RIGHT] = new Rectangle(299, 47, 20, 46);
 		doorColliders[WALL_DOWN] = new Rectangle(134, 0, 51, 15);
 		
-		x[0] = 90;
-		y[0] = 40;
+		x[0] = 150;
+		y[0] = 15;
 		colboxes = false;
 		playerCol = new Rectangle(x[0], y[0], 15, 15);
 		collisions = new Rectangle[8];
 		collisions[0] = new Rectangle(0, 148, 134, 32);
 		collisions[1] = new Rectangle(184, 148, 135, 32);
-		
+		bossBattleActivation = new Rectangle(0, 80, 320, 100);
 		collisions[2] = new Rectangle(0, 0, 20, 47);
 		collisions[3] = new Rectangle(0, 103, 20, 55);
 		
@@ -95,21 +110,30 @@ public class floorScreen implements Screen {
 		collisions[6] = new Rectangle(0, 0, 134, 15);
 		collisions[7] = new Rectangle(185, 0, 135, 15);
 		
-		interactions = new Rectangle[1];
-		
 		doors = new Rectangle[4];
 		doors[WALL_UP] = new Rectangle(134, 175, 51, 5);
 		doors[WALL_LEFT] = new Rectangle(0, 47, 5, 55);
 		doors[WALL_RIGHT] = new Rectangle(315, 47, 5, 55);
 		doors[WALL_DOWN] = new Rectangle(134, 0, 51, 5);
+		
+		treasure = new Rectangle(160 - 12, 90 - 8, 24, 16);
 	}
 	@Override
     public void show() {
         // Prepare your screen here.
 		this.resume();
+		if(Main.player.currScreen == "FIRST_SCREEN") {
+			currPosition = floor.getRoomPosition(Room.ROOM_START);
+			x[0] = 150;
+			y[0] = 20;
+		}
+		timer = 0;
+		steps = 0;
+		firstSteps = 0;
+		Main.player.state = PlayerState.WAITING;
 		showMap = false;
 		chars = Main.player.getCharacters();
-		Main.player.currScreen = "FIRST_FLOOR_SCREEN";
+		Main.player.currScreen = "FLOOR_SCREEN";
 		camera = new OrthographicCamera();
 		viewport = game.viewport;
 		viewport.setCamera(camera);
@@ -131,7 +155,15 @@ public class floorScreen implements Screen {
 	}
 	@Override
     public void render(float delta) {
+		Room room = floor.layout[currPosition[0]][currPosition[1]];
         // Draw your screen here. "delta" is the time since last render in seconds.
+		if(Main.player.state == PlayerState.WAITING) {
+    		timer += delta;
+    		if(timer >= game.roomDelay) {
+    			Main.player.state = PlayerState.IDLE;
+    			timer = 0;
+    		}
+    	}
     	float[] floats = new float[2];
     	if(Main.player.state == PlayerState.IDLE) {
         	floats = InputMan.movement(this, game);
@@ -160,6 +192,7 @@ public class floorScreen implements Screen {
             y[0] += moveY;
             if (moveY != 0) moved = true;
         }
+        playerCol.y = y[0];
         
         if (moved) { //si el personaje principal se movió
             posHistory.insert(0, new Vector2(x[0], y[0])); //inserta la posicion del chars[0]
@@ -167,6 +200,22 @@ public class floorScreen implements Screen {
             if (posHistory.size > chars.length * followDelay + 5) {
                 posHistory.pop(); //evita que la lista siga creando posiciones cuando
                 				  //ya creó todos los fotogramas que necesitaba
+            }
+            if(room.roomType != Room.ROOM_START && room.roomType != Room.ROOM_BOSS) {
+	            if(firstSteps <= 100) {
+	            	firstSteps++;
+	            }else {
+	            	if(steps < 60) {
+	            		steps++;
+	            	}else {
+	            		if(rand.nextInt(100) < 5) {
+	            			game.setScreen(battle);
+	            			battle.lastScreen = this;
+	            		}else {
+	            			steps = 0;
+	            		}
+	            	}
+	            }
             }
         }
         
@@ -231,10 +280,28 @@ public class floorScreen implements Screen {
     	camera.update();
     	game.batch.setProjectionMatrix(camera.combined);
     	game.batch.begin();
+    	
     	game.batch.draw(background, 0, 0);
     	for(int i = 0; i < wallTextures.length; i++) {
-    		if(wallBooleans[i]) {
+    		if(wallBooleans[i] && 
+    				!(i == WALL_DOWN  && floor.layout[currPosition[0]][currPosition[1]].roomType == Room.ROOM_START)
+    				&& 
+    				!(i == WALL_UP  
+    					&& floor.layout[currPosition[0]][currPosition[1]].roomType == Room.ROOM_BOSS 
+    					&& getBossFlag())
+    			) {
     			game.batch.draw(wallTextures[i], 0, 0);
+    		}
+    	}
+    	if(!getBossFlag() && room.roomType == Room.ROOM_BOSS) {
+    		Boss boss = (Boss) (bossBattle.battle.possibleEnemy[0]);
+        	game.batch.draw(boss.bossIdle, 320 / 2 - boss.bossIdle.getWidth() / 2, 180 / 2 - boss.bossIdle.getHeight() / 2 + 25);
+        }
+    	if(room.roomType == Room.ROOM_TREASURE) {
+    		if(room.isTreasureOpen()) {
+    			game.batch.draw(game.chestOpen, treasure.x, treasure.y);
+    		}else {
+    			game.batch.draw(game.chestClosed, treasure.x, treasure.y);
     		}
     	}
     	game.batch.draw(chars[3].getCurrentFrame(), x[3], y[3]);
@@ -250,11 +317,8 @@ public class floorScreen implements Screen {
     				game.batch.draw(game.colBox, col.x, col.y, col.width, col.height);
     			}
     		}
-    		for(int i = 0; i < interactions.length; i++) {
-    			Rectangle col = interactions[i];
-    			if(col != null) {
-    				game.batch.draw(game.intBox, col.x, col.y, col.width, col.height);
-    			}
+    		if(treasure != null && room.roomType == Room.ROOM_TREASURE) {
+    			game.batch.draw(game.intBox, treasure.x, treasure.y, treasure.width, treasure.height);
     		}
     		for(int i = 0; i < doors.length; i++) {
     			Rectangle col = doors[i];
@@ -271,11 +335,8 @@ public class floorScreen implements Screen {
     	}
     	int resp = DialMan.showDialogues(game, delta);
     	switch(resp) {
-    	
-    	}
-    	
-    	if(resp != -1) {
-    		System.out.println(resp);
+    	case 100:
+    		game.setScreen(bossBattle);
     	}
     	
     	
@@ -325,11 +386,64 @@ public class floorScreen implements Screen {
         }
 	}
 	private boolean checkInteraction(Rectangle player) {
-		for(Rectangle col : interactions) {
-			if(col != null && player.overlaps(col)) {
-				return true;
-				
+		Room room = floor.layout[currPosition[0]][currPosition[1]];
+		if(room.roomType == Room.ROOM_TREASURE && player.overlaps(treasure)) {
+			if(room.isTreasureOpen()) {
+				DialMan.addDialogue(0, -1, null, null, "Ya has abierto este cofre.", 20);
+			}else {
+				String msg = "";
+				int random = rand.nextInt(3);
+				if(random == 0 || random == 2) {
+					int gold = rand.nextInt(floor.maxGld - (floor.maxGld - (floor.maxGld / 3))) + (floor.maxGld - floor.maxGld / 3);
+					msg += gold + "G";
+					Main.player.gold += gold;
+				}
+				if(random == 1 || random == 2) {
+					int n = rand.nextInt(100);
+					int n2;
+					if(n > 50) {
+						n2 = 1;
+					}else if (n > 25) {
+						n2 = 2;
+					}else if(n > 8) {
+						n2 = 3;
+					}else {
+						n2 = 4;
+					}
+					for(int i = 1; i <= n2; i++) {
+						if(!msg.equals("")) {
+							if(i < n2) {
+								msg += ", ";
+							}else {
+								msg += " y ";
+							}
+						}
+						Item item = floor.getRandomItem();
+						if (!item.unique) {
+							int q = rand.nextInt(item.maxQ) + 1;
+							if(q > 1) {
+								msg += q + " ";
+							}
+							Main.player.addItems(item, q);
+						}else {
+							floor.removeFromPool(item);
+							if (item instanceof Armor) {
+								Main.player.addArmors((Armor) item);
+							}else if(item instanceof Weapon){
+								Main.player.addWeapons((Weapon) item);
+							}else {
+								Main.player.addItems(item);
+							}
+						}
+						msg += item.getName();
+					}
+				}
+				msg += ".";
+				DialMan.addDialogue(0, 1, null, null, "Has abierto el cofre!", 20);
+				DialMan.addDialogue(1, -1, null, null, "Has encontrado " + msg, 20);
+				room.setTreasureOpen();
 			}
+			return true;
 		}
 		return false;
 	}
@@ -346,39 +460,54 @@ public class floorScreen implements Screen {
         
         for (int i = 0; i < doorColliders.length; i++) {
         	Rectangle col = doorColliders[i];
-            if (col != null && player.overlaps(col) && wallBooleans[i]) {
+            if (col != null && player.overlaps(col) && 
+            		(wallBooleans[i]  && !(i == WALL_DOWN  
+            			&& floor.layout[currPosition[0]][currPosition[1]].roomType == Room.ROOM_START)) && 
+            			!(i == WALL_UP  
+            				&& floor.layout[currPosition[0]][currPosition[1]].roomType == Room.ROOM_BOSS && getBossFlag())
+            			
+            		) {
             	return true;
             }
 
         }
-
-        return false;
+        Room room = floor.layout[currPosition[0]][currPosition[1]];
+        if(room.roomType == Room.ROOM_TREASURE && player.overlaps(treasure)) {
+			return true;
+		}
+		return false;
     }
     
     private boolean checkDoors(Rectangle player) {
-
+    	if(Main.player.state != PlayerState.IDLE) {
+    		return false;
+    	}
         for (Rectangle col : doors) { //usamos este metodo de for para mayor comodidad
 
             if (col != null && player.overlaps(col)) {
             	if(col == doors[WALL_LEFT]) {
             		currPosition[1]--;
-            		x[0] = doors[WALL_RIGHT].x - 25;
-            		y[0] = doors[WALL_RIGHT].y + 5;
+            		x[0] = doors[WALL_RIGHT].x - 15;
             	}
             	if(col == doors[WALL_UP]) {
-            		currPosition[0]--;
-            		x[0] = doors[WALL_DOWN].x + 5;
-            		y[0] = doors[WALL_DOWN].y + 25;
+            		if(floor.layout[currPosition[0]][currPosition[1]].roomType == Room.ROOM_BOSS) {
+            			game.setScreen(nextScreen);
+            		}else {
+            			currPosition[0]--;
+	            		y[0] = doors[WALL_DOWN].y + 15;
+            		}
             	}
             	if(col == doors[WALL_DOWN]) {
-            		currPosition[0]++;
-            		x[0] = doors[WALL_UP].x + 5;
-            		y[0] = doors[WALL_UP].y - 25;
+            		if(floor.layout[currPosition[0]][currPosition[1]].roomType == Room.ROOM_START) {
+            			game.setScreen(game.firstScreen);
+            		}else{
+	            		currPosition[0]++;
+	            		y[0] = doors[WALL_UP].y - 15;
+            		}
             	}
             	if(col == doors[WALL_RIGHT]) {
             		currPosition[1]++;
-            		x[0] = doors[WALL_LEFT].x + 25;
-            		y[0] = doors[WALL_LEFT].y + 5;
+            		x[0] = doors[WALL_LEFT].x + 15;
             	}
             	floor.layout[currPosition[0]][currPosition[1]].discovered = Room.DISC_TOTAL;
             	posHistory = new Array<>(); // inicializa el ArrayList
@@ -397,7 +526,22 @@ public class floorScreen implements Screen {
             }
 
         }
-
+        if(player.overlaps(bossBattleActivation) 
+        		&& !getBossFlag() 
+        		&& floor.layout[currPosition[0]][currPosition[1]].roomType == Room.ROOM_BOSS 
+        		) {
+        	if(!Main.player.flags[dialogueFlag]) {
+	        	Boss boss = (Boss) bossBattle.battle.possibleEnemy[0];
+	        	Flags.DialogueFlag(dialogueFlag, boss);
+	        	Main.player.flags[dialogueFlag] = true;	        	
+	        	Main.player.state = PlayerState.BUSY;
+	        	System.out.println("Se entró a lo del check");
+        	}else {
+        		DialMan.addDialogue(0, 100);
+        		DialMan.addDialogue(100, -1);
+        	}
+        }
+        
         return false;
     }
     
@@ -459,10 +603,18 @@ public class floorScreen implements Screen {
     @Override
     public void hide() {
         // This method is called when another screen replaces this one.
+    	game.lastScreen = this;
     }
 
     @Override
     public void dispose() {
         // Destroy screen's assets here.
+    	game.lastScreen = this;
+    }
+    
+    private boolean getBossFlag() {
+    	Boss boss = (Boss) (bossBattle.battle.possibleEnemy[0]);
+    	int flag = boss.getFlag();
+    	return Main.player.flags[flag];
     }
 }

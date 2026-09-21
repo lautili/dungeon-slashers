@@ -49,9 +49,12 @@ public class CharSelectScreen implements Screen {
     	
     	game.mainFont.getData().setScale(0.3f);
     	game.mainFont.draw(game.batch, "SELECCIONE LOS PERSONAJES:", -75, 80f);
+    	if(countChars() == 4) {
+    		game.mainFont.getData().setScale(0.2f);
+    		game.mainFont.draw(game.batch, "4 Personajes seleccionados, presione X para continuar.", -160, 60);
+    	}
     	
-    	Menu.showOptionsX(game, game.mainFont, 0.2f, -140, -70, 60, null, sel, "GUERRERO", "MAGA",
-    														"LADRONA", "EXPLORADOR", "CURANDERO");
+    	Menu.showOptionsSelScreen(game, game.mainFont, 0.2f, -140, -70, 60, null, sel, selCharacters, characters);
     	
     	game.batch.end();
     	if(InputMan.checkKey("Z")) {
@@ -140,10 +143,12 @@ public class CharSelectScreen implements Screen {
     @Override
     public void hide() {
         // This method is called when another screen replaces this one.
+    	game.lastScreen = this;
     }
 
     @Override
     public void dispose() {
         // Destroy screen's assets here.
+    	game.lastScreen = this;
     }
 }

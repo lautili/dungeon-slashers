@@ -23,7 +23,7 @@ public class Player {
 	private Hero[] characters; //los personajes
 	public String currScreen;
 	public PlayerState state;
-	public boolean[] flags = new boolean[1]; // las flags
+	public boolean[] flags = new boolean[3]; // las flags
 	public int gold;
 	
 	//constructor

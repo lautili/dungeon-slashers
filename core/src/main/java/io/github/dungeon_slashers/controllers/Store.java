@@ -92,7 +92,7 @@ public class Store {
 	
 	public static void buy(Item item, int q) {
 		if(player.gold < item.getCost() * q) {
-			Menu.msg("No tiene suficiente dinero.");
+			
 		}else {
 			player.gold -= item.getCost() * q;
 			player.addItems(item, q);

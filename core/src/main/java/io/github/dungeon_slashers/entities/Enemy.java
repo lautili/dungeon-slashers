@@ -1,5 +1,7 @@
 package io.github.dungeon_slashers.entities;
 
+import com.badlogic.gdx.graphics.Texture;
+
 import io.github.dungeon_slashers.Effect;
 import io.github.dungeon_slashers.Skill;
 
@@ -47,6 +49,11 @@ public class Enemy extends Entity{
 		this.WAT = WAT;
 		this.WIN = WIN;
 		this.EAR = EAR;
+		try {
+			texture = new Texture("sprites/enemies/" + IDname + ".png");
+		}catch(Exception e) {
+			texture = new Texture("sprites/enemies/something.png");
+		}
 		skills = new Skill[2];
 		skills[0] = attack;
 		skills[1] = defend;
@@ -61,6 +68,7 @@ public class Enemy extends Entity{
 	//  asi que se puede utilizar este metodo sin miedo.
 	public Enemy(Enemy enemy) { 
 		this.name = enemy.name;
+		this.IDname = enemy.IDname;
 		this.baseType =enemy.baseType;
 		this.maxhp = enemy.hp;
 		this.hp = enemy.hp;
@@ -69,6 +77,7 @@ public class Enemy extends Entity{
 		this.maxmp = enemy.mp;
 		this.mp = enemy.mp;
 		this.atk = enemy.atk;
+		this.texture = enemy.texture;
 		this.def = enemy.def;
 		this.mat = enemy.mat;
 		this.mdf = enemy.mdf;

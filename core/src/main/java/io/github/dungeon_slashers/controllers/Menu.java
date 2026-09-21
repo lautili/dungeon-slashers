@@ -30,73 +30,6 @@ import io.github.dungeon_slashers.item.Weapon;
 public class Menu {
 	public static boolean menu;
 	public static FitViewport viewport;
-private static void charSelection(Hero warrior, Hero mage, Hero sage, Hero explorer, Hero thief) {
-	//Array de Strings con los nombres de las clases
-			String[] charSel = {"Warrior", "Mage", "Explorer", "Thief", "Sage"};
-			int heroesSeleccionados = 0;
-			
-	// Ciclo para elegir a los personajes
-	while (heroesSeleccionados < 4) {
-
-		// Ingresa la seleccion con el largo de la cantidad de personajes -1
-		int seleccion = InputMan.scanInt(1, charSel.length);
-		seleccion--;
-		
-		//Si la seleccion esta vacia (Ya fue elegido), 
-		//	lo avisa y repite el ciclo sin hacer lo que hay por delante
-		if (charSel[seleccion].equals("")) {
-			Menu.msg("Ese personaje ya fue elegido o no esta disponible. Escoja uno de la lista.");
-			continue;
-		}
-		
-		// crea la funcion para asignar a un heroe
-		Hero heroeAsignar = null;
-		
-		//hace un switch a la selecci�n para saber a quien eligi�, y guarda ese personaje en heroeAsignar
-		switch (charSel[seleccion]) {
-			case "Warrior": 
-				heroeAsignar = warrior; 
-				break;
-			case "Mage":     
-				heroeAsignar = mage; 
-				break;
-			case "Explorer": 
-				heroeAsignar = explorer; 
-				break;
-			case "Thief":    
-				heroeAsignar = thief; 
-				break;
-			case "Sage":     
-				heroeAsignar = sage; 
-				break;
-		}
-		
-		//Muestra todos los datos del heroe
-		Menu.msg("\nEsta seguro que desea elegir a este personaje?\n	0-No\n	1-Si");
-		int opt = InputMan.scanInt(0, 1);
-		if (opt == 1) {
-			//Si elige al personaje, lo guarda en la proxima ubicacion de la lista, 
-			//	avanza a la proxima posicion de la lista (heroesSeleccionados) y borra al
-			//	personaje del array de Strings de las clases
-			Main.player.getCharacters()[heroesSeleccionados] = heroeAsignar;
-			Menu.msg(heroeAsignar.getName() + " a�adido al equipo!");
-			heroesSeleccionados++;
-			charSel[seleccion] = "";
-		}else {
-			//Si cambia de opinion, repite el ciclo
-			continue;
-		}
-	}
-	Menu.msg("\n�Equipo completado con exito!");
-	
-}
-
-//muestra las estadisticas de las entidades en una batalla
-public static void battleStats(Hero[] heroes, Enemy[] enemies) {
-	showEntityBStats(heroes);
-	System.out.println("\n--------------------------------------------------------------------------------------------------------------------------------------------------\n");
-	showEntityBStats(enemies);
-}
 
 // metodo generalizado para mostrar una estadistica como una barra, como una barra de vida
 private static String statBar(int maxStat, int stat) {
@@ -115,9 +48,6 @@ private static String statBar(int maxStat, int stat) {
 //mostrar las estadisticas de un heroe
 public static void showHeroStats(Main game, Hero entity) {
 	
-	String showHP = statBar(entity.maxhp, entity.hp);
-	String showMP = statBar(entity.maxmp, entity.mp);
-	String showSP = statBar(entity.maxsp, entity.sp);
 	String showATK = (entity.atk < entity.atkF) ? (" (+"+ (entity.atkF-entity.atk) +")")
 			:(entity.atk > entity.atkF) ? (" (-"+ (entity.atk-entity.atkF) +")")
 			: " (0)";
@@ -141,15 +71,22 @@ public static void showHeroStats(Main game, Hero entity) {
 	game.invFont.draw(game.batch,"Clase " + entity.getclassName(), 345, 52);
 	game.invFont.getData().setScale(0.3f);
 	game.mainFont.getData().setScale(0.3f);
-	game.mainFont.draw(game.batch, "HP " + showHP, 50, -52);
-	game.mainFont.draw(game.batch, "MP " + showMP, 50, -63);
-	game.mainFont.draw(game.batch, "SP " + showSP, 50, -74);
+	game.mainFont.draw(game.batch, "HP ", 50, -52);
+	game.mainFont.draw(game.batch, "MP ", 50, -63);
+	game.mainFont.draw(game.batch, "SP ", 50, -74);
+	float mult = 2f;
+	game.batch.draw(game.HPbar, 75, -62, (90f * entity.hp / entity.getHP()) * mult, 5 * mult);
+	game.batch.draw(game.battleBar, 75, -62, 90  * mult, 5  * mult);
+	game.batch.draw(game.MPbar, 75, -73, (90f * entity.mp / entity.getMP()) * mult, 5 * mult);
+	game.batch.draw(game.battleBar, 75, -73, 90  * mult, 5  * mult);
+	game.batch.draw(game.SPbar, 75, -84, (90f * entity.sp / entity.getSP()) * mult, 5 * mult);
+	game.batch.draw(game.battleBar, 75, -84, 90  * mult, 5  * mult);
 	game.mainFont.getData().setScale(0.3f);
-	game.mainFont.draw(game.batch, "ATK " + entity.atkF + showATK, 330, 30);
+	game.mainFont.draw(game.batch, "ATK " + entity.atkF + showATK, 320, 30);
 	game.mainFont.draw(game.batch, "MAT " + entity.matF + showMAT, 405, 30);
-	game.mainFont.draw(game.batch, "DEF " + entity.atkF + showDEF, 330, 0);
+	game.mainFont.draw(game.batch, "DEF " + entity.atkF + showDEF, 320, 0);
 	game.mainFont.draw(game.batch, "MDF " + entity.matF + showMDF, 405, 0);
-	game.mainFont.draw(game.batch, "SPD " + entity.matF + showSPD, 363, -30);
+	game.mainFont.draw(game.batch, "SPD " + entity.matF + showSPD, 353, -30);
 	game.invFont.draw(game.batch, entity.getXPleft() + " XP para el proximo nivel", 280, -62);
 	game.invFont.getData().setScale(0.35f);
 	game.invFont.draw(game.batch, "Arma: \n" + entity.getWeapon().getName(), 190, 30, 120, Align.center, true);
@@ -204,45 +141,6 @@ public static void showItemStats(Main game, Item i) {
 	game.invFont.draw(game.batch, layout, 140, 200);
 }
 
-//mostrar las estadisticas de los personajes en batalla
-	private static void showEntityBStats(Entity[] entities) {
-		// Nombres
-		for (int i = 0; i < entities.length; i++) {
-			String temp = (entities[i].getClass() == Hero.class) ? " (" + entities[i].getclassName() + ")" : "";
-		    System.out.printf("| %-30s ", entities[i].getName() + temp);
-		}
-		System.out.println("|");
-
-		// HP
-		for (int i = 0; i < entities.length; i++) {
-		    System.out.printf("| %-30s ", "HP: " + statBar(entities[i].maxhp, entities[i].hp));
-		}
-		System.out.println("|");
-
-		if(entities[0].getClass() == Hero.class) {
-			// MP
-			for (int i = 0; i < entities.length; i++) {
-			    System.out.printf("| %-30s ", "MP: " + statBar(entities[i].maxmp, entities[i].mp));
-			}
-			System.out.println("|");
-	
-			// SP
-			for (int i = 0; i < entities.length; i++) {
-			    System.out.printf("| %-30s ", "SP: " + statBar(entities[i].maxsp, entities[i].sp));
-			}
-			System.out.println("|");
-		}
-		//efectos de estado
-		for (int i = 0; i < entities.length; i++) {
-			String msg = "";
-			for(int j = 0; j < entities[i].getEffects().length; j++) {
-				msg += (entities[i].getEffects()[j] != null) ? entities[i].getEffects()[j].getShortName() : "";
-				msg += " ";
-			}
-			System.out.printf("| %-30s ", msg);
-		}
-		System.out.println("|");
-	}
 	
 	//Mostrar stats de skill
 	public static void showSkillStats(Main game, Skill s) {
@@ -358,87 +256,45 @@ public static void showItemStats(Main game, Item i) {
 			}
 		}
 	}
-	
-	public static void showBattleOptions(String msg, Hero[] heroes, Hero hero) {
-		System.out.println(msg);
-		System.out.println("1. Atacar");
-		System.out.println("2. Defender");
-		System.out.println("3. Skills");
-		System.out.println("4. Inventario");
-		if(hero != heroes[0]) {
-			System.out.println("5. Atras"); //Si no es el primer heroe, permite volver atras
-		}
-		System.out.println("\n");
-	}
-	
-	public static void showObjOptions(String msg, boolean hasExit, Entity[] entities) {
-		System.out.println(msg);
-		if(hasExit) {
-			System.out.println("0. Salir");
-		}
-		for(int i = 0; i < entities.length; i++) {
-			if(entities[i] != null) {
-				System.out.println((i+1) + ". " + entities[i].getName());
-			}
-		}
-	}
-	public static void showObjBatOptions(String msg, boolean hasExit, Entity[] e) {
-		System.out.println(msg);
-		if(hasExit) {
-			System.out.println("0. Salir");
-		}
-		for(int i = 0; i < e.length; i++) {
-			if(e[i].hp > 0) {
-				System.out.println(i+1 + ". " + e[i].getName()); //Solo muestra los que no estan caidos
-			}
-		}
-	}
-	
-	public static void showItemBatOptions(String msg, boolean hasExit, Item[] inv) {
-		System.out.println(msg);
-		if(hasExit) {
-			System.out.println("0. Salir");
-		}
-		for(int i = 0; i < inv.length; i++) {
-			System.out.println(i+1 + ". " + inv[i].getName());
-		}
-	}
-	public static void showItemOptions(String msg, Item[] inventory) {
-		System.out.println(msg);
-		System.out.println("0. Salir");
-		for(int i = 0; i < inventory.length; i++) {
-			System.out.println(i+1 + ". " + inventory[i].getName());
-		}
-	}
-	
-	public static void showWeaponOptions(String msg, Weapon[] weapons) {
-		System.out.println(msg);
-		System.out.println("0. Salir");
-		for(int i = 0; i < weapons.length; i++) {
-			System.out.println(i+1 + ". " + weapons[i].getName());
-		}
-	}
-	public static void showArmorOptions(String msg, Armor[] armors) {
-		System.out.println(msg);
-		System.out.println("0. Salir");
-		for(int i = 0; i < armors.length; i++) {
-			System.out.println(i+1 + ". " + armors[i].getName());
-		}
-	}
-	
-	public static void msg(String msg) {
-		System.out.println(msg);
-	}
+	public static void showItems(Main game, int x, int y, float scale, int length, int dif, int sel, Item[] items) {
+		if (items == null || items.length == 0 || length <= 0) return;
+		
+		sel = Math.max(0, Math.min(sel, items.length - 1));
+		
+		int startIndex = 0;
+	    if (items.length > length) {
+	        startIndex = Math.max(0, Math.min(sel - length / 2, items.length - length));
+	    }
+	    
+		int currentY = y;
+	    int visibleCount = Math.min(length, items.length);
+		for (int i = 0; i < visibleCount; i++) {
+	        int itemIndex = startIndex + i;
+	        Item item = items[itemIndex];
 
-	public static void atkMsg(String msg) {
-		System.out.println(msg);
-	}
+	        if (item != null) {
+	        	
+	            if (itemIndex == sel) {
+	                game.mainFont.draw(game.batch, ">", x - 5, currentY);
+	            }
 
+	            game.invFont.draw(game.batch, item.getName(), x, currentY);
+
+	            if (item.q > 1) {
+	                String qtyMsg = "x" + item.q;
+	                
+	                game.invFont.draw(game.batch, qtyMsg, x + 150, currentY); 
+	            }
+
+	            currentY -= dif;
+	        }
+	    }
+	}
 	//para dialogos
 	public static void showDialogue(Main game, Dialogue dialogue) {
 		if(dialogue.getName() != null) {
 			game.dialFont.getData().setScale(0.5f);
-			game.batch.draw(new Texture("ui/box-name.png"), 00, 59);
+			game.batch.draw(game.nameBox, 00, 59);
 			game.dialFont.draw(game.batch, dialogue.getName(), 0, 79);
 			
 		}
@@ -452,30 +308,32 @@ public static void showItemStats(Main game, Item i) {
 			    Align.left,
 			    true      // wrap
 			);
-	    game.batch.draw(new Texture("ui/box-dialogue.png"), 0, 00);
+	    game.batch.draw(game.dialogueBox, 0, 00);
 	    game.dialFont.draw(game.batch, layout, 5, 58);
 	    
 	    if(dialogue.portrait != null) {
-	    	game.batch.draw(new Texture("ui/box-portrait.png"), 250, 59);
+	    	game.batch.draw(game.portraitBox, 250, 59);
 	    	game.batch.draw(dialogue.portrait, 251, 60, 68, 68);
 	    }
 	}
-	public static void showBattleDialogue(Main game, Dialogue dialogue) {
+	public static void showBDialogue(Main game, Dialogue dialogue) {
 		if(dialogue.getName() != null) {
-			game.dialFont.draw(game.batch, dialogue.getName(), 10, 80);
-			
+			game.dialFont.getData().setScale(0.5f);
+			game.batch.draw(game.nameBBox, 0, 102);
+			game.dialFont.draw(game.batch, dialogue.getName(), 0, 123);
 		}
+		game.dialFont.getData().setScale(0.4f);
 	    GlyphLayout layout = new GlyphLayout();
 	    layout.setText(
-			    game.invFont,
+			    game.dialFont,
 			    dialogue.currMsg,
 			    Color.WHITE,
 			    300,      // ancho máximo de la caja
 			    Align.left,
 			    true      // wrap
 			);
-	    game.batch.draw(new Texture("ui/box-dialogue.png"), 0, 00);
-	    game.dialFont.draw(game.batch, layout, 10, 54);
+	    game.batch.draw(game.dialogueBBox, 0, 120);
+	    game.dialFont.draw(game.batch, layout, 5, 174);
 	}
 	public static void showChoice(Main game, Choice choice) {
 		game.dialFont.getData().setScale(0.4f);
@@ -488,43 +346,19 @@ public static void showItemStats(Main game, Item i) {
 			    Align.left,
 			    true      // wrap
 			);
-	    game.batch.draw(new Texture("ui/box-dialogue.png"), 0, 00);
+	    game.batch.draw(game.dialogueBox, 0, 00);
 	    game.dialFont.draw(game.batch, layout, 5, 58);
 	}
 	public static void showChoices(Main game, Choice choice) {
 		int j = 0;
 		for(int i = (choice.getChoices().length - 1); i >= 0; i--) {
-			game.batch.draw(new Texture("ui/box-choice.png"), 220, 59+(j*15));
+			game.batch.draw(game.choiceBox, 220, 59+(j*15));
 			game.dialFont.draw(game.batch, choice.getChoices()[i], 232, 74+(j*15));
 			if(i == choice.currChoice) {
 				game.dialFont.draw(game.batch, ">", 222, 74+(j*15));
 			}
 			j++;
 		}
-	}
-
-	public static void showItems(Item[] items) {
-		for(int i = 0; i < items.length; i++) {
-			String msg = (items[i].getClass() == Item.class) ? "Item" : (items[i].getClass() == Weapon.class) ? "Arma" : "Armadura";
-			System.out.printf("| %-30s [" + items[i].getCost() + "G]|\n", items[i].getName() + " (" + msg + ")");
-		}
-	}
-
-	public static void showPlayItems(Item[] items) {
-		for(int i = 0; i < items.length; i++) {
-			String temp = "";
-			if(!items[i].unique) {
-				temp = "x" + items[i].q;
-			}
-			String msg = (items[i].getClass() == Item.class) ? "Item" : (items[i].getClass() == Weapon.class) ? "Arma" : "Armadura";
-			System.out.printf("| %-30s [" + items[i].getCost() + "G]|\n", items[i].getName() + " (" + msg + ") " + temp);
-		}
-	}
-
-	public static void showItemStatsShop(Item i) {
-		System.out.println("----|NOMBRE: "+ i.getName() +"|----\n"
-				+ "DESCRIPCION: "+ i.getDesc() +"\n"
-				+ "COSTO: "+ i.getCost() +"G\n");
 	}
 
 	public static void showSkills(Main game, float x, float y, float dif, int pos, Skill[] skills) {
@@ -578,4 +412,174 @@ public static void showItemStats(Main game, Item i) {
 		}
 	}
 
+	public static void showBattleBars(Main game, Hero hero) {
+		game.batch.draw(game.HPbar, 10, 55, (90f * hero.hp / hero.getHP()), 5);
+		game.batch.draw(game.battleBar, 10, 55);
+		game.batch.draw(game.MPbar, 115, 55, (90f * hero.mp / hero.getMP()), 5);
+		game.batch.draw(game.battleBar, 115, 55);
+		game.batch.draw(game.SPbar, 220, 55, (90f * hero.sp / hero.getSP()), 5);
+		game.batch.draw(game.battleBar, 220, 55);
+	}
+
+	public static void showBInventory(Main game, int pos, Item[] items) {
+		showItems(game, 10, 170, 0.25f, 5, 20, pos, items);
+		Item item = items[pos];
+		showItemBStats(game, item);
+	}
+	public static void showItemBStats(Main game, Item i) {
+		int y = 170;
+		int x = 180;
+		game.invFont.setColor(1, 1, 1, 1);
+		GlyphLayout layout = new GlyphLayout();
+		game.invFont.getData().setScale(0.25f);
+		game.invFont.draw(game.batch, i.getName(), x, y);
+		game.invFont.getData().setScale(0.22f);
+		layout.setText(
+			    game.invFont,
+			    i.getDesc(),
+			    Color.WHITE,
+			    130,      // ancho máximo de la caja
+			    Align.left,
+			    true      // wrap
+			);
+		game.invFont.draw(game.batch, layout, x, y - 20);
+	}
+
+	public static void showBSkills(Main game, int pos, Skill[] skills, Hero hero) {
+		showSkills(game, 10, 170, 0.25f, 8, 10, pos, skills, hero);
+		Skill skill = skills[pos];
+		showSkillBStats(game, skill);
+	}
+
+	public static void showSkills(Main game, int x, int y, float scale, int length, int dif, int sel, Skill[] skills, Hero hero) {
+	    if (skills == null || skills.length == 0 || length <= 0) return;
+
+	    sel = Math.max(0, Math.min(sel, skills.length - 1));
+
+	    int startIndex = 0;
+	    if (skills.length > length) {
+	        startIndex = Math.max(0, Math.min(sel - length / 2, skills.length - length));
+	    }
+
+	    int currentY = y;
+	    int visibleCount = Math.min(length, skills.length);
+
+	    for (int i = 0; i < visibleCount; i++) {
+	        int skillIndex = startIndex + i;
+	        Skill skill = skills[skillIndex];
+
+	        if (skill != null) {
+	            int x1 = 150;
+
+	            if (skillIndex == sel) {
+	                game.mainFont.getData().setScale(scale);
+	                game.mainFont.draw(game.batch, ">", x - 5, currentY);
+	            }
+
+	            game.invFont.getData().setScale(scale);
+	            
+	            if (hero.mp < skill.getMP() || hero.sp < skill.getSP()) {
+	                game.invFont.setColor(0.3f, 0.3f, 0.3f, 1f);
+	            } else {
+	            	game.invFont.setColor(1f, 1f, 1f, 1f);
+	            }
+	            
+	            game.invFont.draw(game.batch, skill.getName(), x, currentY);
+
+	            if (skill.getMP() > 0) {
+	                game.invFont.setColor(0.3f, 0.3f, 1f, 1f);
+	                game.invFont.draw(game.batch, Integer.toString(skill.getMP()), x + x1, currentY);
+	                x1 -= 20;
+	            }
+	            
+	            if (skill.getSP() > 0) {
+	                game.invFont.setColor(0.3f, 1f, 0.3f, 1f);
+	                game.invFont.draw(game.batch, Integer.toString(skill.getSP()), x + x1, currentY);
+	            }
+
+	            game.invFont.setColor(1f, 1f, 1f, 1f);
+
+	            currentY -= dif;
+	        }
+	    }
+	}
+	public static void showSkillBStats(Main game, Skill s) {
+	    if (s == null) return;
+
+	    int y = 170;
+	    int x = 180;
+	    
+	    game.invFont.setColor(1, 1, 1, 1);
+	    GlyphLayout layout = new GlyphLayout();
+
+	    // Nombre de la habilidad
+	    game.invFont.getData().setScale(0.25f);
+	    game.invFont.draw(game.batch, s.getName(), x, y);
+
+	    // Tipo / Elemento
+	    if (s.getType() != null) {
+	        String typeMsg = "";
+	        switch (s.getType()) {
+	            case "FIR": typeMsg = "FUEGO"; break;
+	            case "WAT": typeMsg = "AGUA"; break;
+	            case "WIN": typeMsg = "VIENTO"; break;
+	            case "EAR": typeMsg = "TIERRA"; break;
+	            case "UNI": typeMsg = "UNIVERSAL"; break;
+	            case "PHY": typeMsg = "FISICO"; break;
+	            case "RAN": typeMsg = "RANGO"; break;
+	            default:    typeMsg = ""; break;
+	        }
+	        game.invFont.getData().setScale(0.2f);
+	        game.invFont.draw(game.batch, typeMsg, x + 100, y);
+	    }
+
+	    // Descripción con ajuste automático de texto (Wrap)
+	    game.invFont.getData().setScale(0.22f);
+	    layout.setText(
+	        game.invFont,
+	        s.getDesc(),
+	        Color.WHITE,
+	        130,             // Ancho máximo de la caja
+	        Align.left,
+	        true             // Wrap
+	    );
+	    game.invFont.draw(game.batch, layout, x, y - 15);
+	}
+
+	public static void showOptionsSelScreen(Main game, BitmapFont font, float fontSize, float x, float y, float dif, String msg,
+			int sel, Hero[] selCharacters, Hero[] characters) {
+		font.getData().setScale(fontSize);
+		if(msg != null) {
+			font.draw(game.batch, msg, x, y);
+			y -= dif;
+		}
+		
+		for(int i = 0; i < characters.length; i++) {
+			String name = characters[i].getclassName();
+			if(!name.equals("") && name != null) {
+				String msg1;
+				if(i == sel) {
+					font.draw(game.batch, ">", x-10, y);
+				}
+				if(isSelected(selCharacters, characters[i])) {
+					font.setColor(1f, 1f, 1f, 1f);
+				}else {
+					font.setColor(0.5f, 0.5f, 0.5f, 1f);
+				}
+				msg1 = name.toUpperCase();
+				font.draw(game.batch, msg1, x, y);
+				font.setColor(1f, 1f, 1f, 1f);
+				x += dif;
+			}
+		}
+	}
+
+	private static boolean isSelected(Hero[] selCharacters, Hero hero) {
+		for(Hero selHero : selCharacters) {
+			if(selHero == hero) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

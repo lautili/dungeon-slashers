@@ -202,10 +202,12 @@ public class StoreScreen implements Screen {
     @Override
     public void hide() {
         // This method is called when another screen replaces this one.
+    	game.lastScreen = this;
     }
 
     @Override
     public void dispose() {
         // Destroy screen's assets here.
+    	game.lastScreen = this;
     }
 }

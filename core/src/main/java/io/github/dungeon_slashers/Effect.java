@@ -18,8 +18,8 @@ public class Effect {
 	private String msg; //mensaje al aplicarse
 	private String turnMsg; //mensaje por turno (puede ser null)
 	private String endMsg; //mensaje al terminar el efecto
-	private int minTurns; //los turnos minimos que durar�
-	private int maxTurns; //los turnos maximos que durar�
+	private int minTurns; //los turnos minimos que durarñ
+	private int maxTurns; //los turnos maximos que durarñ
 	private transient Random rand = new Random();
 	int turn; //los turnos que lleva activo
 	
@@ -34,7 +34,7 @@ public class Effect {
 		switch(shortName) {
 		case "DWN":
 			name = "Noqueado";
-			msg = " cay�!";
+			msg = " cayo!";
 			endMsg = " revivio!";
 		break;
 		case "BLE":
@@ -62,7 +62,7 @@ public class Effect {
 			maxTurns = 5;
 			break;
 		case "SLE":
-			name = "Sue�o";
+			name = "Sueño";
 			msg = " se quedo dormido!";
 			turnMsg = " duerme...";
 			endMsg = " desperto!";
@@ -79,7 +79,7 @@ public class Effect {
 		case "POI":
 			name = "Envenenamiento";
 			msg = " esta envenenado!";
-			turnMsg = " sufre da�os por el veneno...";
+			turnMsg = " sufre daños por el veneno...";
 			endMsg = " se curo del veneno!";
 			minTurns = 5;
 			maxTurns = 9;
@@ -103,7 +103,7 @@ public class Effect {
 		case "BEN":
 			name = "Bendicion";
 			msg = " fue bendecido!";
-			turnMsg = " siente los efectos del cari�o de los Dioses.";
+			turnMsg = " siente los efectos del cariño de los Dioses.";
 			endMsg = " perdio sus beneficios divinos!";
 			minTurns = 4;
 			maxTurns = 7;
