@@ -413,12 +413,29 @@ public static void showItemStats(Main game, Item i) {
 	}
 
 	public static void showBattleBars(Main game, Hero hero) {
-		game.batch.draw(game.HPbar, 10, 55, (90f * hero.hp / hero.getHP()), 5);
-		game.batch.draw(game.battleBar, 10, 55);
-		game.batch.draw(game.MPbar, 115, 55, (90f * hero.mp / hero.getMP()), 5);
-		game.batch.draw(game.battleBar, 115, 55);
-		game.batch.draw(game.SPbar, 220, 55, (90f * hero.sp / hero.getSP()), 5);
-		game.batch.draw(game.battleBar, 220, 55);
+		int x = 10;
+		int x2 = 115;
+		int x3 = 220;
+		int y = 54;
+		float num = (90f * hero.hp / hero.getHP());
+		float num2 = (90f * hero.mp / hero.getMP());
+		float num3 = (90f * hero.sp / hero.getSP());
+		game.mainFont.getData().setScale(0.15f);
+		
+		game.batch.draw(game.HPbar, x, y, num, 5);
+		game.batch.draw(game.battleBar, x, y);
+		game.mainFont.draw(game.batch, Integer.toString(hero.hp), x + num - 5, y);
+		game.mainFont.draw(game.batch, Integer.toString(hero.getHP()), x + 90 - 5, y+10);
+		
+		game.batch.draw(game.MPbar, x2, y, num2, 5);
+		game.batch.draw(game.battleBar, x2, y);
+		game.mainFont.draw(game.batch, Integer.toString(hero.mp), x2 + num2 - 5, y);
+		game.mainFont.draw(game.batch, Integer.toString(hero.getMP()), x2 + 90 - 5, y+10);
+		
+		game.batch.draw(game.SPbar, x3, y, num3, 5);
+		game.batch.draw(game.battleBar, x3, y);
+		game.mainFont.draw(game.batch, Integer.toString(hero.sp), x3 + num3 - 5, y);
+		game.mainFont.draw(game.batch, Integer.toString(hero.getSP()), x3 + 90 - 5, y+10);
 	}
 
 	public static void showBInventory(Main game, int pos, Item[] items) {

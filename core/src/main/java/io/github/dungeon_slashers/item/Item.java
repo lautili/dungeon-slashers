@@ -99,10 +99,28 @@ public class Item {
 		case "minHPven":
 			if(a.hp>0) {
 				a.modHP( -(int) (a.getHP() * 0.2 + 10));
-				msg = ( a.getName() + " pierde " + (int) (a.getHP() * 0.2 + 10) + " MS! (" + a.sp + "/" + a.getHP() + ")");				
+				msg = ( a.getName() + " pierde " + (int) (a.getHP() * 0.2 + 10) + " HP! (" + a.hp + "/" + a.getHP() + ")");				
 			}else {
 			 use = false;
 			 errMsg = "El enemigo esta muerto!";
+			}
+			break;
+		case "minMPven":
+			if(a.mp>0) {
+				a.modMP( -(int) (a.getMP() * 0.2 + 10));
+				msg = ( a.getName() + " pierde " + (int) (a.getMP() * 0.2 + 10) + " MP! (" + a.mp + "/" + a.getMP() + ")");				
+			}else {
+			 use = false;
+			 errMsg = "El enemigo no tiene maná!";
+			}
+			break;
+		case "minSPven":
+			if(a.sp>0) {
+				a.modSP( -(int) (a.getSP() * 0.2 + 10));
+				msg = ( a.getName() + " pierde " + (int) (a.getSP() * 0.2 + 10) + " HP! (" + a.sp + "/" + a.getSP() + ")");				
+			}else {
+			 use = false;
+			 errMsg = "El enemigo no tiene stamina!";
 			}
 			break;
 		}

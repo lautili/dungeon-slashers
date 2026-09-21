@@ -337,6 +337,7 @@ public class floorScreen implements Screen {
     	switch(resp) {
     	case 100:
     		game.setScreen(bossBattle);
+    		bossBattle.lastScreen = this;
     	}
     	
     	

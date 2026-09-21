@@ -642,10 +642,11 @@ public class BattleScreen implements Screen {
 	    		curr++;
 	    		currChar++;
 	    	}
-	    	hero = heroes[currChar];
 	    	if(currChar >= 4) {
 	    		BState = BSTATE_ENEMY_CHOOSE;
 	    		return;
+	    	}else {
+	    		hero = heroes[currChar];
 	    	}
     	}
     	Menu.showOptionsX(game, game.mainFont, 0.2f, 10, 70, 80, null, sel[1], "ATACAR", "DEFENDER", "HABILIDADES", "INVENTARIO");
@@ -934,7 +935,11 @@ public class BattleScreen implements Screen {
 			float x2 = sectionWidth * i + sectionWidth / 2f - 45f;
 			if(i == sel) {
 				batch.draw(game.selection, x, 50 + 50);
-				game.batch.draw(game.HPbar, x2, 155, (90f * enemies[i].hp / enemies[i].getHP()), 5);
+				float num = (90f * enemies[i].hp / enemies[i].getHP());
+				game.batch.draw(game.HPbar, x2, 155, num, 5);
+				game.mainFont.getData().setScale(0.15f);
+				game.mainFont.draw(batch, Integer.toString(enemies[i].hp), x2 + num - 5, 155);
+				game.mainFont.draw(batch, Integer.toString(enemies[i].getHP()), x2 + 90 - 5, 165);
 				game.batch.draw(game.battleBar, x2, 155);
 				Effect[] effects = enemies[i].getEffects();
 				for(int j = 0; j < effects.length; j++) {
