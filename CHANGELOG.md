@@ -27,3 +27,25 @@
 - Se implementó la acción de guardado.
   ### Fixed
 - Se arregló un error en los dialogos donde estos no devolvian el ID correspondiente. 
+
+## [0.3.0] 21-09-2026
+### Added
+- Se agregó el sistema de combate, junto a la diferenciación de este en cada piso.
+- Se implementó la habitación con tesoro y con jefe.
+- Se agregó la textura de la fogata en el inicio del juego.
+  ### Fixed
+- Se arregló problema en los dialogos.
+- Se arregló la aparición de pisos sin sala de boss.
+- Se arregló la creación de un mapa muy corto en los pisos.
+- Se arregló un problema en el movimiento.
+  
+## [0.3.1] 22-09-2026
+### Added
+- Se implementó un sistema en el cual se pueden agregar flags sin que estas nuevas interfieran en un juego guardado antiguo.
+  
+## [0.3.2] 23-09-2026
+### Added 
+- Se agregaron variables que indican los valores maximos de vida, maná y estamina en los combates.
+  ### Fixed
+  - Se arregló un error critico que al momento de iniciar una bossfight en la respectiva sala el juego crasheaba.
+    
