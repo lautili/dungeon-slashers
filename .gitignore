@@ -15,8 +15,14 @@ gradle-app.setting
 /shared/build/
 gradle/wrapper/gradle-9.6.1-bin.zip
 packr.jar
-packr-config.json
+packr-config-win64.json
+packr-config-linux64.json
+packr-config-mac.json
 compilegame.bat
+commit.bat
+save.json
+store.json
+config.json
 
 ## Java:
 *.class

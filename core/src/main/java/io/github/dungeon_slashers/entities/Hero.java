@@ -126,9 +126,10 @@ public class Hero extends Entity{
 	
 	//Verifica si la XP ya pasó el límite del nivel, y si lo hace sube el nivel y updatea las stats y las skills
 	public int checkLvl(int cont) {
-		if(xp >= nextXp) {
+		while(xp >= nextXp){
+			xp -= nextXp;
 			lvl++;
-			DialMan.addDialogue(cont, cont+1, null, null, name + " ha subido al nivel " + lvl + "!", 20);
+			DialMan.addDialogue(cont, cont+1, null, null, name + " ha subido al nivel " + lvl + "!", 2, null);
 			cont++;
 			this.updateStats();
 			hp = maxhp;
@@ -136,7 +137,7 @@ public class Hero extends Entity{
 			sp = maxsp;
 			cont = updateSkills(cont);
 			nextXp = (int) (100*lvl+(100*lvl*(0.1*lvl)));
-		}
+		};
 		return cont;
 	}
 	
@@ -144,7 +145,7 @@ public class Hero extends Entity{
 		for(int i = 0; i < posSkills.length; i++) {
 			if(posSkills[i].getLvl() == lvl) {
 				DialMan.addDialogue(cont, cont+1, null, null, 
-						name + " ha aprendido " + posSkills[i].getName() + "!", 20);
+						name + " ha aprendido " + posSkills[i].getName() + "!", 20, null);
 				addSkill(posSkills[i]);
 				cont++;
 			}

@@ -44,7 +44,7 @@ public class CharSelectScreen implements Screen {
     	game.viewport.apply();
     	game.batch.setProjectionMatrix(game.viewport.getCamera().combined);
     	
-    	sel = InputMan.scrollInt(MenuScrollType.HORIZONTAL, 5, sel);
+    	sel = InputMan.scrollInt(MenuScrollType.HORIZONTAL, 5, sel, Menu.MenuMove);
     	game.batch.begin();
     	
     	game.mainFont.getData().setScale(0.3f);
@@ -62,26 +62,10 @@ public class CharSelectScreen implements Screen {
     			selChars[sel] = false;
     			removeCharacter(characters[sel]);
     			
-    			System.out.println("Personajes seleccionados: " + countChars());
-    	    	System.out.println("Personajes en orden: ");
-    	    	for(int i = 0; i < 4; i++) {
-    	    		if(selCharacters[i] != null) {
-    	    			System.out.println(selCharacters[i].getName());
-    	    		}
-    	    	}
     		}else {
     			if(countChars() < 4) {
     				selChars[sel] = true;
-    				System.out.println("Agregando al personaje: " + characters[sel].getName());
     				addCharacter(characters[sel]);
-    				
-    				System.out.println("Personajes seleccionados: " + countChars());
-    		    	System.out.println("Personajes en orden: ");
-    		    	for(int i = 0; i < 4; i++) {
-    		    		if(selCharacters[i] != null) {
-    		    			System.out.println(selCharacters[i].getName());
-    		    		}
-    		    	}
     			}
     		}
     	}

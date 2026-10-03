@@ -1,10 +1,7 @@
 package io.github.dungeon_slashers.screens;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -12,13 +9,10 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import io.github.dungeon_slashers.Main;
 import io.github.dungeon_slashers.MenuScrollType;
-import io.github.dungeon_slashers.Player;
 import io.github.dungeon_slashers.PlayerState;
-import io.github.dungeon_slashers.Skill;
 import io.github.dungeon_slashers.controllers.InputMan;
 import io.github.dungeon_slashers.controllers.Menu;
 import io.github.dungeon_slashers.controllers.Store;
-import io.github.dungeon_slashers.entities.Hero;
 import io.github.dungeon_slashers.item.Armor;
 import io.github.dungeon_slashers.item.Item;
 import io.github.dungeon_slashers.item.Weapon;
@@ -108,9 +102,9 @@ public class StoreScreen implements Screen {
 	    }
     	batch.end();
     	if(Main.player.state == PlayerState.MENU) {
-    		pos = InputMan.scrollInt(2, itemArray.length, pos);
+    		pos = InputMan.scrollInt(2, itemArray.length, pos, Menu.MenuMove);
     	}else {
-    		currQ = InputMan.scrollInt(MenuScrollType.HORIZONTAL, maxQ, currQ);
+    		currQ = InputMan.scrollInt(MenuScrollType.HORIZONTAL, maxQ, currQ, Menu.MenuMove);
     		actualQ = currQ + 1;
     	}
     	

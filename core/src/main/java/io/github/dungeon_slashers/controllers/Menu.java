@@ -1,18 +1,17 @@
 package io.github.dungeon_slashers.controllers;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import io.github.dungeon_slashers.Main;
 import io.github.dungeon_slashers.Skill;
+import io.github.dungeon_slashers.entities.Boss;
 import io.github.dungeon_slashers.entities.Enemy;
-import io.github.dungeon_slashers.entities.Entity;
 import io.github.dungeon_slashers.entities.Hero;
 import io.github.dungeon_slashers.item.Armor;
 import io.github.dungeon_slashers.item.Item;
@@ -30,21 +29,8 @@ import io.github.dungeon_slashers.item.Weapon;
 public class Menu {
 	public static boolean menu;
 	public static FitViewport viewport;
-
-// metodo generalizado para mostrar una estadistica como una barra, como una barra de vida
-private static String statBar(int maxStat, int stat) {
-	String msg = "[";
-	for(int i=0; i < 10; i++) {
-		if(stat >= maxStat * (0.1 * i) && stat != 0) {
-			msg += "#";
-		}else {
-			msg += "-";
-		}
-	}
-	msg += "] (" + stat + "/" + maxStat + ")";
-	return msg;
-}
-
+	public static Sound MenuMove = Gdx.audio.newSound(Gdx.files.internal("sounds/move-menu.wav"));
+	public static Sound MenuOk = Gdx.audio.newSound(Gdx.files.internal("sounds/menu-ok.wav"));
 //mostrar las estadisticas de un heroe
 public static void showHeroStats(Main game, Hero entity) {
 	
@@ -71,8 +57,12 @@ public static void showHeroStats(Main game, Hero entity) {
 	game.invFont.draw(game.batch,"Clase " + entity.getclassName(), 345, 52);
 	game.invFont.getData().setScale(0.3f);
 	game.mainFont.getData().setScale(0.3f);
+	int x = 50;
+	game.mainFont.draw(game.batch, entity.hp + "/" + entity.getHP(), 50 - x, -52);
 	game.mainFont.draw(game.batch, "HP ", 50, -52);
+	game.mainFont.draw(game.batch, entity.mp + "/" + entity.getMP(), 50 - x, -63);
 	game.mainFont.draw(game.batch, "MP ", 50, -63);
+	game.mainFont.draw(game.batch, entity.sp + "/" + entity.getSP(), 50 - x, -74);
 	game.mainFont.draw(game.batch, "SP ", 50, -74);
 	float mult = 2f;
 	game.batch.draw(game.HPbar, 75, -62, (90f * entity.hp / entity.getHP()) * mult, 5 * mult);
@@ -82,11 +72,11 @@ public static void showHeroStats(Main game, Hero entity) {
 	game.batch.draw(game.SPbar, 75, -84, (90f * entity.sp / entity.getSP()) * mult, 5 * mult);
 	game.batch.draw(game.battleBar, 75, -84, 90  * mult, 5  * mult);
 	game.mainFont.getData().setScale(0.3f);
-	game.mainFont.draw(game.batch, "ATK " + entity.atkF + showATK, 320, 30);
-	game.mainFont.draw(game.batch, "MAT " + entity.matF + showMAT, 405, 30);
-	game.mainFont.draw(game.batch, "DEF " + entity.atkF + showDEF, 320, 0);
-	game.mainFont.draw(game.batch, "MDF " + entity.matF + showMDF, 405, 0);
-	game.mainFont.draw(game.batch, "SPD " + entity.matF + showSPD, 353, -30);
+	game.mainFont.draw(game.batch, "ATK " + entity.atkF + showATK, 320, 30, 50, Align.left, true);
+	game.mainFont.draw(game.batch, "MAT " + entity.matF + showMAT, 405, 30, 50, Align.left, true);
+	game.mainFont.draw(game.batch, "DEF " + entity.atkF + showDEF, 320, 0, 50, Align.left, true);
+	game.mainFont.draw(game.batch, "MDF " + entity.matF + showMDF, 405, 0, 50, Align.left, true);
+	game.mainFont.draw(game.batch, "SPD " + entity.matF + showSPD, 353, -30, 50, Align.left, true);
 	game.invFont.draw(game.batch, entity.getXPleft() + " XP para el proximo nivel", 280, -62);
 	game.invFont.getData().setScale(0.35f);
 	game.invFont.draw(game.batch, "Arma: \n" + entity.getWeapon().getName(), 190, 30, 120, Align.center, true);
@@ -97,7 +87,7 @@ public static void showItemStats(Main game, Item i) {
 	game.invFont.setColor(1, 1, 1, 1);
 	GlyphLayout layout = new GlyphLayout();
 	game.invFont.getData().setScale(0.5f);
-	game.invFont.draw(game.batch, i.getName(), 140, 222);
+	game.invFont.draw(game.batch, i.getName(), 140, 222, 200, Align.left, true);
 	if(i.getClass() == Weapon.class) {
 		game.invFont.getData().setScale(0.4f);
 		Weapon w = (Weapon) i;
@@ -138,7 +128,7 @@ public static void showItemStats(Main game, Item i) {
 		    Align.left,
 		    true      // wrap
 		);
-	game.invFont.draw(game.batch, layout, 140, 200);
+	game.invFont.draw(game.batch, layout, 150, 160);
 }
 
 	
@@ -147,7 +137,7 @@ public static void showItemStats(Main game, Item i) {
 		int x1 = 430;
 		GlyphLayout layout = new GlyphLayout();
 		game.invFont.getData().setScale(0.5f);
-		game.invFont.draw(game.batch, s.getName(), 140, 222);
+		game.invFont.draw(game.batch, s.getName(), 140, 222, 200, Align.left, true);
 		if(s.getType() != null) {
 			String msg = null;
 			switch (s.getType()) {
@@ -317,23 +307,37 @@ public static void showItemStats(Main game, Item i) {
 	    }
 	}
 	public static void showBDialogue(Main game, Dialogue dialogue) {
-		if(dialogue.getName() != null) {
-			game.dialFont.getData().setScale(0.5f);
-			game.batch.draw(game.nameBBox, 0, 102);
-			game.dialFont.draw(game.batch, dialogue.getName(), 0, 123);
+		if(dialogue.isCombat) {
+			GlyphLayout layout = new GlyphLayout();
+		    layout.setText(
+				    game.dialFont,
+				    dialogue.currMsg,
+				    Color.WHITE,
+				    300,      // ancho máximo de la caja
+				    Align.left,
+				    true      // wrap
+				);
+		    game.batch.draw(game.atkBox, 0, 75);
+		    game.dialFont.draw(game.batch, layout, 5, 90);
+		}else {
+			if(dialogue.getName() != null) {
+				game.dialFont.getData().setScale(0.5f);
+				game.batch.draw(game.nameBBox, 0, 102);
+				game.dialFont.draw(game.batch, dialogue.getName(), 0, 123);
+			}
+			game.dialFont.getData().setScale(0.4f);
+		    GlyphLayout layout = new GlyphLayout();
+		    layout.setText(
+				    game.dialFont,
+				    dialogue.currMsg,
+				    Color.WHITE,
+				    300,      // ancho máximo de la caja
+				    Align.left,
+				    true      // wrap
+				);
+		    game.batch.draw(game.dialogueBBox, 0, 120);
+		    game.dialFont.draw(game.batch, layout, 5, 174);
 		}
-		game.dialFont.getData().setScale(0.4f);
-	    GlyphLayout layout = new GlyphLayout();
-	    layout.setText(
-			    game.dialFont,
-			    dialogue.currMsg,
-			    Color.WHITE,
-			    300,      // ancho máximo de la caja
-			    Align.left,
-			    true      // wrap
-			);
-	    game.batch.draw(game.dialogueBBox, 0, 120);
-	    game.dialFont.draw(game.batch, layout, 5, 174);
 	}
 	public static void showChoice(Main game, Choice choice) {
 		game.dialFont.getData().setScale(0.4f);
@@ -369,7 +373,6 @@ public static void showItemStats(Main game, Item i) {
 				game.mainFont.getData().setScale(0.3f);
 				game.mainFont.draw(game.batch, ">", x-10, y);
 			}
-			System.out.println(skills[i]);
 			if(!skills[i].getMenu()) {
 				game.invFont.setColor(0.5f, 0.5f, 0.5f, 1);
 			}
@@ -377,7 +380,7 @@ public static void showItemStats(Main game, Item i) {
 			if(skills[i].getMP() > 0) {
 				game.invFont.setColor(0.3f, 0.3f, 1f, 1);
 				game.invFont.draw(game.batch, Integer.toString(skills[i].getMP()), x + x1, y);
-				x1 -= 20;
+				x1 -= 30;
 			}
 			if(skills[i].getSP() > 0) {
 				game.invFont.setColor(0.3f, 1f, 0.3f, 1);
@@ -449,7 +452,7 @@ public static void showItemStats(Main game, Item i) {
 		game.invFont.setColor(1, 1, 1, 1);
 		GlyphLayout layout = new GlyphLayout();
 		game.invFont.getData().setScale(0.25f);
-		game.invFont.draw(game.batch, i.getName(), x, y);
+		game.invFont.draw(game.batch, i.getName(), x, y, 100, Align.left, true);
 		game.invFont.getData().setScale(0.22f);
 		layout.setText(
 			    game.invFont,
@@ -459,7 +462,7 @@ public static void showItemStats(Main game, Item i) {
 			    Align.left,
 			    true      // wrap
 			);
-		game.invFont.draw(game.batch, layout, x, y - 20);
+		game.invFont.draw(game.batch, layout, x, y - 30);
 	}
 
 	public static void showBSkills(Main game, int pos, Skill[] skills, Hero hero) {
@@ -506,7 +509,7 @@ public static void showItemStats(Main game, Item i) {
 	            if (skill.getMP() > 0) {
 	                game.invFont.setColor(0.3f, 0.3f, 1f, 1f);
 	                game.invFont.draw(game.batch, Integer.toString(skill.getMP()), x + x1, currentY);
-	                x1 -= 20;
+	                x1 -= 30;
 	            }
 	            
 	            if (skill.getSP() > 0) {
@@ -529,11 +532,9 @@ public static void showItemStats(Main game, Item i) {
 	    game.invFont.setColor(1, 1, 1, 1);
 	    GlyphLayout layout = new GlyphLayout();
 
-	    // Nombre de la habilidad
 	    game.invFont.getData().setScale(0.25f);
-	    game.invFont.draw(game.batch, s.getName(), x, y);
+	    game.invFont.draw(game.batch, s.getName(), x, y, 100, Align.left, true);
 
-	    // Tipo / Elemento
 	    if (s.getType() != null) {
 	        String typeMsg = "";
 	        switch (s.getType()) {
@@ -550,7 +551,6 @@ public static void showItemStats(Main game, Item i) {
 	        game.invFont.draw(game.batch, typeMsg, x + 100, y);
 	    }
 
-	    // Descripción con ajuste automático de texto (Wrap)
 	    game.invFont.getData().setScale(0.22f);
 	    layout.setText(
 	        game.invFont,
@@ -560,7 +560,7 @@ public static void showItemStats(Main game, Item i) {
 	        Align.left,
 	        true             // Wrap
 	    );
-	    game.invFont.draw(game.batch, layout, x, y - 15);
+	    game.invFont.draw(game.batch, layout, x, y - 25);
 	}
 
 	public static void showOptionsSelScreen(Main game, BitmapFont font, float fontSize, float x, float y, float dif, String msg,
@@ -599,4 +599,110 @@ public static void showItemStats(Main game, Item i) {
 		}
 		return false;
 	}
+	
+		public static void showEnemies(Main game, int x, int y, int spacing, int sel, Enemy[] enemies) {
+			game.invFont.getData().setScale(0.5f);
+			int currentY = y;
+			
+			int start = Math.max(0, sel - 4);
+			int end = Math.min(enemies.length, start + 8);
+			
+			for(int i = start; i < end; i++) {
+				if(i == sel) {
+					game.mainFont.draw(game.batch, ">", x-10, currentY);
+				}
+				String enemyName = enemies[i].discovered ? enemies[i].getName() : (enemies[i] instanceof Boss) ? "?????" : "???";
+				game.invFont.draw(game.batch, enemyName, x, currentY);
+				currentY -= (game.invFont.getLineHeight() + spacing);
+			}
+			game.invFont.setColor(1, 1, 1, 1);
+		}
+
+		public static void showEnemyStats(Main game, Enemy enemy) {
+			game.invFont.setColor(1, 1, 1, 1);
+			game.invFont.getData().setScale(0.5f);
+			
+			if (!enemy.discovered) {
+				String name = (enemy instanceof Boss) ? "?????" : "???";
+				String boss = (enemy instanceof Boss) ? "jefe" : "enemigo";
+				game.mainFont.draw(game.batch, name, 140, 222);
+				game.mainFont.getData().setScale(0.35f);
+				game.mainFont.draw(game.batch, "Aun no has descubierto a este " + boss + ".", 140, 200);
+				return;
+			}
+
+			game.mainFont.draw(game.batch, enemy.getName(), 140, 222, 200, Align.left, true);
+			
+			if (enemy.getTexture() != null) {
+				if(enemy instanceof Boss) {
+					game.batch.draw(game.firstBossFight.background, 380, 120, 80, 80);
+				}else {
+					game.batch.draw(game.defBattleScreen.background, 380, 120, 80, 80);
+				}
+				game.batch.draw(enemy.getTexture(), 380, 120, 80, 80);
+				game.batch.draw(game.currentChar, 380, 120, 80, 80);
+			}
+			
+			game.invFont.getData().setScale(0.35f);
+			
+			String ATK = (enemy.defeated) ? "" + enemy.getATK() : "?";
+			String DEF = (enemy.defeated) ? "" + enemy.getDEF() : "?";
+			String MAT = (enemy.defeated) ? "" + enemy.getMAT() : "?";
+			String MDF = (enemy.defeated) ? "" + enemy.getMDF() : "?";
+			String SPD = (enemy.defeated) ? "" + enemy.getSPD() : "?";
+			String statsStr = "ATK: " + ATK + "   DEF: " + DEF + "\nMAT: " + MAT + " MDF: " + MDF + "\nSPD: " + SPD;
+			
+			game.mainFont.draw(game.batch, statsStr, 350, 120, 200, Align.center, false);
+			
+			game.mainFont.getData().setScale(0.3f);
+			
+			boolean[] weak = enemy.getWeaknesses();
+			String elemStr = 
+				  "PHY: " + getElemStr(enemy.getPHY(), weak, enemy.WEAK_PHY, enemy.discovered) + "\n"
+				+ "RAN: " + getElemStr(enemy.getRAN(), weak, enemy.WEAK_RAN, enemy.discovered) + "\n"
+				+ "FIR: " + getElemStr(enemy.getFIR(), weak, enemy.WEAK_FIR, enemy.discovered) + "\n"
+				+ "WAT: " + getElemStr(enemy.getWAT(), weak, enemy.WEAK_WAT, enemy.discovered) + "\n"
+				+ "WIN: " + getElemStr(enemy.getWIN(), weak, enemy.WEAK_WIN, enemy.discovered) + "\n"
+				+ "EAR: " + getElemStr(enemy.getEAR(), weak, enemy.WEAK_EAR, enemy.discovered);
+				
+			game.mainFont.draw(game.batch, elemStr, 140, 180);
+			
+			if (enemy.getDesc() != null && enemy.defeated) {
+				game.mainFont.draw(game.batch, enemy.getDesc(), 140, 70, 300, Align.left, true);
+			}
+		}
+		
+		private static String getElemStr(double val, boolean[] weak, int idx, boolean enemyDiscovered) {
+			if (weak != null && idx < weak.length && !weak[idx]) {
+				return "?";
+			}
+			switch((int) (val * 100)) {
+				case 100: return "NOM";
+				case 150: return "MDE";
+				case 200: return "DEB";
+				case 400: return "SDE";
+				case 75:  return "MFU";
+				case 50:  return "FUE";
+				case 25:  return "SFU";
+				default:  return "NUL";
+			}
+		}
+		public static void showConfigOptions(Main game, float x, float y, float dif, int sel, Config config) {
+		    game.invFont.getData().setScale(0.4f);
+		    String[] options = {
+		        "Volumen: " + Math.round(config.volume * 100f) + "%",
+		        "Pantalla Completa: " + (config.fullScreen ? "SI" : "NO"),
+		        "Resolucion: " + config.getRes(),
+		        "Salir"
+		    };
+		    
+		    for(int i = 0; i < options.length; i++) {
+		        if(i == sel) {
+		            game.mainFont.getData().setScale(0.3f);
+		            game.mainFont.draw(game.batch, ">", x - 10, y);
+		        }
+		        game.invFont.draw(game.batch, options[i], x, y);
+		        y -= dif;
+		    }
+		}
 }

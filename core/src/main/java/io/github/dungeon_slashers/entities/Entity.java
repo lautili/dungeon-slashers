@@ -21,7 +21,7 @@ public abstract class Entity {
 	protected String baseType;
 	protected String className;
 	protected transient Texture texture;
-	
+
 	// stats
 	public int maxhp;
 	public int hp;
@@ -30,6 +30,9 @@ public abstract class Entity {
 	public int maxsp;
 	public int sp;
 	public int prot; //usada en calculos para ataque. define si se esta protegiendo o no
+	public int lastDamageTaken;
+	public double lastDamageWeakness;
+	public boolean lastIsDamage;
 	
 	//las stats iniciales, usada para formulas (heroes)
 		protected int hpIn;
@@ -131,11 +134,10 @@ public abstract class Entity {
 			effects[i] = null;
 		}
 	}
-	public String setEffect(Effect effect) {
+	public int setEffect(Effect effect, int count) {
 		if(effects[0] != null && effects[0].getShortName().equals("DWN")) {
-			return null;
+			return count;
 		}else {
-			System.out.println(name + effect.getMSG());
 			if(effect.getShortName() == "DWN") {
 				clearEffects();
 				effects[0] = effect;
@@ -156,8 +158,10 @@ public abstract class Entity {
 				if(cont == 6) {
 					effects[0] = effect;
 				}
+				DialMan.addBDialogue(count, count+1, name + effect.getMSG());
+				count++;
 			}
-			return effect.getMSG();
+			return count;
 		}
 	}
 	public void clearEffect(String name) {
@@ -186,12 +190,12 @@ public abstract class Entity {
 				if(!effect.getShortName().equals("DWN")) {  //si el efecto no es DWN,
 					
 					if(effect.checkTurns()) { //si el efecto termin�,
-						DialMan.addDialogue(cont, cont+1, null, null, name + effect.getEndMsg(), 20);
+						DialMan.addDialogue(cont, cont+1, null, null, name + effect.getEndMsg(), 20, null);
 						cont++;
 						effects[i] = null; //limpia el efecto
 					}else { //si no termino
 						if(effect.getTurnMsg() != null) {
-							DialMan.addDialogue(cont, cont+1, null, null, name + effect.getTurnMsg(), 20);
+							DialMan.addDialogue(cont, cont+1, null, null, name + effect.getTurnMsg(), 20, null);
 							cont++;
 						}
 						effect.use(this); //y si es POS, BLE, BEN, ENC o TIR, hace lo que el efecto haria.
@@ -225,6 +229,12 @@ public abstract class Entity {
 	
 	//cambios rapidos de vida/mana/stamina para pociones / ataques
 			public void modHP(int num) {
+				if(num > 0) {
+					lastIsDamage = false;
+					lastDamageWeakness = 0;
+				}else {
+					lastIsDamage = true;
+				}
 				hp += num;
 				if(hp > maxhp) {
 					hp = maxhp;
@@ -234,6 +244,11 @@ public abstract class Entity {
 				}
 			}
 			public void modMP(int num) {
+				if(num > 0) {
+					lastIsDamage = false;
+				}else {
+					lastIsDamage = true;
+				}
 				mp += num;
 				if(mp > maxmp) {
 					mp = maxmp;
@@ -243,6 +258,11 @@ public abstract class Entity {
 				}
 			}
 			public void modSP(int num) {
+				if(num > 0) {
+					lastIsDamage = false;
+				}else {
+					lastIsDamage = true;
+				}
 				sp += num;
 				if(sp > maxsp) {
 					sp = maxsp;

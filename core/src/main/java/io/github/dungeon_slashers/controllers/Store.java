@@ -73,7 +73,6 @@ public class Store {
 				}else {
 		*/
 					if(player.gold < item.getCost()) {
-						System.out.println("No tiene suficiente dinero.");
 					}else {
 						player.gold -= item.getCost();
 						if(item.getClass() == Item.class) {
@@ -153,6 +152,9 @@ public class Store {
 					check = true;
 				}
 		}
+	}
+	public static void setItems(Item[] items2) {
+		items = items2;
 	}
 	
 }

@@ -1,5 +1,7 @@
 package io.github.dungeon_slashers.controllers;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 
 import io.github.dungeon_slashers.Main;
@@ -20,12 +22,16 @@ import io.github.dungeon_slashers.PlayerState;
 
 public class DialMan {
 	private static DialEvent[] events = new DialEvent[0];
+	private static Sound defaultSound = Gdx.audio.newSound(Gdx.files.internal("sounds/dialogue-default.wav"));
 	private static int cont = 0;
 	private static int next;
 	private static float time;
 	
-	public static void addDialogue(int id, int idnext, String name, Texture texture, String msg, float time) {
-		Dialogue dialogue = new Dialogue(id, name, texture, msg, time);
+	public static void addDialogue(int id, int idnext, String name, Texture texture, String msg, float time, Sound snd) {
+		if (snd == null) {
+			snd = defaultSound; 
+		}
+		Dialogue dialogue = new Dialogue(id, name, texture, msg, time, snd);
 		DialEvent[] temp = events.clone();
 		events = new DialEvent[temp.length + 1];
 		for(int i = 0; i < temp.length; i++) {
@@ -36,8 +42,23 @@ public class DialMan {
 		temp = null;
 		dialogue = null;
 	}
+	public static void addBDialogue(int id, int idnext, String msg) {
+	    Dialogue dialogue = new Dialogue(id, null, null, msg, 20, defaultSound);
+	    dialogue.isCombat = true; 
+	    dialogue.displayTimer = 2.0f;
+	    DialEvent[] temp = events.clone();
+		events = new DialEvent[temp.length + 1];
+		for(int i = 0; i < temp.length; i++) {
+			events[i] = temp[i];
+		}
+		events[temp.length] = dialogue; //inserta el dialogo
+		dialogue.next = idnext; //le pone el ID del dialogo al que saltara
+		temp = null;
+		dialogue = null;
+	}
+	
 	public static void addDialogue(int id, int idnext) {
-		Dialogue dialogue = new Dialogue(id, null, null, null, time);
+		Dialogue dialogue = new Dialogue(id, null, null, null, time, null);
 		DialEvent[] temp = events.clone();
 		events = new DialEvent[temp.length + 1];
 		for(int i = 0; i < temp.length; i++) {
@@ -49,8 +70,11 @@ public class DialMan {
 		dialogue = null;
 	}
 	
-	public static void addChoice(int id, float time, String msg, String[] choices, int[] ids) {
-		Choice choice = new Choice(id, msg, time, choices);
+	public static void addChoice(int id, float time, String msg, Sound snd, String[] choices, int[] ids) {
+		if (snd == null) {
+			snd = defaultSound; 
+		}
+		Choice choice = new Choice(id, msg, time, choices, snd);
 		DialEvent[] temp = events.clone();
 		events = new DialEvent[temp.length + 1];
 		for(int i = 0; i < temp.length; i++) {
@@ -94,11 +118,12 @@ public class DialMan {
 					}
 					Dialogue dial = (Dialogue) event;
 					Menu.showDialogue(game, dial);
-					if(!InputMan.checkKey("Z")){
+					if(!InputMan.checkKey("Z", null)){
 						if(!dial.currMsg.equals(dial.msg) && time > (dial.time / 1000)) {
 							dial.currMsg += dial.msg.charAt(dial.nextChar);
 							dial.nextChar++;
 							time = 0;
+							event.snd.play(Main.config.volume * 0.5f);
 						}
 						return next;	
 					}else {
@@ -119,15 +144,16 @@ public class DialMan {
 				}else {
 					Choice choice = (Choice) event;
 					Menu.showChoice(game, choice);
-					if(!InputMan.checkKey("Z")){
+					if(!InputMan.checkKey("Z", null)){
 						if(!choice.currMsg.equals(choice.msg) && time > (choice.time / 1000)) {
 							choice.currMsg += choice.msg.charAt(choice.nextChar);
 							choice.nextChar++;
 							time = 0;
+							event.snd.play(Main.config.volume * 0.5f);
 						}
 						if(choice.currMsg.equals(choice.msg)) {
 							Menu.showChoices(game, choice);
-							choice.currChoice = InputMan.scrollInt(MenuScrollType.VERTICAL, choice.getChoices().length, choice.currChoice);
+							choice.currChoice = InputMan.scrollInt(MenuScrollType.VERTICAL, choice.getChoices().length, choice.currChoice, Menu.MenuMove);
 						}
 						return next;	
 					}
@@ -173,36 +199,65 @@ public class DialMan {
 				if(event instanceof Dialogue) {
 					Dialogue dial = (Dialogue) event;
 					Menu.showBDialogue(game, dial);
-					if(!InputMan.checkKey("Z")){
-						if(!dial.currMsg.equals(dial.msg) && time > (dial.time / 1000)) {
-							dial.currMsg += dial.msg.charAt(dial.nextChar);
-							dial.nextChar++;
-							time = 0;
+					if(dial.isCombat) {
+					    if(!dial.currMsg.equals(dial.msg) && time > (dial.time / 1000)) {
+					        dial.currMsg += dial.msg.charAt(dial.nextChar);
+					        dial.nextChar++;
+					        time = 0;
+					        event.snd.play(Main.config.volume * 0.5f);
+					    } else if (dial.currMsg.equals(dial.msg)) {
+					        // El texto ya se escribió, empieza a contar el timer de lectura
+					        dial.displayTimer -= delta; 
+					        if(dial.displayTimer <= 0) { // Permite skipearlo rápido si el jugador quiere
+					        	if(dial.next <= 0) {
+									return -1;
+								}
+					        	i = getEvent(dial.next);
+					        	return i;
+					        }
+					    }
+					    if(InputMan.checkKey("Z", null)) {
+					    	if(dial.next <= 0) {
+								return -1;
+							}
+				        	i = getEvent(dial.next);
+				        	return i;
+					    }
+					    return n;
+					} else {
+						if(!InputMan.checkKey("Z", null)){
+							if(!dial.currMsg.equals(dial.msg) && time > (dial.time / 1000)) {
+								dial.currMsg += dial.msg.charAt(dial.nextChar);
+								dial.nextChar++;
+								time = 0;
+								event.snd.play(Main.config.volume * 0.5f);
+							}
+							return next;	
 						}
-						return next;	
-					}
-					if(!dial.currMsg.equals(dial.msg)) {
-						dial.currMsg = dial.msg;
-						return n;
-					}else {
-						if(events.length > 1) {
-							n = dial.next;
+						if(!dial.currMsg.equals(dial.msg)) {
+							dial.currMsg = dial.msg;
+							return n;
 						}else {
-							n = -1;
+							if(events.length > 1) {
+								n = dial.next;
+							}else {
+								n = -1;
+							}
 						}
 					}
 				}else {
 					Choice choice = (Choice) event;
 					Menu.showChoice(game, choice);
-					if(!InputMan.checkKey("Z")){
+					if(!InputMan.checkKey("Z", null)){
 						if(!choice.currMsg.equals(choice.msg) && time > (choice.time / 1000)) {
 							choice.currMsg += choice.msg.charAt(choice.nextChar);
 							choice.nextChar++;
 							time = 0;
+							event.snd.play(Main.config.volume * 0.5f);
 						}
 						if(choice.currMsg.equals(choice.msg)) {
 							Menu.showChoices(game, choice);
-							choice.currChoice = InputMan.scrollInt(MenuScrollType.VERTICAL, choice.getChoices().length, choice.currChoice);
+							choice.currChoice = InputMan.scrollInt(MenuScrollType.VERTICAL, choice.getChoices().length, choice.currChoice, Menu.MenuMove);
 						}
 						return n;	
 					}

@@ -33,7 +33,7 @@ public class MainMenuScreen implements Screen {
     	game.viewport.apply();
     	game.batch.setProjectionMatrix(game.viewport.getCamera().combined);
     	
-    	sel = InputMan.scrollInt(MenuScrollType.VERTICAL, 3, sel);
+    	sel = InputMan.scrollInt(MenuScrollType.VERTICAL, 3, sel, Menu.MenuMove);
     	game.batch.begin();
     	
     	game.titleFont.draw(game.batch, "DUNGEON SLASHERS", -75, 80f);

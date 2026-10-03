@@ -68,10 +68,11 @@ public class FirstScreen implements Screen {
     public void show() {
         // Prepare your screen here.
 		this.resume();
-		boolean temp = false;
 		timer = 0;
 		chars = Main.player.getCharacters();
-		Main.player.state = PlayerState.WAITING;
+		if(Main.player.currScreen != "MENU_SCREEN") {
+			Main.player.state = PlayerState.WAITING;
+		}
 		if(Main.player.currScreen == "SHOP_SCREEN") { 
 			x[0] = 10;
 			chars[0].direction = "right";
@@ -80,24 +81,19 @@ public class FirstScreen implements Screen {
 			y[0] = 120;
 			chars[0].direction = "down";
 		}else if(Main.player.currScreen == "LOOSE") {
-			temp = true;
-			x[0] = 130;
-			y[0] = 65;
+			x[0] = 125;
+			y[0] = 70;
 			chars[0].direction = "right";
-			x[1] = 150;
-			y[1] = 35;
-			chars[1].direction = "up";
-			x[2] = 180;
-			y[2] = 35;
-			chars[2].direction = "up";
-			x[3] = 210;
-			y[3] = 65;
-			chars[3].direction = "left";
 			for(int i = 0; i < chars.length; i++) {
     			chars[i].hp = chars[i].maxhp;
         		chars[i].sp = chars[i].maxsp;
         		chars[i].mp = chars[i].maxmp;
     		}
+			game.firstFloor.generateNewLayout();
+			game.secondFloor.generateNewLayout();
+			game.thirdFloor.generateNewLayout();
+			game.fourthFloor.generateNewLayout();
+			game.fifthFloor.generateNewLayout();
     		Save.save();
 		}
 		Main.player.currScreen = "FIRST_SCREEN";
@@ -107,29 +103,29 @@ public class FirstScreen implements Screen {
 		camera.setToOrtho(false, 320, 180);
 		camera.zoom = 1f;
 		if(!Main.player.flags[Flags.FLAG_FIRSTSCREEN_DIALOGUE_START]) {
-			DialMan.addDialogue(0, 1, chars[0].getName(), chars[0].getPortrait(), "Esta es una prueba de dialogos. asjdaajsd s d d adoalalala lalalalaallala lolololololololo", 20);
-			DialMan.addDialogue(1, 2, chars[1].getName(), chars[1].getPortrait(), "Esta es una prueba de dialogos con otra foto. Hola", 60);
-			DialMan.addChoice(2, 20, "A quien preferis", new String[] {chars[0].getName(), chars[1].getName(), "Los 2", "Ninguno"}, new int[] {3, 4, 5, 6});
-			DialMan.addDialogue(3, -1, chars[0].getName(), chars[0].getPortrait(), "Gracias", 20);
-			DialMan.addDialogue(4, -1, chars[1].getName(), chars[1].getPortrait(), "Gracias", 20);
-			DialMan.addDialogue(5, -1, "Los 2", null, "Gracias", 20);
-			DialMan.addDialogue(6, -1, null, null, "Te miran con cara de culo", 20);
+			DialMan.addDialogue(0, 1, chars[0].getName(), chars[0].getPortrait(), "Esta es una prueba de dialogos. asjdaajsd s d d adoalalala lalalalaallala lolololololololo", 20, null);
+			DialMan.addDialogue(1, 2, chars[1].getName(), chars[1].getPortrait(), "Esta es una prueba de dialogos con otra foto. Hola", 60, null);
+			DialMan.addChoice(2, 20, "A quien preferis", null, new String[] {chars[0].getName(), chars[1].getName(), "Los 2", "Ninguno"}, new int[] {3, 4, 5, 6});
+			DialMan.addDialogue(3, -1, chars[0].getName(), chars[0].getPortrait(), "Gracias", 20, null);
+			DialMan.addDialogue(4, -1, chars[1].getName(), chars[1].getPortrait(), "Gracias", 20, null);
+			DialMan.addDialogue(5, -1, "Los 2", null, "Gracias", 20, null);
+			DialMan.addDialogue(6, -1, null, null, "Te miran con cara de culo", 20, null);
 			Main.player.flags[Flags.FLAG_FIRSTSCREEN_DIALOGUE_START] = true;
 		}
 		
-		posHistory = new Array<>(); // inicializa el ArrayList
-		for(int i = 0; i < (chars.length * followDelay) + 5; i++) {
-			//mientras que i sea menor a la length de chars * la cantidad de frames...
-            posHistory.add(new Vector2(x[0], y[0])); //añade un nuevo vector2 con las posiciones
-            										 // del primer personaje
-        }
-		for(int i = 1; i < chars.length; i++) {
-			if(!temp) {
-	            x[i] = x[0];	//pone las posiciones de cada personaje en 0
-	            y[i] = y[0];	
-	            chars[i].direction = chars[0].direction; //pone a todos en la misma direccion
-			}
-        }
+		if(Main.player.state == PlayerState.WAITING) {
+			posHistory = new Array<>(); // inicializa el ArrayList
+			for(int i = 0; i < (chars.length * followDelay) + 5; i++) {
+				//mientras que i sea menor a la length de chars * la cantidad de frames...
+	            posHistory.add(new Vector2(x[0], y[0])); //añade un nuevo vector2 con las posiciones
+	            										 // del primer personaje
+	        }
+			for(int i = 1; i < chars.length; i++) {
+		       x[i] = x[0];	//pone las posiciones de cada personaje en 0
+		       y[i] = y[0];	
+	           chars[i].direction = chars[0].direction; //pone a todos en la misma direccion
+	       }
+		}
 	}
 
     @Override
@@ -154,13 +150,11 @@ public class FirstScreen implements Screen {
     		}
     	}
     	if(InputMan.checkKey("F2")) {
-			System.out.println("yendo a battlescreen");
 			game.setScreen(game.defBattleScreen);
 			game.defBattleScreen.lastScreen = this;
 			this.pause();
 		}
     	if(InputMan.checkKey("F3")) {
-			System.out.println("yendo a battlescreen");
 			game.setScreen(game.firstBossFight);
 			game.firstBossFight.lastScreen = this;
 			this.pause();
@@ -219,8 +213,7 @@ public class FirstScreen implements Screen {
             }
         }
     	
-    	if(InputMan.checkKey("Z") && Main.player.state == PlayerState.IDLE) {
-    		System.out.println("chequeando colisiones en direccion " + chars[0].direction);
+    	if(InputMan.checkKey("Z", null) && Main.player.state == PlayerState.IDLE) {
 	    	switch(chars[0].direction) {
 	    	case "up":
 	    		playerCol.y = y[0] + 10;
@@ -289,15 +282,13 @@ public class FirstScreen implements Screen {
     
     private boolean checkInteraction(Rectangle player) {
 		for(Rectangle col : interactions) {
-			System.out.println("chequeando interacciones...");
 			if(col != null && player.overlaps(col)) {
-				System.out.println("se encontró interaccion");
 				if(col == interactions[0]) {
-                	DialMan.addDialogue(0, 1, null, null, "La fogata. Esta apagada.", 20);
-                	DialMan.addChoice(1, 20, "Deseas guardar y recuperar salud?", new String[] {"Si", "No"},
+                	DialMan.addDialogue(0, 1, null, null, "La fogata. Esta apagada.", 20, null);
+                	DialMan.addChoice(1, 20, "Deseas guardar y recuperar salud?", null, new String[] {"Si", "No"},
                 			new int[] {30, 4});
-                	DialMan.addDialogue(30, -1, null, null, "Guardado.", 20);
-                	DialMan.addDialogue(4, -1, null, null, "No se ha guardado.", 20);
+                	DialMan.addDialogue(30, -1, null, null, "Guardado.", 20, null);
+                	DialMan.addDialogue(4, -1, null, null, "No se ha guardado.", 20, null);
                 }
 				return true;
 				

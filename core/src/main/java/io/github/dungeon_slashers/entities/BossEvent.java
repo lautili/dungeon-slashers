@@ -56,16 +56,16 @@ public class BossEvent {
 					check = true;
 					for(int i = 0; i < msgs.length; i++) {
 						int i2 = i+1;
-						DialMan.addDialogue(i, i2, boss.name, null, msgs[i], 2); //codigo sencillo para hacer los dialogos
+						DialMan.addDialogue(i, i2, boss.name, null, msgs[i], 2, null); //codigo sencillo para hacer los dialogos
 					}
 					return true;
 				}
 			}else {
-				if(turn == num) { //chequea que sea ese turno
+				if(turn >= num) { //chequea que sea ese turno
 					check = true;
 					for(int i = 0; i < msgs.length; i++) {
 						int i2 = i+1;
-						DialMan.addDialogue(i, i2, boss.name, null, msgs[i], 2);
+						DialMan.addDialogue(i, i2, boss.name, null, msgs[i], 2, null);
 					}
 					return true;
 				}

@@ -130,7 +130,9 @@ public class floorScreen implements Screen {
 		timer = 0;
 		steps = 0;
 		firstSteps = 0;
-		Main.player.state = PlayerState.WAITING;
+		if(Main.player.currScreen != "MENU_SCREEN") {
+			Main.player.state = PlayerState.WAITING;
+		}
 		showMap = false;
 		chars = Main.player.getCharacters();
 		Main.player.currScreen = "FLOOR_SCREEN";
@@ -140,18 +142,22 @@ public class floorScreen implements Screen {
 		camera.setToOrtho(false, 320, 180);
 		camera.zoom = 1f;
 		checkRoomBooleans();
-		
-		posHistory = new Array<>(); // inicializa el ArrayList
-		for(int i = 0; i < (chars.length * followDelay) + 5; i++) {
-			//mientras que i sea menor a la length de chars * la cantidad de frames...
-            posHistory.add(new Vector2(x[0], y[0])); //añade un nuevo vector2 con las posiciones
-            										 // del primer personaje
-        }
-		for(int i = 1; i < chars.length; i++) {
-            x[i] = x[0];	//pone las posiciones de cada personaje en 0
-            y[i] = y[0];	
-            chars[i].direction = chars[0].direction; //pone a todos en la misma direccion
-        }
+		if(Main.player.state == PlayerState.WAITING) {
+			posHistory = new Array<>(); // inicializa el ArrayList
+			for(int i = 0; i < (chars.length * followDelay) + 5; i++) {
+				//mientras que i sea menor a la length de chars * la cantidad de frames...
+	            posHistory.add(new Vector2(x[0], y[0])); //añade un nuevo vector2 con las posiciones
+	            										 // del primer personaje
+	        }
+			for(int i = 1; i < chars.length; i++) {
+	            x[i] = x[0];	//pone las posiciones de cada personaje en 0
+	            y[i] = y[0];	
+	            chars[i].direction = chars[0].direction; //pone a todos en la misma direccion
+	        }
+		}
+		if(Main.player.flags[dialogueFlag]) {
+			floor.discoverAll();
+		}
 	}
 	@Override
     public void render(float delta) {
@@ -168,12 +174,15 @@ public class floorScreen implements Screen {
     	if(Main.player.state == PlayerState.IDLE) {
         	floats = InputMan.movement(this, game);
     	}
-    	if(InputMan.checkKey("F1")) {
+    	if(InputMan.checkKey("F1", null)) {
     		if(!colboxes) {
     			colboxes = true;
     		}else {
     			colboxes = false;
     		}
+    	}
+    	if(InputMan.checkKey("F6", null)) {
+    		floor.discoverAll();
     	}
     	float moveX = floats[0] * delta;
     	float moveY = floats[1] * delta;
@@ -245,8 +254,7 @@ public class floorScreen implements Screen {
             }
         }
     	
-    	if(InputMan.checkKey("Z") && Main.player.state == PlayerState.IDLE) {
-    		System.out.println("chequeando colisiones en direccion " + chars[0].direction);
+    	if(InputMan.checkKey("Z", null) && Main.player.state == PlayerState.IDLE) {
 	    	switch(chars[0].direction) {
 	    	case "up":
 	    		playerCol.y = y[0] + 10;
@@ -373,11 +381,38 @@ public class floorScreen implements Screen {
 
                         // habitación actual
                         game.batch.draw(game.roomCurr, roomX, roomY, roomSize, roomSize);
-
+                        game.batch.draw(game.roomDisc, roomX, roomY, roomSize, roomSize);
+                        switch(floor.layout[i][j].roomType) {
+                        case Room.ROOM_START:
+                        	game.batch.draw(game.roomStart, roomX, roomY, roomSize, roomSize);
+                        	break;
+                        case Room.ROOM_TREASURE:
+                        	game.batch.draw(game.roomTreasure, roomX, roomY, roomSize, roomSize);
+                        	break;
+                        case Room.ROOM_SECRET:
+                        	game.batch.draw(game.roomSecret, roomX, roomY, roomSize, roomSize);
+                        	break;
+                        case Room.ROOM_BOSS:
+                        	game.batch.draw(game.roomBoss, roomX, roomY, roomSize, roomSize);
+                        	break;
+                        }
                     } else if(floor.layout[i][j].discovered == Room.DISC_TOTAL) {
                         // habitación descubierta
                         game.batch.draw(game.roomDisc, roomX, roomY, roomSize, roomSize);
-
+                        switch(floor.layout[i][j].roomType) {
+                        case Room.ROOM_START:
+                        	game.batch.draw(game.roomStart, roomX, roomY, roomSize, roomSize);
+                        	break;
+                        case Room.ROOM_TREASURE:
+                        	game.batch.draw(game.roomTreasure, roomX, roomY, roomSize, roomSize);
+                        	break;
+                        case Room.ROOM_SECRET:
+                        	game.batch.draw(game.roomSecret, roomX, roomY, roomSize, roomSize);
+                        	break;
+                        case Room.ROOM_BOSS:
+                        	game.batch.draw(game.roomBoss, roomX, roomY, roomSize, roomSize);
+                        	break;
+                        }
                     } else if (floor.layout[i][j].discovered == Room.DISC_PART){
                     	// habitación descubierta a la que no se entro
                     	game.batch.draw(game.roomUnd, roomX, roomY, roomSize, roomSize);
@@ -390,7 +425,7 @@ public class floorScreen implements Screen {
 		Room room = floor.layout[currPosition[0]][currPosition[1]];
 		if(room.roomType == Room.ROOM_TREASURE && player.overlaps(treasure)) {
 			if(room.isTreasureOpen()) {
-				DialMan.addDialogue(0, -1, null, null, "Ya has abierto este cofre.", 20);
+				DialMan.addDialogue(0, -1, null, null, "Ya has abierto este cofre.", 20, null);
 			}else {
 				String msg = "";
 				int random = rand.nextInt(3);
@@ -440,8 +475,8 @@ public class floorScreen implements Screen {
 					}
 				}
 				msg += ".";
-				DialMan.addDialogue(0, 1, null, null, "Has abierto el cofre!", 20);
-				DialMan.addDialogue(1, -1, null, null, "Has encontrado " + msg, 20);
+				DialMan.addDialogue(0, 1, null, null, "Has abierto el cofre!", 20, null);
+				DialMan.addDialogue(1, -1, null, null, "Has encontrado " + msg, 20, null);
 				room.setTreasureOpen();
 			}
 			return true;
@@ -536,7 +571,6 @@ public class floorScreen implements Screen {
 	        	Flags.DialogueFlag(dialogueFlag, boss);
 	        	Main.player.flags[dialogueFlag] = true;	        	
 	        	Main.player.state = PlayerState.BUSY;
-	        	System.out.println("Se entró a lo del check");
         	}else {
         		DialMan.addDialogue(0, 100);
         		DialMan.addDialogue(100, -1);

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Screen;
 
 import io.github.dungeon_slashers.controllers.InputMan;
 import io.github.dungeon_slashers.controllers.Menu;
+import io.github.dungeon_slashers.entities.Enemy;
 import io.github.dungeon_slashers.entities.Hero;
 import io.github.dungeon_slashers.item.Armor;
 import io.github.dungeon_slashers.item.Item;
@@ -21,9 +22,10 @@ public class Player {
 	private Weapon[] weapons; //inventario de armas
 	private Armor[] armors; //inventario de armaduras
 	private Hero[] characters; //los personajes
+	private Enemy[] bestiary;
 	public String currScreen;
 	public PlayerState state;
-	public boolean[] flags = new boolean[3]; // las flags
+	public boolean[] flags = new boolean[11]; // las flags
 	public int gold;
 	
 	//constructor
@@ -49,6 +51,21 @@ public class Player {
 	public Hero[] getCharacters() {
 		return this.characters;
 	}
+	public Enemy[] getBestiary() {
+		return bestiary;
+	}
+	public void setBestiary(Enemy[] enemies) {
+		bestiary = enemies;
+	}
+	public void updateBestiary(Enemy enemy) {
+		for(Enemy enemy2 : bestiary) {
+			if(enemy2.getIDName().equals(enemy.getIDName())) {
+				enemy2.defeated = enemy.defeated;
+				enemy2.discovered = enemy.discovered;
+				enemy2.setWeaknesses(enemy.getWeaknesses());
+			}
+		}
+	}
 	
 	//cambiar armadura de un heroe
 	public void changeArmors(Hero hero, Armor armor) {
@@ -70,8 +87,6 @@ public class Player {
 						break;
 					}
 				}
-			}else {
-				System.out.println("Este arma no es compatible con la clase " + hero.getclassName());
 			}
 		}
 	
@@ -85,7 +100,6 @@ public class Player {
 			weapons[i] = temp[i];
 		}
 		weapons[length] = weapon;
-		System.out.println("Se agrego el arma");
 	}
 	public void subWeapons(Weapon weapon) {
 		if(weapons.length > 0) {
@@ -117,8 +131,6 @@ public class Player {
 						check = true;
 					}
 				}
-			}else {
-				System.out.println("No se encontro ese arma en el inventario.");
 			}
 		}
 	}
@@ -163,8 +175,6 @@ public class Player {
 						check = true;
 					}
 				}
-			}else {
-				System.out.println("No se encontró esa armadura en el inventario.");
 			}
 		}
 	}
@@ -254,8 +264,6 @@ public class Player {
 					}
 				}
 			}
-		}else {
-			System.out.println("No se encontró el item en el inventario.");
 		}		
 	}
 	//Si se especifica la cantidad, se saca q
@@ -291,11 +299,7 @@ public class Player {
 							}
 						}
 					}
-				}else {
-					System.out.println("No se pueden quitar mas items de los que se posee.");
 				}
-			}else {
-				System.out.println("No se encontro el item en el inventario.");
 			}		
 		}
 	
@@ -303,7 +307,6 @@ public class Player {
 	public void loadCharacters() {
 		for(int i = 0; i < characters.length; i++) {
 			characters[i].loadTextures();
-			System.out.println(characters[i].getWeapon().getName());
 		}
 	}
 

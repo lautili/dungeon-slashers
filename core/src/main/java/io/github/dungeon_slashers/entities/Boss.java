@@ -11,17 +11,21 @@ import io.github.dungeon_slashers.Skill;
  */
 
 public class Boss extends Enemy{
-	private BossEvent[] events;
-	private int bossFlag;
-	public Texture bossIdle;
-	public BossEvent finalEvent;
+	private transient BossEvent[] events;
+	private transient int bossFlag;
+	public transient Texture bossIdle;
+	public transient BossEvent finalEvent;
 	public Boss(String name, String IDname, String baseType, int hp, int mp, int sp, int atk, int def, int mat, int mdf, int spd,
 			int xp, int gld, int priority, double PHY, double RAN, double FIR, double WAT, double WIN, double EAR,
 			Skill attack, Skill defend, int bossFlag) {
 		super(name, IDname, baseType, hp, mp, sp, atk, def, mat, mdf, spd, xp, gld, priority, PHY, RAN, FIR, WAT, WIN, EAR, attack,
 				defend);
 		this.bossFlag = bossFlag;
-		bossIdle = new Texture("sprites/enemies/" + IDname + "-down.png");
+		try {
+			bossIdle = new Texture("sprites/enemies/" + IDname + "-down.png");
+		}catch(Exception e) {
+			bossIdle = new Texture("sprites/enemies/ogre-down.png");
+		}
 	}
 	
 	//settear los Eventos de Boss

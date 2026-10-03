@@ -13,9 +13,20 @@ import io.github.dungeon_slashers.Skill;
 */
 
 public class Enemy extends Entity{		
-	protected int priority; //la prioridad que tiene al randomizar las batallas
-	public int xp; //la xp que dan
-	public int gld; //el oro que dan
+	protected transient int priority; //la prioridad que tiene al randomizar las batallas
+	public transient int xp; //la xp que dan
+	public transient int gld; //el oro que dan
+	private transient String description;
+	public boolean defeated = false;
+	public boolean discovered = false;
+	private boolean[] discWeakness = new boolean[6];
+	public transient final int WEAK_PHY = 0;
+	public transient final int WEAK_RAN = 1;
+	public transient final int WEAK_FIR = 2;
+	public transient final int WEAK_WAT = 3;
+	public transient final int WEAK_WIN = 4;
+	public transient final int WEAK_EAR = 5;
+	
 	//constructor
 	public Enemy(String name, String IDname, String baseType, int hp, int mp, int sp, int atk, int def, int mat, int mdf, int spd, 
 			int xp, int gld, int priority,
@@ -85,6 +96,10 @@ public class Enemy extends Entity{
 		this.xp = enemy.xp;
 		this.gld = enemy.gld;
 		this.priority = enemy.priority;
+		this.description = enemy.description;
+		this.discWeakness = enemy.discWeakness;
+		defeated = enemy.defeated;
+		discovered = enemy.discovered;
 		atkF = atk;
 		defF = def;
 		matF = mat;
@@ -110,5 +125,54 @@ public class Enemy extends Entity{
 	}
 	public int getGLD() {
 		return gld;
+	}
+	public String getDesc() {
+		return description;
+	}
+	public double[] getWeakness() {
+		double[] temp = {
+				PHY,
+				RAN,
+				FIR,
+				WAT,
+				WIN,
+				EAR
+		};
+		return temp;
+	}
+	public void updateDiscoveries(String type) {
+		if(type == null) {
+			return;
+		}
+		switch(type) {
+		case "PHY":
+			discWeakness[WEAK_PHY] = true;
+			break;
+		case "RAN":
+			discWeakness[WEAK_RAN] = true;
+			break;
+		case "FIR":
+			discWeakness[WEAK_FIR] = true;
+			break;
+		case "WAT":
+			discWeakness[WEAK_WAT] = true;
+			break;
+		case "WIN":
+			discWeakness[WEAK_WIN] = true;
+			break;
+		case "EAR":
+			discWeakness[WEAK_EAR] = true;
+			break;
+		}
+	}
+	public boolean[] getWeaknesses() {
+		return discWeakness;
+	}
+	public void setWeaknesses(boolean[] weak) {
+		discWeakness = weak;	
+	}
+	
+	public void setDesc(String description) {
+		this.description = description;
 	}
 }

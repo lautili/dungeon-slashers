@@ -2,8 +2,12 @@ package io.github.dungeon_slashers;
 
 import java.util.Random;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
+
 import io.github.dungeon_slashers.controllers.DialMan;
 import io.github.dungeon_slashers.controllers.Menu;
+import io.github.dungeon_slashers.entities.Enemy;
 import io.github.dungeon_slashers.entities.Entity;
 import io.github.dungeon_slashers.entities.Hero;
 import io.github.dungeon_slashers.item.Item;
@@ -18,6 +22,23 @@ import io.github.dungeon_slashers.screens.BattleScreen;
 
 public class Skill {
 	//valores
+	private static Sound PHY = Gdx.audio.newSound(Gdx.files.internal("sounds/sword.mp3"));
+	private static Sound RAN = Gdx.audio.newSound(Gdx.files.internal("sounds/arrow.mp3"));
+	private static Sound FIR = Gdx.audio.newSound(Gdx.files.internal("sounds/fire.mp3"));
+	private static Sound WAT = Gdx.audio.newSound(Gdx.files.internal("sounds/water.mp3"));
+	private static Sound WIN = Gdx.audio.newSound(Gdx.files.internal("sounds/wind.mp3"));
+	private static Sound EAR = Gdx.audio.newSound(Gdx.files.internal("sounds/earth.mp3"));
+	private static Sound SWORD_BIG = Gdx.audio.newSound(Gdx.files.internal("sounds/sword_big.mp3"));
+	private static Sound RAN_BIG = Gdx.audio.newSound(Gdx.files.internal("sounds/arrow_big.mp3"));
+	private static Sound MAGIC_BIG = Gdx.audio.newSound(Gdx.files.internal("sounds/magic_big.mp3"));
+	private static Sound BLADE_BIG = Gdx.audio.newSound(Gdx.files.internal("sounds/blade_big.mp3"));
+	private static Sound SAGE_BIG = Gdx.audio.newSound(Gdx.files.internal("sounds/sage_big.mp3"));
+	private static Sound SHIELD = Gdx.audio.newSound(Gdx.files.internal("sounds/shield.mp3"));
+	private static Sound HEAL = Gdx.audio.newSound(Gdx.files.internal("sounds/healing.mp3"));
+	private static Sound TRAP = Gdx.audio.newSound(Gdx.files.internal("sounds/trap.mp3"));
+	private static Sound SMOKE_BOMB = Gdx.audio.newSound(Gdx.files.internal("sounds/smokebomb.mp3"));
+	private static Sound BARD = Gdx.audio.newSound(Gdx.files.internal("sounds/bard.mp3"));
+	private static Sound GROWL = Gdx.audio.newSound(Gdx.files.internal("sounds/growl.mp3"));
 	private String shortName; //nombre corto, para hacer mas facil el switch del Use
 	private String name;
 	private String desc;
@@ -94,6 +115,9 @@ public class Skill {
 	public String getName() {
 		return name;
 	}
+	public String getID() {
+		return shortName;
+	}
 	public String getDesc() {
 		return desc;
 	}
@@ -115,6 +139,9 @@ public class Skill {
 	public String getType() {
 		return type;
 	}
+	public int getAtkTimes() {
+		return atkTimes;
+	}
 	public void setType(int n) { //UNICAMENTE usar con items en skills
 		skillType = n;
 	}
@@ -128,25 +155,28 @@ public class Skill {
 	public void use(Entity a) {	//Self
 		checkRand();
 		String msg = (a.getName() + atkMsg); //muestra el mensaje de la skill
+		Sound snd = null;
 		a.modSP(-SPcost);
 		a.modMP(-MPcost);
 		switch(shortName) {
 		case "defend":
 			//Protegerse
 			a.prot = 2;
+			snd = SHIELD;
 			break;
 		}
+		snd.play(Main.config.volume);
 		DialMan.addDialogue(0, BattleScreen.DIAL_BACTION);
-		DialMan.addDialogue(BattleScreen.DIAL_BACTION, -1, null, null, msg, 20);
+		DialMan.addBDialogue(BattleScreen.DIAL_BACTION, -1, msg);
 	}
 	public void use(Entity a, Entity b) { //A otra entidad
 		checkRand();
-		int cont = 1;
 		if(atkMsg != null) {
-			DialMan.addDialogue(0, 1, null, null, a.getName() + atkMsg + b.getName(), 20); //muestra el mensaje de la skill
+			DialMan.addBDialogue(0, 1, a.getName() + atkMsg + b.getName()); //muestra el mensaje de la skill
 		}else {
 			DialMan.addDialogue(0, 1);
 		}
+		int count = 1;
 		int dmg = 0;
 		String dmgType;
 		a.modSP(-SPcost);
@@ -154,32 +184,54 @@ public class Skill {
 		//Si la skill no tiene un tipo definido, usa la del que la castea.
 		// por ejemplo, los ataques comunes no tienen tipo, asi que a pesar de que el explorador y 
 		// el ladron usan el mismo ataque, el tipo del primero es RAN y del segundo es PHY
-		String msg = null;
-		String msg2 = null;
-		String msg3 = null;
 		if(type == null ) {
 			dmgType = a.getType();
 		}else {
 			dmgType = type;
 		}
-		
+		Sound snd;
+		switch(dmgType) {
+		case "PHY":
+			snd = PHY;
+			break;
+		case "RAN":
+			snd = RAN;
+			break;
+		case "FIR":
+			snd = FIR;
+			break;
+		case "WAT":
+			snd = WAT;
+			break;
+		case "WIN":
+			snd = WIN;
+			break;
+		case "EAR":
+			snd = EAR;
+			break;
+		default:
+			snd = PHY;
+			break;
+		}
+		if(b instanceof Enemy) {
+			((Enemy) b).updateDiscoveries(dmgType);
+		}
+		b.lastDamageTaken = 0; // Se reinicia para acumular el daño total de la acción
 		for(int i = 0; i < atkTimes; i++) {
-			Double mul = detMul(b, dmgType); //multiplicador de daño para chequear resistencias y debilidades
-											 //esto solo aplica con enemigos, los heroes no reciben mas o menos daño.
+			double mul = detMul(b, dmgType); //multiplicador de daño para chequear resistencias y debilidades
+			b.lastDamageWeakness = mul;	    //esto solo aplica con enemigos, los heroes no reciben mas o menos daño.
 			switch(shortName) {
 			//ataque normal fisico
 			case "defAtt":
 				dmg = ((a.getATK()*4) / ( (b.getDEF() / 10) + 1 )) / b.prot ; //la formula del ataque
 				dmg *= mul; 
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			//ataque normal magico
 			case "defMat":
 				dmg = ((a.getMAT()*4) / ( (b.getMDF() / 10) + 1 )) / b.prot ;
 				dmg *= mul;
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 				
 			//warrior
@@ -187,63 +239,51 @@ public class Skill {
 				dmg = ((a.getMAT()*6) / ( (b.getMDF() / 10) + 1 )) / b.prot ;
 				dmg *= mul;
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			case "deepCut":
 				dmg = ((a.getMAT()*5) / ( (b.getMDF() / 10) + 1 )) / b.prot ;
 				dmg *= mul;
-				if(rand.nextInt(100) < 20) {
-					msg2 = b.setEffect(new Effect("BLE"));
-				}
+				count = b.setEffect(new Effect("BLE"), count);
+				
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			case "knockout":
 				dmg = ((a.getATK()*5) / ( (b.getDEF() / 10) + 1 )) / b.prot ;
 				dmg *= mul;
-				if(rand.nextInt(100) < 25) {
-					msg2 = b.setEffect(new Effect("CON"));
-				}
+				count = b.setEffect(new Effect("CON"), count);
+				
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			case "skullCracker":
 				dmg = ((a.getATK()*6) / ( (b.getDEF() / 10) + 1 )) / b.prot ;
 				dmg *= mul;
-				if(rand.nextInt(100) < 30) {
-					msg2 = b.setEffect(new Effect("CON"));
-				}
+				count = b.setEffect(new Effect("CON"), count);
+				
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			case "brutalBlow":
 				dmg = ((a.getATK()*8) / ( (b.getDEF() / 10) + 1 )) / b.prot ;
 				dmg *= mul; 
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			case "lunge":
 				dmg = ((a.getATK()*6) / ( (b.getDEF() / 10) + 1 )) / b.prot ;
 				dmg *= mul; 
-				msg2 = b.setEffect(new Effect("CON"));
+				count = b.setEffect(new Effect("CON"), count);
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			case "hustle":
 				dmg = ((a.getATK()*8) / ( (b.getDEF() / 10) + 1 )) / b.prot ;
-				dmg *= mul; 
-				if(rand.nextInt(100)<40) {
-					msg2 = b.setEffect(new Effect("RAG"));
-				}
+				dmg *= mul;
+				count = b.setEffect(new Effect("RAG"), count);
+				
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			case "backhand":
 				dmg = ((a.getATK()*6) / ( (b.getDEF() / 10) + 1 )) / b.prot ;
 				dmg *= mul;
-				msg2 = b.setEffect(new Effect("SLE"));
+				count = b.setEffect(new Effect("SLE"), count);
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			
 				
@@ -253,70 +293,63 @@ public class Skill {
 				dmg = ((a.getMAT()*6) / ( (b.getMDF() / 10) + 1 )) / b.prot ;
 				dmg *= mul;
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			case "windBurst":
 				dmg = ((a.getMAT()*6) / ( (b.getMDF() / 10) + 1 )) / b.prot ;
 				dmg *= mul;
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			case "terrAttack":
 				dmg = ((a.getMAT()*6) / ( (b.getMDF() / 10) + 1 )) / b.prot ;
 				dmg *= mul;
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			case "splatter":
 				dmg = ((a.getMAT()*6) / ( (b.getMDF() / 10) + 1 )) / b.prot ;
 				dmg *= mul;
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			case "poisoning":
-				msg2 = b.setEffect(new Effect("POI"));
+				count = b.setEffect(new Effect("POI"), count);
+				snd = HEAL;
 				break;
 			case "incantation":
-				msg2 = b.setEffect(new Effect("ENC"));
+				count = b.setEffect(new Effect("ENC"), count);
+				snd = HEAL;
 				break;
 			case "decibels":
-				msg2 = b.setEffect(new Effect("SIL"));
+				count = b.setEffect(new Effect("SIL"), count);
+				snd = HEAL;
 				break;
 				
 				//thief
 			case "decCut":
 				dmg = ((a.getATK()*6) / ( (b.getDEF() / 10) + 1 )) / b.prot ;
 				dmg *= mul; 
-				if(rand.nextInt(100)<30) {
-					msg2 = b.setEffect(new Effect("BLE"));
-				}
+				count = b.setEffect(new Effect("BLE"), count);
+				
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			case "fastAtk":
 				dmg = ((a.getATK()*5) / ( (b.getDEF() / 10) + 1 )) / b.prot ;
 				dmg *= mul;
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			case "smokeBomb":
-				msg2 = b.setEffect(new Effect("SIL"));
-				if(rand.nextInt(100)>20) {
-					msg3 = b.setEffect(new Effect("CON"));
-				}
+				count = b.setEffect(new Effect("SIL"), count);
+				count = b.setEffect(new Effect("CON"), count);
+				snd = SMOKE_BOMB;
 				break;
 			case "sneakAtk":
 				dmg = ((a.getATK()*6) / ( ((int) (b.getDEF() * 0.6 ) / 10) + 1 )) / b.prot ;
 				dmg *= mul;
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			case "venomEdge":
 				dmg = ((a.getATK()*6) / ((b.getDEF() / 10) + 1 )) / b.prot ;
 				dmg *= mul;
-				msg2 = b.setEffect(new Effect("POI"));
+				count = b.setEffect(new Effect("POI"), count);
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			case "magicTheft":
 				dmg = ((int) (b.getHP() * 0.1));
@@ -325,7 +358,7 @@ public class Skill {
 				b.modMP(-mdmg);
 				a.modHP(dmg);
 				a.modMP(mdmg);
-				msg = (a.getName() + " ha robado " + dmg + " HP y " + mdmg + " MP de " + b.getName() + "!");
+				snd = HEAL;
 				break;
 			case "vitalTheft":
 				dmg = ((int) (b.getHP() * 0.1));
@@ -334,10 +367,11 @@ public class Skill {
 				b.modSP(-sdmg);
 				a.modHP(dmg);
 				a.modSP(sdmg);
-				msg = (a.getName() + " ha robado " + dmg + " HP y " + sdmg + " SP de " + b.getName() + "!");
+				snd = HEAL;
 				break;
 			case "sleepPll":
-				msg2 = b.setEffect(new Effect("SLE"));
+				count = b.setEffect(new Effect("SLE"), count);
+				snd = SMOKE_BOMB;
 				break;
 			case "finisher":
 				dmg = ((a.getATK()*8) / ((b.getDEF() / 10) + 1 )) / b.prot ;
@@ -346,13 +380,11 @@ public class Skill {
 				}
 				dmg *= mul;
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			case "hitman":
 				dmg = (a.getATK()*8) / b.prot ;
 				dmg *= mul;
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 				
 				// explorer
@@ -360,141 +392,129 @@ public class Skill {
 				dmg = ((a.getATK()*6) / ( (b.getDEF() / 10) + 1 )) / b.prot ;
 				dmg *= mul; 
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			case "fireArrow":
 				dmg = ((a.getATK()*5) / ( (b.getDEF() / 10) + 1 )) / b.prot ;
 				dmg *= mul; 
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			case "iceArrow":
 				dmg = ((a.getATK()*5) / ( (b.getDEF() / 10) + 1 )) / b.prot ;
 				dmg *= mul; 
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			case "calTrap":
-				msg2 = b.setEffect(new Effect("POI"));
+				count = b.setEffect(new Effect("POI"), count);
+				snd = TRAP;
 				break;
 			case "decoy":
-				msg2 = b.setEffect(new Effect("CON"));
+				count = b.setEffect(new Effect("CON"), count);
+				snd = TRAP;
 				break;
 			case "nailIt":
 				dmg = ((a.getATK()*8) / ( (b.getDEF() / 10) + 1 )) / b.prot ;
 				dmg *= mul; 
 				b.modHP(-dmg);
-				msg = ("El ataque hizo " + dmg + " de daño!");
 				break;
 			case "allyTotem":
-				msg2 = b.setEffect(new Effect("BEN"));
+				count = b.setEffect(new Effect("BEN"), count);
+				snd = HEAL;
 				break;
 				
 				//Sage
 			case "healing":
 				dmg = ( (int) (b.getHP() * 0.4)	 +  10);
 				b.modHP(dmg);
-				msg = (b.getName() + " recupero " + dmg + " HP!");
+				snd = HEAL;
 				break;
 			case "deaftones":
-				msg2 = b.setEffect(new Effect("CON"));
-				if(rand.nextInt() < 50) {
-					msg3 = b.setEffect(new Effect("POI"));
-				}
+				count = b.setEffect(new Effect("CON"), count);
+				count = b.setEffect(new Effect("POI"), count);
+				snd = HEAL;
 				break;
 			case "bardSong":
 				dmg = ( (int) (b.getHP() * 0.6)	 +  20);
 				b.modHP(dmg);
-				msg = (b.getName() + " recupero " + dmg + " HP!");
+				snd = BARD;
 				break;
 			case "purification":
 				b.clearNegEffects();
+				snd = HEAL;
 				break;
 			case "vitalLust":
 				dmg = (int) (b.getHP() * 0.15);
 				b.modHP(-dmg);
 				a.modHP(dmg);
-				msg = (a.getName() + " robo " + dmg + " HP de " + b.getName() + "!");
+				snd = HEAL;
 				break;
 			case "revive":
 				if(b.hasState("DWN")) {
 					dmg = (int) (b.getHP() * 0.5);
 					b.clearEffect("DWN");
 					b.modHP(dmg);
-					msg = (b.getName() + " revivio!");
 				}
+				snd = HEAL;
 				break;
 			}
-			DialMan.addDialogue(cont, cont+1, null, null, msg, 20);
-			cont++;
-			if(msg2 != null) {
-				DialMan.addDialogue(cont, cont+1, null, null, b.getName() + msg2, 20);
-				cont++;
-			}
-			if(msg3 != null) {
-				DialMan.addDialogue(cont, cont+1, null, null, b.getName() + msg3, 20);
-				cont++;
-			}
-			msg = null;
-			switch((int) (mul * 100)) {
-			case 25:
-				msg = ("No fue para nada efectivo...");
-				break;
-			case 50:
-				msg = ("No fue tan efectivo...");
-				break;
-			case 75:
-				msg = ("No fue efectivo...");
-				break;
-			case 150:
-				msg = ("Fue efectivo!");
-				break;
-			case 200:
-				msg = ("Fue muy efectivo!");
-				break;
-			case 400:
-				msg = ("Fue demasiado efectivo!");
-				break;
-			}
-			if(msg != null) {
-				DialMan.addDialogue(cont, cont+1, null, null, msg, 20);
-				cont++;
-			}
+			b.lastDamageTaken += dmg;
 		}
-		DialMan.addDialogue(cont, BattleScreen.DIAL_BACTION);
+		snd.play(Main.config.volume);
+		DialMan.addDialogue(count, BattleScreen.DIAL_BACTION);
 		DialMan.addDialogue(BattleScreen.DIAL_BACTION, -1);
 	}
 
 	public void use(Entity a, Entity[] b) { //A varias entidades
 		checkRand();
 		if(atkMsg != null) {
-			DialMan.addDialogue(0, 1, null, null, a.getName() + atkMsg, 20); //muestra el mensaje de la skill
+			DialMan.addBDialogue(0, 1, a.getName() + atkMsg); //muestra el mensaje de la skill
 		}else {
 			DialMan.addDialogue(0, 1);
 		}
-		String msg = null;
-		String msg2 = null;
-		String msg3 = null;
-		String msg4 = null;
 		int count = 1;
 		a.modSP(-SPcost);
+		int dmg = 0;
+		String dmgType;
+		//Si la skill no tiene un tipo definido, usa la del que la castea.
+		// por ejemplo, los ataques comunes no tienen tipo, asi que a pesar de que el explorador y 
+		// el ladron usan el mismo ataque, el tipo del primero es RAN y del segundo es PHY
+		if(type == null ) {
+			dmgType = a.getType();
+		}else {
+			dmgType = type;
+		}
+		Sound snd;
+		switch(dmgType) {
+		case "PHY":
+			snd = PHY;
+			break;
+		case "RAN":
+			snd = RAN;
+			break;
+		case "FIR":
+			snd = FIR;
+			break;
+		case "WAT":
+			snd = WAT;
+			break;
+		case "WIN":
+			snd = WIN;
+			break;
+		case "EAR":
+			snd = EAR;
+			break;
+		default:
+			snd = PHY;
+			break;
+		}
 		a.modMP(-MPcost);
 		for(int i = 0; i<b.length; i++) {
-			int dmg = 0;
-			String dmgType;
-			
-			//Si la skill no tiene un tipo definido, usa la del que la castea.
-			// por ejemplo, los ataques comunes no tienen tipo, asi que a pesar de que el explorador y 
-			// el ladron usan el mismo ataque, el tipo del primero es RAN y del segundo es PHY
-			if(type == null ) {
-				dmgType = a.getType();
-			}else {
-				dmgType = type;
+			if(b[i] instanceof Enemy) {
+				((Enemy) b[i]).updateDiscoveries(dmgType);
 			}
-			
+			b[i].lastDamageTaken = 0; // Se reinicia para acumular el daño en cada objetivo
 			for(int j = 0; j < atkTimes; j++) {
-				Double mul = detMul(b[i], dmgType); //multiplicador de daño para chequear resistencias y debilidades
-												 //esto solo aplica con enemigos, los heroes no reciben mas o menos daño.
+				double mul = detMul(b[i], dmgType); //multiplicador de daño para chequear resistencias y debilidades
+				b[i].lastDamageWeakness = mul;						 //esto solo aplica con enemigos, los heroes no reciben mas o menos daño.
 				switch(shortName) {
 				
 				//warrior 
@@ -502,7 +522,6 @@ public class Skill {
 					dmg = ((a.getATK()*5) / ( (b[i].getDEF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
 					break;
 				case "moralDest":
 					dmg = ((a.getATK()*6) / ( (b[i].getDEF() / 10) + 1 )) / b[i].prot ;
@@ -517,39 +536,33 @@ public class Skill {
 					}else {
 						atkTimes = 1;
 					}
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
 					break;
 				case "heavyTackle":
 					dmg = ((a.getATK()*6) / ( (b[i].getDEF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
-					if(rand.nextInt(100) <50) {
-						msg2 = b[i].setEffect(new Effect("TIR"));
-					}
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
+					count = b[i].setEffect(new Effect("TIR"), count);
 					break;
 				case "heavyLand":
 					dmg = ((a.getATK()*8) / ( (b[i].getDEF() / 10))) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
-					if(rand.nextInt(100) <30) {
-						msg2 = b[i].setEffect(new Effect("CON"));
-					}
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
+					count = b[i].setEffect(new Effect("CON"), count);
 					break;
 				case "warCry":
 					int temp = rand.nextInt(3);
 					switch(temp) {
 					case 0:
-						msg2 = b[i].setEffect(new Effect("CON"));
+						count = b[i].setEffect(new Effect("CON"), count);
 						break;
 					case 1:
-						msg2 = b[i].setEffect(new Effect("RAG"));
+						count = b[i].setEffect(new Effect("RAG"), count);
 						break;
 					case 2:
-						msg2 = b[i].setEffect(new Effect("SIL"));
+						count = b[i].setEffect(new Effect("SIL"), count);
 						break;
 					}
+					snd = GROWL;
 					break;
 				case "crushAtk":
 					if(a.getATK() > a.getMAT()) {
@@ -557,9 +570,9 @@ public class Skill {
 					}else {
 						dmg = ((a.getMAT()*12) / ( (b[i].getMDF() / 10) + 1)) / b[i].prot ;
 					}
-					msg2 = b[i].setEffect(new Effect("TIR"));
-					msg3 = b[i].setEffect(new Effect("CON"));
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
+					count = b[i].setEffect(new Effect("TIR"), count);
+					count = b[i].setEffect(new Effect("CON"), count);
+					snd = SWORD_BIG;
 					break;
 					
 					//mage
@@ -567,72 +580,58 @@ public class Skill {
 					dmg = ((a.getMAT()*6) / ( (b[i].getMDF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
 					break;
 				case "blizzard":
 					dmg = ((a.getMAT()*6) / ( (b[i].getMDF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
 					break;
 				case "pressure":
 					dmg = ((a.getMAT()*6) / ( (b[i].getMDF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
 					break;
 				case "tides":
 					dmg = ((a.getMAT()*6) / ( (b[i].getMDF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
 					break;
 				case "tiresome":
-					msg2 = b[i].setEffect(new Effect("TIR"));
+					count = b[i].setEffect(new Effect("TIR"), count);
 					break;
 				case "fireHur":
 					dmg = ((a.getMAT()*8) / ( (b[i].getMDF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
-					if(rand.nextInt(100) <40) {
-						msg2 = b[i].setEffect(new Effect("RAG"));
-					}
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
+					count = b[i].setEffect(new Effect("RAG"), count);
 					break;
 				case "collapse":
 					dmg = ((a.getMAT()*8) / ( (b[i].getMDF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
-					if(rand.nextInt(100) <30) {
-						msg2 = b[i].setEffect(new Effect("SIL"));
-					}
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
+					count = b[i].setEffect(new Effect("SIL"), count);
 					break;
 				case "seaquake":
 					dmg = ((a.getMAT()*8) / ( (b[i].getMDF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
-					if(rand.nextInt(100) <25) {
-						msg2 = b[i].setEffect(new Effect("SLE"));
-					}
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
+					count = b[i].setEffect(new Effect("SLE"), count);
 					break;
 				case "tornado":
 					dmg = ((a.getMAT()*8) / ( (b[i].getMDF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
-					if(rand.nextInt(100) <50) {
-						msg2 = b[i].setEffect(new Effect("CON"));
-					}
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
+					count = b[i].setEffect(new Effect("CON"), count);
 					break;
 				case "curse":
-					msg2 = b[i].setEffect(new Effect("POI"));
-					msg3 = b[i].setEffect(new Effect("TIR"));
-					msg4 = b[i].setEffect(new Effect("ENC"));
+					count = b[i].setEffect(new Effect("POI"), count);
+					count = b[i].setEffect(new Effect("TIR"), count);
+					count = b[i].setEffect(new Effect("ENC"), count);
+					snd = HEAL;
 					break;
 				case "blessing":
-					msg2 = b[i].setEffect(new Effect("BEN"));
+					count = b[i].setEffect(new Effect("BEN"), count);
+					snd = HEAL;
 					break;
 				case "lastPrism":
 					if(a.getATK() > a.getMAT()) {
@@ -642,7 +641,7 @@ public class Skill {
 					}
 					dmg *= mul;
 					b[i].modHP(-dmg);
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
+					snd = MAGIC_BIG;
 					break;
 					
 					//thief
@@ -650,36 +649,26 @@ public class Skill {
 					dmg = ((a.getATK()*6) / ( (b[i].getDEF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
-					if(rand.nextInt(100) <25) {
-						msg2 = b[i].setEffect(new Effect("BLE"));
-					}
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
+					count = b[i].setEffect(new Effect("BLE"), count);
 					break;
 				case "bladeSweep":
 					dmg = ((a.getATK()*6) / ( (b[i].getDEF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
-					if(rand.nextInt(100) < 5) {
-						msg2 = b[i].setEffect(new Effect("BLE"));
-					}
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
+					count = b[i].setEffect(new Effect("BLE"), count);
 					break;
 				case "bladeTornado":
 					dmg = ((a.getATK()*7) / ( (b[i].getDEF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
-					if(rand.nextInt(100) < 50) {
-						msg2 = b[i].setEffect(new Effect("BLE"));
-					}
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
+					count = b[i].setEffect(new Effect("BLE"), count);
 					break;
 				case "chaos":
 					dmg = (int) (b[i].getHP() * 0.05);
-					msg2 = b[i].setEffect(new Effect("TIR"));
-					msg3 = b[i].setEffect(new Effect("BLE"));
+					count = b[i].setEffect(new Effect("TIR"), count);
+					count = b[i].setEffect(new Effect("BLE"), count);
 					b[i].modHP(-dmg);
 					a.modHP(dmg);
-					msg = (a.getName() + " le robo " + dmg + " HP a " + b[i].getName() + "!");
 					break;
 				case "throatSlice":
 					if(a.getATK() > a.getMAT()) {
@@ -687,9 +676,9 @@ public class Skill {
 					}else {
 						dmg = ((a.getMAT()*10) / ( (b[i].getMDF() / 10) + 1)) / b[i].prot ;
 					}
-					msg2 = b[i].setEffect(new Effect("SIL"));
-					msg3 = b[i].setEffect(new Effect("BLE"));
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
+					count = b[i].setEffect(new Effect("SIL"), count);
+					count = b[i].setEffect(new Effect("BLE"), count);
+					snd = BLADE_BIG;
 					break;
 					
 					//explorador
@@ -697,33 +686,34 @@ public class Skill {
 					dmg = ((a.getATK()*5) / ( (b[i].getDEF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
-					if(rand.nextInt(100) < 10) {
-						msg2 = b[i].setEffect(new Effect("BLE"));
-					}
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
+					count = b[i].setEffect(new Effect("BLE"), count);
 					break;
 				case "slimeDust":
-					msg2 = b[i].setEffect(new Effect("POI"));
+					count = b[i].setEffect(new Effect("POI"), count);
+					snd = TRAP;
 					break;
 				case "expTorment":
-					msg2 = b[i].setEffect(new Effect("CON"));
-					msg3 = b[i].setEffect(new Effect("TIR"));
+					count = b[i].setEffect(new Effect("CON"), count);
+					count = b[i].setEffect(new Effect("TIR"), count);
+					snd = TRAP;
 					break;
 				case "tarPit":
-					msg2 = b[i].setEffect(new Effect("POI"));
-					msg3 = b[i].setEffect(new Effect("TIR"));
+					count = b[i].setEffect(new Effect("POI"), count);
+					count = b[i].setEffect(new Effect("TIR"), count);
+					snd = TRAP;
 					break;
 				case "debrisShower":
 					dmg = ((a.getATK()*7) / ( (b[i].getDEF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
 					break;
 				case "worldRevolving":
-					msg2 = b[i].setEffect(new Effect("RAG"));
+					count = b[i].setEffect(new Effect("RAG"), count);
+					snd = HEAL;
 					break;
 				case "sleepGas":
-					msg2 = b[i].setEffect(new Effect("SLE"));
+					count = b[i].setEffect(new Effect("SLE"), count);
+					snd = SMOKE_BOMB;
 					break;
 				case "finalTrial":
 					if(a.getATK() > a.getMAT()) {
@@ -731,41 +721,47 @@ public class Skill {
 					}else {
 						dmg = ((a.getMAT()*10) / ( (b[i].getMDF() / 10) + 1)) / b[i].prot ;
 					}
-					msg2 = b[i].setEffect(new Effect("BLE"));
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
+					count = b[i].setEffect(new Effect("BLE"), count);
+					snd = RAN_BIG;
 					break;
 					
 					//sage
 				case "mulHeal":
 					dmg = ( (int) (b[i].getHP() * 0.2)	 +  10);
 					b[i].modHP(dmg);
-					msg = (b[i].getName() + " recupero " + dmg + " HP!");
+					snd = HEAL;
 					break;
 				case "incant":
-					msg2 = b[i].setEffect(new Effect("ENC"));
+					count = b[i].setEffect(new Effect("ENC"), count);
+					snd = HEAL;
 					break;
 				case "silence":
-					msg2 = b[i].setEffect(new Effect("SIL"));
+					count = b[i].setEffect(new Effect("SIL"), count);
+					snd = HEAL;
 					break;
 				case "toxicDust":
 					dmg = ((a.getMAT()*6) / ( (b[i].getMDF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
-					msg2 = b[i].setEffect(new Effect("POI"));
-					msg = ("El ataque le hizo " + dmg + " de daño a " + b[i].getName() + "!");
+					count = b[i].setEffect(new Effect("POI"), count);
 					break;
 				case "shadowSpell":
-					msg2 = b[i].setEffect(new Effect("ENC"));
-					msg3 = b[i].setEffect(new Effect("TIR"));
+					count = b[i].setEffect(new Effect("ENC"), count);
+					count = b[i].setEffect(new Effect("TIR"), count);
+					snd = HEAL;
 					break;
 				case "godOffering":
-					msg2 = b[i].setEffect(new Effect("BEN"));
+					count = b[i].setEffect(new Effect("BEN"), count);
+					snd = HEAL;
 					break;
 				case "healingRitual":
 					dmg = ( (int) (b[i].getHP() * 0.4)	 +  20);
+					b[i].modHP(dmg);
+					snd = HEAL;
 					break;
 				case "divineEx":
 					b[i].clearNegEffects();
+					snd = HEAL;
 					break;
 				case "sacrifice":
 					if(b[i].getClass() == a.getClass()) {
@@ -777,82 +773,44 @@ public class Skill {
 							}
 							b[i].hp = b[i].getHP();
 							b[i].clearNegEffects();
-							msg2 = b[i].setEffect(new Effect("BEN"));
+							count = b[i].setEffect(new Effect("BEN"), count);
 						}
 					}else {
-						msg2 = b[i].setEffect(new Effect("POI"));
-						msg3 = b[i].setEffect(new Effect("ENC"));
-						msg4 = b[i].setEffect(new Effect("TIR"));
+						count = b[i].setEffect(new Effect("POI"), count);
+						count = b[i].setEffect(new Effect("ENC"), count);
+						count = b[i].setEffect(new Effect("TIR"), count);
 					}
+					snd = SAGE_BIG;
 					break;
 				}
-				
-				DialMan.addDialogue(count, count + 1, null, null, msg, 20);
-				count++;
-				if(msg2 != null) {
-					DialMan.addDialogue(count, count + 1, null, null, b[i].getName() + msg2, 20);
-					count++;
-				}
-				if(msg3 != null) {
-					DialMan.addDialogue(count, count + 1, null, null, b[i].getName() +  msg3, 20);
-					count++;
-				}
-				if(msg4 != null) {
-					DialMan.addDialogue(count, count + 1, null, null, b[i].getName() +  msg4, 20);
-					count++;
-				}
-				
-				String finMsg = null;
-				switch((int) (mul * 100)) {
-				case 25:
-					finMsg = ("No fue para nada efectivo...");
-					break;
-				case 50:
-					finMsg = ("No fue tan efectivo...");
-					break;
-				case 75:
-					finMsg = ("No fue efectivo...");
-					break;
-				case 150:
-					finMsg = ("Fue efectivo!");
-					break;
-				case 200:
-					finMsg = ("Fue muy efectivo!");
-					break;
-				case 400:
-					finMsg = ("Fue demasiado efectivo!");
-					break;
-				}
-				if(finMsg != null) {
-					DialMan.addDialogue(count, count + 1, null, null, finMsg, 20);
-					count++;
-				}
+				b[i].lastDamageTaken += dmg;
 			}
 		}
+		snd.play(Main.config.volume);
 		DialMan.addDialogue(count, BattleScreen.DIAL_BACTION);
 		DialMan.addDialogue(BattleScreen.DIAL_BACTION, -1);
 	}
 	public void use(Entity a, Entity ally, Entity enemy) { //caso particular, skillType 5
 		checkRand();
 		if(atkMsg != null) {
-			DialMan.addDialogue(0, BattleScreen.DIAL_BACTION, null, null, a.getName() + atkMsg + enemy.getName(), 20); //muestra el mensaje de la skill
+			DialMan.addBDialogue(0, BattleScreen.DIAL_BACTION, a.getName() + atkMsg + enemy.getName()); //muestra el mensaje de la skill
 		}else {
 			DialMan.addDialogue(0, BattleScreen.DIAL_BACTION);
 		}
-		String msg = null;
 		int dmg = 0;
 		a.modSP(-SPcost);
 		a.modMP(-MPcost);
-		
 		switch(shortName) {
 		case "staThief":
 			dmg = (int) (enemy.getSP() * 0.2) + 10;
+			ally.lastDamageTaken = dmg;
 			ally.modSP(dmg);
 			enemy.modSP(-dmg);
-			msg = (a.getName() + " robo " + dmg + " SP de " + enemy.getName() + " y se lo dio a " + ally.getName() + "!");
+			enemy.lastDamageTaken = dmg;
 			break;
 		}
-		DialMan.addDialogue(BattleScreen.DIAL_BACTION, -1, null, null, msg, 20);
+		HEAL.play(Main.config.volume);
+		DialMan.addDialogue(BattleScreen.DIAL_BACTION, -1);
 	}
 	public void use(Entity a, Entity b, Player player, Item item) { //caso especial para combates donde se usa un item
 		checkRand();
@@ -870,8 +828,8 @@ public class Skill {
 		}else {
 			msg = (a.getName() + " no pudo usar" + item.getName() + " porque se termino.\n");
 		}
-		DialMan.addDialogue(1, BattleScreen.DIAL_BACTION, null, null, msg, 20);
-		DialMan.addDialogue(BattleScreen.DIAL_BACTION, -1, null, null, msg2, 20);
+		DialMan.addBDialogue(1, BattleScreen.DIAL_BACTION, msg);
+		DialMan.addBDialogue(BattleScreen.DIAL_BACTION, -1, msg2);
 	}
 	
 	//devuelve la resistencia del enemigo a ese tipo

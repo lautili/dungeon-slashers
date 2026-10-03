@@ -279,4 +279,14 @@ public class Floor {
 			}
 		}
 	}
+	public void discoverAll() {
+		for(Room[] rooms : layout) {
+			for(Room room : rooms) {
+				if(room == null) {
+					continue;
+				}
+				room.discovered = Room.DISC_TOTAL;
+			}
+		}
+	}
 }

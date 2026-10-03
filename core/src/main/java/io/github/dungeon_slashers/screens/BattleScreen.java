@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
@@ -24,7 +25,6 @@ import io.github.dungeon_slashers.entities.Entity;
 import io.github.dungeon_slashers.entities.Hero;
 import io.github.dungeon_slashers.item.Item;
 
-/** Menu sala. */
 public class BattleScreen implements Screen {
 	private final int DIAL_ESCAPE = 100;
 	private final int DIAL_DEFEAT = 101;
@@ -40,12 +40,12 @@ public class BattleScreen implements Screen {
     private FitViewport viewport;
     private OrthographicCamera camera;
     private Main game;
-    private Enemy[] enemies; //enemigos que realmente usar� la batalla
-	private Entity[] entities; //todas las entidades
+    private Enemy[] enemies; // enemigos que realmente usará la batalla
+	private Entity[] entities; // todas las entidades
 	private Hero[] heroes;
-	private Skill[] actions; //las acciones
-	private Entity[][] actionsObj; //los objetivos de las acciones.
-	private Item[] actionsItem; //en caso de que se use un item en la batalla
+	private Skill[] actions; // las acciones
+	private Entity[][] actionsObj; // los objetivos de las acciones
+	private Item[] actionsItem; // en caso de que se use un item
 	private int turn;
 	public Screen lastScreen;
 	boolean win;
@@ -81,17 +81,37 @@ public class BattleScreen implements Screen {
 	int currAct = 0;
 	boolean makeAct = true;
 	
-	private Texture background;
-	
+	public Texture background;
 	private int currChar;
+
+	private BossEvent currentBossEvent;
+
+	private Entity currentAttacker = null;
+	private Entity currentTarget = null;
+	private Skill currentSkill = null;
+	private Item currentItem = null;
+	private float actTimer = 0f;
+	private float hitShakeTimer = 0f;
+
+	private boolean inspectingEnemy = false;
+	private int inspectEnemyIdx = 0;
+
 	public BattleScreen(Main game, Battle battle, Texture background) {
 		this.game = game;
 		this.battle = battle;
 		this.background = background;
 	}
+
+	private float getDamageBounceY() {
+		if (hitShakeTimer <= 0) return 0f;
+		float progress = 1f - (hitShakeTimer / 0.4f);
+		if (progress < 0f) progress = 0f;
+		if (progress > 1f) progress = 1f;
+		return (float) (Math.abs(Math.sin(progress * Math.PI * 2.5)) * (1f - progress) * 20f);
+	}
+
 	@Override
     public void show() {
-        // Prepare your screen here.
 		heroes = Main.player.getCharacters();
 		camera = new OrthographicCamera();
 		viewport = game.viewport;
@@ -107,12 +127,13 @@ public class BattleScreen implements Screen {
 		gld = 0;
 		enemies = battle.initEnemies();
 		for(int i = 0; i < enemies.length; i++) {
-			xp+=enemies[i].getXP();
-			gld+=enemies[i].getGLD();
+			xp += enemies[i].getXP();
+			gld += enemies[i].getGLD();
+			enemies[i].discovered = true;
+			Main.player.updateBestiary(enemies[i]);
 		}
 		actions = new Skill[enemies.length + heroes.length];
-		// espacio 0 para perpetuador, espacio 1 para victima
-		actionsObj = new Entity[actions.length][3]; // 0. caster 1. objetivo 2. objetivo aliado para skillType 5
+		actionsObj = new Entity[actions.length][3];
 		actionsItem = new Item[actions.length];
 		entities = new Entity[actions.length];
 		for(int i = 0; i < heroes.length; i++) {
@@ -123,23 +144,28 @@ public class BattleScreen implements Screen {
 			entities[i2] = enemies[i];
 		}
 		System.out.println("Comienza batalla contra: ");
-		
 		for(int i = 0; i < enemies.length; i++) {
 			System.out.println(enemies[i].getName());
 		}
 
 		BState = BSTATE_TURN_START;
     }
+
     @Override
     public void render(float delta) {
-        // Draw your screen here. "delta" is the time since last render in seconds.
-    	ScreenUtils.clear(0f, 0f, 0f, 1); //limpia el buffer de colores
+    	ScreenUtils.clear(0f, 0f, 0f, 1);
     	game.viewport.apply();
     	game.batch.setProjectionMatrix(game.viewport.getCamera().combined);
+    	
+    	// Actualizar temporizadores visuales
+    	actTimer += delta;
+    	if (hitShakeTimer > 0) hitShakeTimer -= delta;
+
     	batch.begin();
     	if(background != null) {
     		game.batch.draw(background, 0, 0);
     	}
+
     	for(int i = 0; i < enemies.length; i++) {
     		Enemy enemy = enemies[i];
     		if((enemy.hp <= 0 || enemy.hasState("DWN")) && !battle.isBoss) {
@@ -147,47 +173,210 @@ public class BattleScreen implements Screen {
     		}
     		float sectionWidth = 320f / enemies.length;
     		float x = sectionWidth * i + sectionWidth / 2f - 50f;
-    		batch.draw(enemy.getTexture(), x, 50, 100, 100);
+    		float y = 50f;
+
+    		// Paso al frente si el enemigo está atacando
+    		if (enemy == currentAttacker) {
+    			y -= 8f;
+    		}
+    		// Sacudida horizontal si está siendo atacado
+    		if (enemy == currentTarget && hitShakeTimer > 0) {
+    			x += (float) (Math.sin(actTimer * 40f) * 4f);
+    		}
+
+    		batch.draw(enemy.getTexture(), x, y, 100, 100);
+    		
+
+    		// Marcador si es el objetivo activo en BSTATE_ACT
+    		try {
+	    		if ((BState == BSTATE_ACT && enemy == currentTarget) 
+	    				|| currentTarget == null 
+	    					&& ( 
+	    						(currentAttacker.getClass() == Hero.class && currentSkill.getSkillType() == 2)
+	    						|| (currentAttacker.getClass() == Enemy.class && currentSkill.getSkillType() == 4)
+	    						|| (currentSkill.getSkillType() == 6)
+	    					)
+	    			) {
+	    			if(currentSkill == null || !currentSkill.getID().equals("defend")) {
+	    				game.mainFont.getData().setScale(0.3f);
+	    				if(enemy.lastDamageTaken > 0) {
+	    					if(currentTarget != null) {
+	    						batch.draw(game.selection, x + 25f, y + 50f);
+	    					}
+		    				String temp;
+		    				temp = (enemy.lastIsDamage) ? "-" : "+";
+		    				String dmgText = "";
+		    				if(currentSkill != null) {
+		    					for(int k = 0; k < currentSkill.getAtkTimes(); k++) {
+		    						dmgText += temp + enemy.lastDamageTaken + "\n";
+		    					}
+		    				}
+		    				game.mainFont.setColor(0f, 0f, 0f, 1f);
+							game.mainFont.draw(batch, dmgText, x + 10 - 0.4f, y + 100 + getDamageBounceY());
+							game.mainFont.draw(batch, dmgText, x + 10 + 0.4f, y + 100 + getDamageBounceY());
+							game.mainFont.draw(batch, dmgText, x + 10, y + 0.4f + 100 + getDamageBounceY());
+							game.mainFont.draw(batch, dmgText, x + 10, y - 0.4f + 100 + getDamageBounceY());
+							switch((int) (enemy.lastDamageWeakness * 100)) {
+		    				case 100:
+		    					game.mainFont.setColor(1f, 1f, 1f, 1f);
+		    					break;
+		    				case 150:
+		    					game.mainFont.setColor(1f, 0.6f, 0.6f, 1f);
+		    					break;
+		    				case 200:
+		    					game.mainFont.setColor(1f, 0.3f, 0.3f, 1f);
+		    					break;
+		    				case 400:
+		    					game.mainFont.setColor(1f, 0f, 0f, 1f);
+		    					break;
+		    				case 75:
+		    					game.mainFont.setColor(0.5f, 0.6f, 0.6f, 1f);
+		    					break;
+		    				case 50:
+		    					game.mainFont.setColor(0.5f, 0.3f, 0.3f, 1f);
+		    					break;
+		    				case 25:
+		    					game.mainFont.setColor(0.3f, 0.2f, 0.2f, 1f);
+		    					break;
+		    				default:
+		    					game.mainFont.setColor(0.5f, 1f, 0.5f, 1f);
+		    					break;
+		    				}
+		    				game.mainFont.draw(batch, dmgText, x + 10, y + 100 + getDamageBounceY());
+		    				game.mainFont.setColor(1f, 1f, 1f, 1f);
+	    				}
+	    			}
+	    		}
+    		}catch(Exception e) {
+    			
+    		}
     	}
+
     	batch.draw(game.behindCharactersBattle, 0, 0);
     	for(int i = 0; i < heroes.length; i++) {
     		if(heroes[i] != null && heroes[i].getPortrait() != null) {
     			float sectionWidth = 320f / heroes.length;
     			float x = sectionWidth * i + sectionWidth / 2f - 25f;
-    			batch.draw(heroes[i].getPortrait(), x, 0, 50, 50);
-    			if(BState == BSTATE_CHAR_CHOOSE && i == currChar) {
-    				batch.draw(game.currentChar, x, 0);
+    			float y = 0f;
+
+    			// El retrato salta si el héroe es el atacante
+    			if (heroes[i] == currentAttacker) {
+    				y += 10f;
+    			}
+    			// Sacudida en el retrato si el héroe recibe daño
+    			if (heroes[i] == currentTarget && hitShakeTimer > 0) {
+    				x += (float) (Math.sin(actTimer * 30f) * 3f);
+    			}
+
+    			batch.draw(heroes[i].getPortrait(), x, y, 50, 50);
+
+    			// Resaltar atacante o héroe seleccionado
+    			if(heroes[i] == currentAttacker || (BState == BSTATE_CHAR_CHOOSE && i == currChar)) {
+    				batch.draw(game.currentChar, x, y);
     				game.invFont.getData().setScale(0.15f);
-        			Effect[] effects = heroes[currChar].getEffects();
+        			Effect[] effects = heroes[i].getEffects();
         			for(int j = 0; j < effects.length; j++) {
     					Effect effect = effects[j];
     					if(effect != null) {
-    						game.invFont.draw(batch, effect.getShortName(), x - 5 + (15 * j), 55);
+    						game.invFont.draw(batch, effect.getShortName(), x - 5 + (15 * j), y + 55);
+    					}
+    				}
+    			} else {
+    				Effect[] effects = heroes[i].getEffects();
+        			for(int j = 0; j < effects.length; j++) {
+    					Effect effect = effects[j];
+    					if(effect != null) {
+    						game.invFont.getData().setScale(0.15f);
+    						game.invFont.draw(batch, effect.getShortName(), x - 5 + (15 * j), y + 55);
     					}
     				}
     			}
+
+    			// Indicador si el héroe es el objetivo activo de un aliado o enemigo
+    			try {
+	    			if ((BState == BSTATE_ACT && heroes[i] == currentTarget) 
+	    				|| currentTarget == null 
+	    					&& ( 
+	    						(currentAttacker.getClass() == Enemy.class && currentSkill.getSkillType() == 2)
+	    						|| (currentAttacker.getClass() == Hero.class && currentSkill.getSkillType() == 4)
+	    						|| (currentSkill.getSkillType() == 6)
+	    					)
+	    			) {
+	    				if(currentSkill == null || !currentSkill.getID().equals("defend")) {
+	    					game.mainFont.getData().setScale(0.3f);
+	    					if(heroes[i].lastDamageTaken > 0) {
+	    						if(currentTarget != null) {
+	    							batch.draw(game.selection, x, y);
+	    						}
+		    					String temp;
+		    					temp = (heroes[i].lastIsDamage) ? "-" : "+";
+		    					String dmgText = "";
+		    					if(currentSkill != null) {
+		    						for(int k = 0; k < currentSkill.getAtkTimes(); k++) {
+		    							dmgText += temp + heroes[0].lastDamageTaken + "\n";
+		    						}
+		    					}
+		    					game.mainFont.setColor(0f, 0f, 0f, 1f);
+		    					game.mainFont.draw(batch, dmgText, x + 10 - 0.4f, y + 50 + getDamageBounceY());
+		    					game.mainFont.draw(batch, dmgText, x + 10 + 0.4f, y + 50 + getDamageBounceY());
+		    					game.mainFont.draw(batch, dmgText, x + 10, y + 0.4f + 50 + getDamageBounceY());
+		    					game.mainFont.draw(batch, dmgText, x + 10, y - 0.4f + 50 + getDamageBounceY());
+		        				switch((int) (heroes[i].lastDamageWeakness * 100)) {
+		        				case 100:
+		        					game.mainFont.setColor(1f, 1f, 1f, 1f);
+		        					break;
+		        				case 150:
+		        					game.mainFont.setColor(1f, 0.6f, 0.6f, 1f);
+		        					break;
+		        				case 200:
+		        					game.mainFont.setColor(1f, 0.3f, 0.3f, 1f);
+		        					break;
+		        				case 400:
+		        					game.mainFont.setColor(1f, 0f, 0f, 1f);
+		        					break;
+		        				case 75:
+		        					game.mainFont.setColor(0.5f, 0.6f, 0.6f, 1f);
+		        					break;
+		        				case 50:
+		        					game.mainFont.setColor(0.5f, 0.3f, 0.3f, 1f);
+		        					break;
+		        				case 25:
+		        					game.mainFont.setColor(0.3f, 0.2f, 0.2f, 1f);
+		        					break;
+		        				default:
+		        					game.mainFont.setColor(0.5f, 1f, 0.5f, 1f);
+		        					break;
+		        				}
+		        				game.mainFont.draw(batch, dmgText, x + 10, y + 50 + getDamageBounceY());
+		        				game.mainFont.setColor(1f, 1f, 1f, 1f);
+	    					}
+	        			}
+	    			}
+    			}catch(Exception e) {
+    				
+    			}
     		}
     	}
-    	BossEvent event = null;
+
     	switch(BState) {
     	case BSTATE_BOSS_DIALOGUE:
-    		
     		break;
+
     	case BSTATE_TURN_START:
-    		//actualiza cosas importantes de las entidades, tanto enemigos como heroes
-			 //no se usara si la pelea no es bossfight
-    		event = null;
+    		currentBossEvent = null;
     		if(battle.isBoss) {
-    			event = ((Boss) enemies[0]).checkEvents(game, turn, delta);
+    			currentBossEvent = ((Boss) enemies[0]).checkEvents(game, turn, delta);
     		}
-    		int count = (event != null) ? event.getMsgs().length : 0;
-			updateEntities(count);
-			DialMan.addDialogue(count, DIAL_BOSSEVENT);
-			DialMan.addDialogue(DIAL_BOSSEVENT, -1);
+    		int count = (currentBossEvent != null) ? currentBossEvent.getMsgs().length : 0;
+			updateEntities();
+			if(currentBossEvent != null) {
+				DialMan.addDialogue(count, DIAL_BOSSEVENT);
+				DialMan.addDialogue(DIAL_BOSSEVENT, -1);
+			}
 			
-			if(event == null) {
+			if(currentBossEvent == null) {
 				BState = BSTATE_FIGHT_OR_FLEE;
-			}else {
+			} else {
 				BState = BSTATE_BOSS_DIALOGUE;
 			}
 			curr = 0;
@@ -197,8 +386,9 @@ public class BattleScreen implements Screen {
 			sel[2] = 0;
 			sel[3] = 0;
     		break;
+
     	case BSTATE_FIGHT_OR_FLEE:
-    		sel[0] = InputMan.scrollInt(MenuScrollType.VERTICAL, 2, sel[0]);
+    		sel[0] = InputMan.scrollInt(MenuScrollType.VERTICAL, 2, sel[0], Menu.MenuMove);
     		game.batch.draw(game.fightOrFleeBox, 0, 170 - 16);
     		game.batch.draw(game.fightOrFleeBox, 0, 170 - 16 - 25);
     		Menu.showOptionsY(game, game.mainFont, 0.4f, 10, 170, 25, null, sel[0], "ATACAR", "HUIR");
@@ -212,10 +402,10 @@ public class BattleScreen implements Screen {
     				if(!tried && !battle.isBoss) {
 	    				if(rand.nextInt(100) < 50) {
 	    					DialMan.addDialogue(0, DIAL_ESCAPE);
-	    					DialMan.addDialogue(DIAL_ESCAPE, -1, null, null, "Has escapado!", 20);
+	    					DialMan.addDialogue(DIAL_ESCAPE, -1, null, null, "Has escapado!", 20, null);
 	    					BState = BSTATE_BATTLE_END;
-	    				}else {
-	    					DialMan.addDialogue(0, -1, null, null, "No has podido escapar.", 20);
+	    				} else {
+	    					DialMan.addDialogue(0, -1, null, null, "No has podido escapar.", 20, null);
 	    					tried = true;
 	    				}
     				}
@@ -223,39 +413,70 @@ public class BattleScreen implements Screen {
     			}
     		}
     		break;
+
     	case BSTATE_CHAR_CHOOSE:
-    		//90 de largo cada uno, 16.6f de distancia entre si
-    		characterChoose();
-    		if(currChar >= heroes.length) {
-    			currChar = 0;
-    			BState = BSTATE_ENEMY_CHOOSE;
+    		if (InputMan.checkKey("C")) {
+    			if(inspectingEnemy) {
+    				inspectingEnemy = false;
+    			}else {
+    				inspectingEnemy = true;
+    				int first = getFirstUndefeatedEnemy();
+    				if (first != -1) {
+    					inspectingEnemy = true;
+    					inspectEnemyIdx = first;
+    					updateAndDrawEnemyInspect();
+    				}
+    			}
+    		}
+    		if (inspectingEnemy) {
+    			updateAndDrawEnemyInspect();
+    		} else {
+    			characterChoose();
+				if(currChar >= heroes.length) {
+					BState = BSTATE_ENEMY_CHOOSE;
+				}
     		}
     		break;
 
     	case BSTATE_ENEMY_CHOOSE:
-    		enemyChoose(event);
+    		enemyChoose(currentBossEvent);
     		BState = BSTATE_ACT;
     		break;
 
     	case BSTATE_ACT:
     		act();
     		if(currAct >= actions.length) {
-    		BState = BSTATE_TURN_END;
+    			BState = BSTATE_TURN_END;
     		}
     		break;
 
     	case BSTATE_TURN_END:
     		tried = false;
-    		int cont = 0;
-			for(int i = 0; i < enemies.length; i++) {
-				if(enemies[i].hp <= 0 && !enemies[i].hasState("DWN")) {
-					enemies[i].setEffect(new Effect("DWN")); //si tiene la vida en 0, le pone el efecto caido
-				}
-				if(enemies[i].hp <= 0) {
-					cont++; //contador para ver si todos los enemigos murieron
+    		currentAttacker = null;
+    		currentTarget = null;
+    		currentSkill = null;
+    		currentItem = null;
+    		
+    		int dialCont = 0;
+			for(int i = 0; i < entities.length; i++) {
+				if(entities[i].hp > 0) {
+					dialCont = entities[i].updateEffects(dialCont);
 				}
 			}
-			if(cont == enemies.length) {
+			
+			int defeatedEnemies = 0;
+			for(int i = 0; i < enemies.length; i++) {
+				if(enemies[i].hp <= 0 && !enemies[i].hasState("DWN")) {
+					enemies[i].setEffect(new Effect("DWN"), 0);
+				}
+				if(enemies[i].hp <= 0) {
+					defeatedEnemies++;
+					enemies[i].defeated = true;
+				}
+				Main.player.updateBestiary(enemies[i]);
+			}
+			
+			if(defeatedEnemies == enemies.length) {
 				int cont2 = 0;
 				if(battle.isBoss) {
 					Boss boss = (Boss) enemies[0];
@@ -265,40 +486,40 @@ public class BattleScreen implements Screen {
 						boss.activateFlag();
 					}
 				}
-				DialMan.addDialogue(cont2, cont2+1, null, null, "Has ganado!", 20);
+				DialMan.addDialogue(cont2, cont2+1, null, null, "Has ganado!", 20, null);
 				cont2++;
-				DialMan.addDialogue(cont2, cont2+1, null, null, "Obtienes " + gld + "G y " + xp + " XP.", 20);
+				DialMan.addDialogue(cont2, cont2+1, null, null, "Obtienes " + gld + "G y " + xp + " XP.", 20, null);
 				cont2++;
-				cont = cont2;
+				int winCont = cont2;
 				for(int i = 0; i < heroes.length; i++) {
 					heroes[i].clearEffects();
-					if(heroes[i].hp == 0) { //si el heroe esta muerto, lo pone a 1 de vida
+					if(heroes[i].hp == 0) {
 						heroes[i].hp++;
 						continue;
 					}
-					
-					heroes[i].xp+=xp; //le suma la xp solo a los heroes que no murieron
-					cont = heroes[i].checkLvl(cont);
+					heroes[i].xp += xp;
+					winCont = heroes[i].checkLvl(winCont);
 				}
-				Main.player.gold+=gld;
-				DialMan.addDialogue(cont, DIAL_VICTORY);
+				Main.player.gold += gld;
+				DialMan.addDialogue(winCont, DIAL_VICTORY);
 				DialMan.addDialogue(DIAL_VICTORY, -1);
 				BState = BSTATE_BATTLE_END;
 				win = true;
 				break;
 			}
-			cont = 0;
+			
+			int defeatedHeroes = 0;
 			for(int i = 0; i < heroes.length; i++) {
 				if(heroes[i].hp <= 0 && !heroes[i].hasState("DWN")) {
-					
-					heroes[i].setEffect(new Effect("DWN")); //si tiene la vida en 0, le pone el efecto caido
+					heroes[i].setEffect(new Effect("DWN"), 0);
 				}
 				if(heroes[i].hp <= 0) {
-					cont++; //contador para ver si todos los heroes murieron
+					defeatedHeroes++;
 				}
 			}
-			if(cont == heroes.length) {
-				DialMan.addDialogue(0, DIAL_DEFEAT, null, null, "Has perdido.", delta);
+			
+			if(defeatedHeroes == heroes.length) {
+				DialMan.addDialogue(0, DIAL_DEFEAT, null, null, "Has perdido.", 20, null);
 				DialMan.addDialogue(DIAL_DEFEAT, -1);
 				for(int i = 0; i < heroes.length; i++) {
 					heroes[i].hp++;
@@ -308,30 +529,37 @@ public class BattleScreen implements Screen {
 				win = false;
 				break;
 			}
-			cont = 0;
-			for(int i = 0; i < entities.length; i++) {
-				cont = entities[i].updateEffects(cont);
-			}
-			DialMan.addDialogue(cont, DIAL_TURNEND);
+			
+			DialMan.addDialogue(dialCont, DIAL_TURNEND);
 			DialMan.addDialogue(DIAL_TURNEND, -1);
 			currAct = 0;
 			makeAct = true;
 			turn++;
 			BState = BSTATE_END_AWAITING;
     		break;
+
     	case BSTATE_BATTLE_END:
-    		
     		break;
     	}
+
     	int dialogues = DialMan.showBDialogues(game, delta);
     	switch(dialogues) {
     	case DIAL_BACTION:
     		currAct++;
     		makeAct = true;
+    		if (currAct >= actions.length) {
+    			currentAttacker = null;
+    			currentTarget = null;
+    			currentSkill = null;
+    			currentItem = null;
+    		}
+    		if(endTurn()) {
+    			currAct = actions.length;
+    		}
     		break;
     	case DIAL_DEFEAT:
-    		game.setScreen(game.firstScreen);
     		Main.player.currScreen = "LOOSE";
+    		game.setScreen(game.firstScreen);
     		enemies = null;
     		break;
     	case DIAL_VICTORY:
@@ -353,64 +581,198 @@ public class BattleScreen implements Screen {
     		break;
     	}
     	batch.end();
+
+    	// DEBUG KEYS
     	if(InputMan.checkKey("F1")) {
-    		heroes[currChar].setEffect(new Effect("POI"));
-    		heroes[currChar].setEffect(new Effect("CAN"));
-    		heroes[currChar].setEffect(new Effect("ENC"));
-    		heroes[currChar].setEffect(new Effect("BEN"));
+    		heroes[currChar].setEffect(new Effect("POI"), 0);
+    		heroes[currChar].setEffect(new Effect("CAN"), 0);
+    		heroes[currChar].setEffect(new Effect("ENC"), 0);
+    		heroes[currChar].setEffect(new Effect("BEN"), 0);
     	}
     	if(InputMan.checkKey("F2")) {
-    		heroes[currChar].setEffect(new Effect("RAG"));
+    		heroes[currChar].setEffect(new Effect("RAG"), 0);
     	}
     	if(InputMan.checkKey("F3")) {
-    		heroes[currChar].setEffect(new Effect("SIL"));
+    		heroes[currChar].setEffect(new Effect("SIL"), 0);
     	}
     	if(InputMan.checkKey("F4")) {
-    		heroes[currChar].setEffect(new Effect("SLE"));
+    		heroes[currChar].setEffect(new Effect("SLE"), 0);
     	}
     	if(InputMan.checkKey("F5")) {
-    		heroes[currChar].setEffect(new Effect("DWN"));
+    		heroes[currChar].setEffect(new Effect("DWN"), 0);
     		heroes[currChar].hp = 0;
     	}
     }
-    private void updateEntities(int count) {
-    	// actualiza las entidades al principio de cada turno
-    			for(int i = 0; i < enemies.length; i++) {
-    				enemies[i].prot = 1;
-    				
-    				if((turn % 2) == 0 ) { //solo en turnos pares
-    					enemies[i].modMP( (int) (enemies[i].getMP() * 0.2 + 10)); //recupera un poco el mana de los enemigos
-    					enemies[i].modSP( (int) (enemies[i].getSP() * 0.2 + 10)); //recupera un poco la stamina de los enemigos
-    					//esto ultimo para asegurar de que nunca se queden sin hacer habilidades.
-    				}
-    			}
-    			for(int i = 0; i < heroes.length; i++) {
-    				heroes[i].prot = 1;
-    			}
-    			for(int i = 0; i < actions.length; i++) { //limpia los arrays
-    				actions[i] = null;
-    				actionsObj[i][0] = null;
-    				actionsObj[i][1] = null;
-    				actionsObj[i][2] = null;
-    				actionsItem[i] = null;
-    			}
+
+	private boolean isUndefeated(Enemy enemy) {
+		if (enemy == null) return false;
+		if (enemy.hp <= 0 || enemy.hasState("DWN")) return false;
+		return true;
 	}
+
+	private int getFirstUndefeatedEnemy() {
+		if (enemies == null) return -1;
+		for (int i = 0; i < enemies.length; i++) {
+			if (isUndefeated(enemies[i])) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private int getNextUndefeatedEnemy(int startIdx, int dir) {
+		if (enemies == null || enemies.length == 0) return -1;
+		int count = enemies.length;
+		int curr = startIdx;
+		for (int i = 0; i < count; i++) {
+			curr = (curr + dir + count) % count;
+			if (isUndefeated(enemies[curr])) {
+				return curr;
+			}
+		}
+		return -1;
+	}
+
+	private String getElemStr(double val, boolean[] weak, int idx, boolean enemyDiscovered) {
+		if (weak != null && idx < weak.length && !weak[idx]) {
+			return "?";
+		}
+		switch((int) (val * 100)) {
+		case 100:
+			return "NOM";
+		case 150:
+			return "MDE";
+		case 200:
+			return "DEB";
+		case 400:
+			return "SDE";
+		case 75:
+			return "MFU";
+		case 50:
+			return "FUE";
+		case 25:
+			return "SFU";
+		default:
+			return "NUL";
+		}
+	}
+
+	private void updateAndDrawEnemyInspect() {
+
+		int antSel = inspectEnemyIdx;
+		int newSel = InputMan.scrollInt(MenuScrollType.HORIZONTAL, enemies.length, inspectEnemyIdx, Menu.MenuMove);
+		if (newSel != antSel) {
+			int dir = 1;
+			if ((antSel == 0 && newSel == enemies.length - 1) || newSel < antSel) {
+				if (!(antSel == enemies.length - 1 && newSel == 0)) {
+					dir = -1;
+				}
+			}
+			int nextValid = getNextUndefeatedEnemy(antSel, dir);
+			if (nextValid != -1) {
+				inspectEnemyIdx = nextValid;
+			}
+		}
+
+		if (inspectEnemyIdx < 0 || inspectEnemyIdx >= enemies.length || !isUndefeated(enemies[inspectEnemyIdx])) {
+			int first = getFirstUndefeatedEnemy();
+			if (first != -1) {
+				inspectEnemyIdx = first;
+			} else {
+				inspectingEnemy = false;
+				return;
+			}
+		}
+
+		Enemy enemy = enemies[inspectEnemyIdx];
+		batch.draw(game.dialogueBBox, 0, 0, 320, 180);
+		float sectionWidth = 320f / enemies.length;
+		float x = sectionWidth * inspectEnemyIdx + sectionWidth / 2f - 50f;
+		float y = 50f;
+		batch.draw(enemy.getTexture(), x, y, 100, 100);
+		batch.draw(game.selection, x + 25f, y + 50f);
+		
+		game.mainFont.getData().setScale(0.3f);
+		game.mainFont.setColor(1f, 1f, 1f, 1f);
+		game.mainFont.draw(batch, enemy.getName(), 10, 175);
+		float x2 = 115;
+		float num = (90f * enemy.hp / enemy.getHP());
+		game.batch.draw(game.HPbar, x2, 165, num, 5);
+		game.mainFont.getData().setScale(0.15f);
+		game.mainFont.draw(batch, Integer.toString(enemy.hp), x2 + num - 5, 165);
+		game.mainFont.draw(batch, Integer.toString(enemy.getHP()), x2 + 90 - 5, 175);
+		game.batch.draw(game.battleBar, x2, 165);
+		Effect[] effects = enemy.getEffects();
+		for(int j = 0; j < effects.length; j++) {
+			Effect effect = effects[j];
+			if(effect != null) {
+				game.invFont.getData().setScale(0.2f);
+				game.invFont.draw(batch, effect.getShortName(), x2 + (20 * j), 155);
+			}
+		}
+		
+		game.invFont.getData().setScale(0.15f);
+		game.invFont.setColor(1f, 1f, 1f, 1f);
+		String ATK = (enemy.defeated) ? "" + enemy.getATK() : "?";
+		String DEF = (enemy.defeated) ? "" + enemy.getDEF() : "?";
+		String MAT = (enemy.defeated) ? "" + enemy.getMAT() : "?";
+		String MDF = (enemy.defeated) ? "" + enemy.getMDF() : "?";
+		String SPD = (enemy.defeated) ? "" + enemy.getSPD() : "?";
+		String statsStr = "ATK:" + ATK + " DEF:" + DEF + "\nMAT:" + MAT + " MDF:" + MDF + "\nSPD:" + SPD;
+		game.invFont.draw(batch, statsStr, 210, 170, 110, Align.center, false);
+		game.invFont.getData().setScale(0.3f);
+		boolean[] weak = enemy.getWeaknesses();
+		String elemStr = "PHY:" + getElemStr(enemy.getPHY(), weak, enemy.WEAK_PHY, enemy.discovered)
+				+ " RAN:" + getElemStr(enemy.getRAN(), weak, enemy.WEAK_RAN, enemy.discovered)
+				+ " FIR:" + getElemStr(enemy.getFIR(), weak, enemy.WEAK_FIR, enemy.discovered)
+				+ " WAT:" + getElemStr(enemy.getWAT(), weak, enemy.WEAK_WAT, enemy.discovered)
+				+ " WIN:" + getElemStr(enemy.getWIN(), weak, enemy.WEAK_WIN, enemy.discovered)
+				+ " EAR:" + getElemStr(enemy.getEAR(), weak, enemy.WEAK_EAR, enemy.discovered);
+		game.invFont.draw(batch, elemStr, 5, 20, 320, Align.center, false);
+
+		if (enemy.getDesc() != null && enemy.defeated) {
+			int x3 = (newSel > enemies.length / 2 - 1) ? 5 : 215;
+			game.invFont.getData().setScale(0.15f);
+			game.invFont.draw(batch, enemy.getDesc(), x3, 140, 100, Align.center, true);
+		}
+	}
+
+    private void updateEntities() {
+		for(int i = 0; i < enemies.length; i++) {
+			enemies[i].prot = 1;
+			if((turn % 2) == 0 ) {
+				enemies[i].modMP((int) (enemies[i].getMP() * 0.2 + 10));
+				enemies[i].modSP((int) (enemies[i].getSP() * 0.2 + 10));
+			}
+		}
+		for(int i = 0; i < heroes.length; i++) {
+			heroes[i].prot = 1;
+		}
+		for(int i = 0; i < actions.length; i++) {
+			actions[i] = null;
+			actionsObj[i][0] = null;
+			actionsObj[i][1] = null;
+			actionsObj[i][2] = null;
+			actionsItem[i] = null;
+		}
+	}
+
 	private void act() {
-    	//simple bubblesort para ordenar las acciones por velocidad
     	if(!makeAct || currAct >= actions.length) {
     		return;
     	}
     	makeAct = false;
+
+    	// Ordenamiento de velocidad en el primer turno de acción
     	if(currAct == 0) {
 	    	for(int i = 0; i < actions.length; i++) {
 				for(int j = 0; j < actions.length-i-1; j++) {
 					if(actions[j] == null || actions[j + 1] == null) {
 						continue;
-					}else {
-						 int spd1 = actionsObj[j][0].getSPD() + actions[j].SPD; // SPD de la entidad + SPD de la Skill
-					     int spd2 = actionsObj[j + 1][0].getSPD() + actions[j + 1].SPD; // SPD entidad + SPD Skill
-					     if (spd1 < spd2) { // mayor velocidad primero
-	
+					} else {
+						 int spd1 = actionsObj[j][0].getSPD() + actions[j].SPD;
+					     int spd2 = actionsObj[j + 1][0].getSPD() + actions[j + 1].SPD;
+					     if (spd1 < spd2) {
 					         Skill tempSkill = actions[j];
 					         actions[j] = actions[j + 1];
 					         actions[j + 1] = tempSkill;
@@ -427,114 +789,141 @@ public class BattleScreen implements Screen {
 				}
 			}
     	}
-		//de esta forma las acciones se ordenan por quien actuara primero segun su velocidad
-		//	y la velocidad de la accion.
-		
-				Skill skill = actions[currAct]; //guarda la skill en una variable
-				if(actionsItem[currAct] == null) {
-					if (skill != null
-					        && actionsObj[currAct][0].hp > 0
-					        && !actionsObj[currAct][0].hasState("DWN")
-					        && (actionsObj[currAct][1] == null ||
-					        actionsObj[currAct][1].hp > 0
-					        	&& !actionsObj[currAct][1].hasState("DWN")
-					        	)
-					) {
-						switch(skill.getSkillType()) {
-						case 0: //self
-							skill.use(actionsObj[currAct][0]);
-							break;
-						case 1: //to enemy
-							if(actionsObj[currAct][0].hasState("CON")) {
-								if(rand.nextInt(2) == 0) {
-								skill.use(actionsObj[currAct][0],actionsObj[currAct][0]);
-								return;
-								}
-							}
-								skill.use(actionsObj[currAct][0],actionsObj[currAct][1]);
-							break;
-						case 2: //to enemies
-							if(actionsObj[currAct][0].hasState("CON")) {
-								int random = rand.nextInt(2);
-								if(random == 0) {
-									if(actionsObj[currAct][0].getClass() == Hero.class) { //si lo usa un heroe, lo usa en heroes
-										skill.use(actionsObj[currAct][0], heroes);
-									}else { //si no (es un enemigo), la usa en heroes
-										skill.use(actionsObj[currAct][0], enemies); 
-									}
-								}
-							}
-								if(actionsObj[currAct][0].getClass() == Hero.class) { //si lo usa un heroe, lo usa en enemigos
-									skill.use(actionsObj[currAct][0], enemies);
-								}else { //si no (es un enemigo), la usa en heroes
-									skill.use(actionsObj[currAct][0], heroes); 
-								}
-							break;
-						case 3: //to ally
-							if(actionsObj[currAct][0].hasState("CON")) {
-								if(rand.nextInt(2) == 0) {
-									skill.use(actionsObj[currAct][0], actionsObj[currAct][0]);
-									return;
-								}
-							}
-							skill.use(actionsObj[currAct][0], actionsObj[currAct][1]);
-							break;
-						case 4: //to allies
-							if(actionsObj[currAct][0].hasState("CON")) {
-								int random = rand.nextInt(2);
-								if(random == 0) {
-									if(actionsObj[currAct][0].getClass() == Hero.class) { //si lo usa un heroe, lo usa en heroes
-										skill.use(actionsObj[currAct][0], enemies);
-									}else { //si no (es un enemigo), la usa en heroes
-										skill.use(actionsObj[currAct][0], heroes); 
-									}
-								}
-							}
-								if(actionsObj[currAct][0].getClass() == Hero.class) { //si lo usa un heroe, lo usa en enemigos
-									skill.use(actionsObj[currAct][0], heroes);
-								}else { //si no (es un enemigo), la usa en heroes
-									skill.use(actionsObj[currAct][0], enemies); 
-								}
-							break;
-						case 5: //To enemy and ally
-							if(actionsObj[currAct][0].hasState("CON")) {
-								int random = rand.nextInt(2);
-								if(random == 0) {
-									Entity temp = actionsObj[currAct][1];
-									actionsObj[currAct][1] = actionsObj[currAct][0];
-									actionsObj[currAct][0] = temp;
-								}
-							}
-									skill.use(actionsObj[currAct][0], actionsObj[currAct][2], actionsObj[currAct][1]);
-							break;
-						case 6: //to all entities
-							skill.use(actionsObj[currAct][0], entities);
-							break;
+
+		currentAttacker = actionsObj[currAct][0];
+		currentTarget = actionsObj[currAct][1];
+		currentSkill = actions[currAct];
+		currentItem = actionsItem[currAct];
+		hitShakeTimer = 0.4f; // Duración del sacudido al impactar
+
+		Skill skill = actions[currAct];
+		if(actionsItem[currAct] == null) {
+			if (skill != null
+			        && actionsObj[currAct][0].hp > 0
+			        && !actionsObj[currAct][0].hasState("DWN")
+			        && (actionsObj[currAct][1] == null ||
+			        actionsObj[currAct][1].hp > 0
+			        	&& !actionsObj[currAct][1].hasState("DWN")
+			        	)
+			) {
+				switch(skill.getSkillType()) {
+				case 0: // self
+					skill.use(actionsObj[currAct][0]);
+					break;
+				case 1: // to enemy
+					if(actionsObj[currAct][0].hasState("CON")) {
+						if(rand.nextInt(2) == 0) {
+							skill.use(actionsObj[currAct][0], actionsObj[currAct][0]);
+							return;
 						}
-					}else {
-						makeAct = true;
-						currAct++;
 					}
-				}else {
-					//solo hace esto si la accion usa un item
-					skill.setType(actionsItem[currAct].getType());
-					skill.use(actionsObj[currAct][0], actionsObj[currAct][1], Main.player, actionsItem[currAct]);
+					skill.use(actionsObj[currAct][0], actionsObj[currAct][1]);
+					break;
+				case 2: // to enemies
+					if(actionsObj[currAct][0].hasState("CON")) {
+						int random = rand.nextInt(2);
+						if(random == 0) {
+							if(actionsObj[currAct][0].getClass() == Hero.class) {
+								skill.use(actionsObj[currAct][0], heroes);
+							} else {
+								skill.use(actionsObj[currAct][0], enemies); 
+							}
+						}
+					}
+					if(actionsObj[currAct][0].getClass() == Hero.class) {
+						skill.use(actionsObj[currAct][0], enemies);
+					} else {
+						skill.use(actionsObj[currAct][0], heroes); 
+					}
+					break;
+				case 3: // to ally
+					if(actionsObj[currAct][0].hasState("CON")) {
+						if(rand.nextInt(2) == 0) {
+							skill.use(actionsObj[currAct][0], actionsObj[currAct][0]);
+							return;
+						}
+					}
+					skill.use(actionsObj[currAct][0], actionsObj[currAct][1]);
+					break;
+				case 4: // to allies
+					if(actionsObj[currAct][0].hasState("CON")) {
+						int random = rand.nextInt(2);
+						if(random == 0) {
+							if(actionsObj[currAct][0].getClass() == Hero.class) {
+								skill.use(actionsObj[currAct][0], enemies);
+							} else {
+								skill.use(actionsObj[currAct][0], heroes); 
+							}
+						}
+					}
+					if(actionsObj[currAct][0].getClass() == Hero.class) {
+						skill.use(actionsObj[currAct][0], heroes);
+					} else {
+						skill.use(actionsObj[currAct][0], enemies); 
+					}
+					break;
+				case 5: // To enemy and ally
+					if(actionsObj[currAct][0].hasState("CON")) {
+						int random = rand.nextInt(2);
+						if(random == 0) {
+							Entity temp = actionsObj[currAct][1];
+							actionsObj[currAct][1] = actionsObj[currAct][0];
+							actionsObj[currAct][0] = temp;
+						}
+					}
+					skill.use(actionsObj[currAct][0], actionsObj[currAct][2], actionsObj[currAct][1]);
+					break;
+				case 6: // to all entities
+					skill.use(actionsObj[currAct][0], entities);
+					break;
 				}
+			} else {
+				makeAct = true;
+				currAct++;
+			}
+		} else {
+			skill.setType(actionsItem[currAct].getType());
+			skill.use(actionsObj[currAct][0], actionsObj[currAct][1], Main.player, actionsItem[currAct]);
+		}
 	}
+
+	private boolean endTurn() {
+		int count = 0;
+		int count2 = 0;
+		for(Enemy enemy : enemies) {
+			if(enemy.hp <= 0) {
+				count++;
+				enemy.defeated = true;
+			}
+		}
+		for(Hero hero : heroes) {
+			if(hero.hp <= 0) {
+				count2++;
+			}
+		}
+		if(count >= enemies.length || count2 >= heroes.length) {
+			return true;
+		}
+		return false;
+	}
+
 	private void enemyChoose(BossEvent event) {
 		for(int i = 0; i < enemies.length; i++) {
-			if(enemies[i].hp <= 0 || enemies[i].hasState("SLE")) { //si esta muerto o dormido, continua el ciclo
+			if(enemies[i].hp <= 0 || enemies[i].hasState("SLE")) {
 				actions[curr] = null;
 				curr++;
 				continue;
 			}
-			if(event == null || event.getSkill() == null) {
-				actions[curr] = enemyAct(enemies[i]);
-			}else {
+			
+			// Si la entidad es el Boss principal y hay un BossEvent activo
+			if(enemies[i] instanceof Boss && event != null && event.getSkill() != null) {
 				actions[curr] = event.getSkill();
+			} else {
+				actions[curr] = enemyAct(enemies[i]);
 			}
+			
 			actionsObj[curr][0] = enemies[i];
-			actionsObj[curr][1] = selEnObj(actions[curr], enemies[i]); //objetivos
+			actionsObj[curr][1] = selEnObj(actions[curr], enemies[i]);
 			curr++;
 		}
 	}
@@ -542,102 +931,102 @@ public class BattleScreen implements Screen {
     private Entity selEnObj(Skill skill, Enemy enemy) {
     	if(skill == null) {
 			return null;
-		}else {
+		} else {
 			int sel;
 			switch(skill.getSkillType()) {
-			case 0: //self
+			case 0:
 				return enemy; 
-			case 1: //to enemy
+			case 1:
 				do {
 					if(!enemy.hasState("RAG")) {
 						sel = rand.nextInt(heroes.length);
 						if(heroes[sel].hp <= 0) {
-							continue; //siempre y cuando no eleccione a un heroe muerto, el ciclo termina
+							continue;
 						}
-					}else {
+					} else {
 						sel = rand.nextInt(entities.length);
 						if(entities[sel].hp <= 0 || entities[sel] == enemy) {
 							continue;
-						}else {
+						} else {
 							return entities[sel];
 						}
 					}
 					break;
-				}while(true);
+				} while(true);
 				return heroes[sel];
-			case 2: //to enemies
-				return null; //la seleccion a varios objetivos las maneja act()
-			case 3: //to ally
+			case 2:
+				return null;
+			case 3:
 				do {
 					if(!enemy.hasState("RAG")) {
 						sel = rand.nextInt(enemies.length);
 						if(enemies[sel].hp <= 0) {
-							continue; //siempre y cuando no eleccione a un enemigo muerto, el ciclo termina
+							continue;
 						}
-					}else {
+					} else {
 						sel = rand.nextInt(entities.length);
 						if(entities[sel].hp <= 0) {
 							continue;
-						}else {
+						} else {
 							return entities[sel];
 						}
 					}
 					break;
-				}while(true);
+				} while(true);
 				return enemies[sel];
-			case 4: //to allies
-				return null; //la seleccion a varios objetivos las maneja act()
+			case 4:
+				return null;
 			default:
 				return null;
 			}
 		}
 	}
+
 	private Skill enemyAct(Enemy enemy) {
-		Skill[] skills = enemy.getSkills(); //guarda las skills del enemigo en una lista
+		Skill[] skills = enemy.getSkills();
 		int sel = 0;
-			if(enemy.hasState("SIL")) {
-				sel = rand.nextInt(2);
-				return skills[sel];
-			}else {
-				do {
-					int temp = rand.nextInt(100);
-					if(temp < 50) { //que tenga prioridad por sobre otras cosas un ataque normal
+		if(enemy.hasState("SIL")) {
+			sel = rand.nextInt(2);
+			return skills[sel];
+		} else {
+			do {
+				int temp = rand.nextInt(100);
+				if(temp < 50) {
+					return skills[0];
+				} else if(temp < 80) {
+					if(skills.length <= 2) {
 						return skills[0];
-					}else if(temp < 80) { //que la 2da mayor prioridad sea usar skills
-						if(skills.length <= 2) { //si no tiene skills
-							return skills[0];
-						}
-						sel = rand.nextInt(skills.length); //selecciona aleatoriamente una skill
-						if(skills[sel] != null) {
-							if(enemy.mp < skills[sel].getMP() || enemy.sp < skills[sel].getSP()) {
-								continue; //si el enemigo tiene < MP o SP que la que usa la skill,vuelve a hacer el random
-							}
-							return skills[sel];
-						}
-					}else { //que la prioridad mas pequeña la tenga defenderse
-						return skills[1];	
 					}
-				}while(true);
-			}
+					sel = rand.nextInt(skills.length);
+					if(skills[sel] != null) {
+						if(enemy.mp < skills[sel].getMP() || enemy.sp < skills[sel].getSP()) {
+							continue;
+						}
+						return skills[sel];
+					}
+				} else {
+					return skills[1];	
+				}
+			} while(true);
+		}
 	}
     
 	private void characterChoose() {
-		System.out.println("curr: " + curr + "\ncurrChar: " + currChar);
     	Hero hero = heroes[currChar];
     	while(hero.hp <= 0 || hero.hasState("DWN") || hero.hasState("SLE") || hero.hasState("RAG")) {
 	    	if(hero.hp <= 0 || hero.hasState("DWN") || hero.hasState("SLE")) {
 	    		curr++;
 	    		currChar++;
-	    	}else if(hero.hasState("RAG")) {
+	    	} else if(hero.hasState("RAG")) {
 	    		actions[curr] = hero.getSkills()[0];
 	    		actionsObj[curr][0] = hero;
 	    		Entity entity;
-	    		do{
+	    		do {
 	    			entity = entities[rand.nextInt(entities.length)];
 	    			if(entity == actionsObj[curr][0] || entity.hp <= 0)
 	    				continue;
 	    			break;
-	    		}while(true);
+	    		} while(true);
 	    		actionsObj[curr][1] = entity;
 	    		curr++;
 	    		currChar++;
@@ -645,7 +1034,7 @@ public class BattleScreen implements Screen {
 	    	if(currChar >= 4) {
 	    		BState = BSTATE_ENEMY_CHOOSE;
 	    		return;
-	    	}else {
+	    	} else {
 	    		hero = heroes[currChar];
 	    	}
     	}
@@ -654,31 +1043,27 @@ public class BattleScreen implements Screen {
 		case ASTATE_IDLE:
 			actionsItem[curr] = null;
     		Menu.showBattleBars(game, heroes[currChar]);
-			sel[1] = InputMan.scrollInt(MenuScrollType.HORIZONTAL, 4, sel[1]);
+			sel[1] = InputMan.scrollInt(MenuScrollType.HORIZONTAL, 4, sel[1], Menu.MenuMove);
 			sel[2] = 0;
     		if(InputMan.checkKey("Z")) {
     			switch(sel[1]) {
     			case ASTATE_ATTACK:
     				AState = ASTATE_SELECT_OBJECTIVE;
     				actions[curr] = hero.getSkills()[0];
-    				
     				break;
     			case ASTATE_DEFEND:
     				AState = ASTATE_SELECT_OBJECTIVE;
     				actions[curr] = hero.getSkills()[1];
-    				
     				break;
     			case ASTATE_SKILL:
     				if(!hero.hasState("SIL"))
-    				AState = ASTATE_SKILL;
-    				
+    					AState = ASTATE_SKILL;
     				break;
     			case ASTATE_INVENTORY:
     				AState = ASTATE_INVENTORY;
-    				
     				break;
     			}
-    		}else if(InputMan.checkKey("X") && currChar > 0) {
+    		} else if(InputMan.checkKey("X") && currChar > 0) {
     			int ogCurrChar = currChar;
     			actions[curr] = null;
 				actionsObj[curr][0] = null;
@@ -704,11 +1089,11 @@ public class BattleScreen implements Screen {
     			}
     			AState = ASTATE_IDLE;
     		}
-    		
     		break;
+
 		case ASTATE_SKILL:
 			Skill[] skills = hero.getRealSkills();
-			sel[2] = InputMan.scrollInt(MenuScrollType.VERTICAL, skills.length, sel[2]);
+			sel[2] = InputMan.scrollInt(MenuScrollType.VERTICAL, skills.length, sel[2], Menu.MenuMove);
 			game.batch.draw(game.battleMenu, 0, 0);
 			Menu.showBSkills(game, sel[2], skills, hero);
 			if(InputMan.checkKey("Z")) {
@@ -717,18 +1102,18 @@ public class BattleScreen implements Screen {
 					actions[curr] = skills[sel[2]];
 					if(skills[sel[2]].getSkillType() == 3) {
 						sel[2] = currChar;
-					}else {
+					} else {
 						sel[2] = 0;
 					}
 				}
-			}else if(InputMan.checkKey("X")) {
+			} else if(InputMan.checkKey("X")) {
 				AState = ASTATE_IDLE;
 			}
-			
 			break;
+
 		case ASTATE_INVENTORY:
 			Item[] items = Main.player.getInventory();
-			sel[2] = InputMan.scrollInt(MenuScrollType.VERTICAL, items.length, sel[2]);
+			sel[2] = InputMan.scrollInt(MenuScrollType.VERTICAL, items.length, sel[2], Menu.MenuMove);
 			game.batch.draw(game.battleMenu, 0, 0);
 			Menu.showBInventory(game, sel[2], items);
 			if(InputMan.checkKey("Z")) {
@@ -737,7 +1122,7 @@ public class BattleScreen implements Screen {
 					actionsItem[curr] = items[sel[2]];
 					actions[curr].setType(actionsItem[curr].getType());
 					sel[2] = currChar;
-			}else if(InputMan.checkKey("X")) {
+			} else if(InputMan.checkKey("X")) {
 				AState = ASTATE_IDLE;
 			}
 			break;
@@ -753,7 +1138,7 @@ public class BattleScreen implements Screen {
 				break;
 			case 1: // to Enemy
 					antsel = sel[2];
-					sel[2] = InputMan.scrollInt(MenuScrollType.HORIZONTAL, enemies.length, sel[2]);
+					sel[2] = InputMan.scrollInt(MenuScrollType.HORIZONTAL, enemies.length, sel[2], Menu.MenuMove);
 					if (antsel == 0 && sel[2] == enemies.length - 1) {
 					    haciaAdelante = false;
 					} else if (antsel == enemies.length - 1 && sel[2] == 0) {
@@ -780,10 +1165,9 @@ public class BattleScreen implements Screen {
 					if(InputMan.checkKey("Z")) {
 						actionsObj[curr][1] = enemies[sel[2]]; 
 						AState = ASTATE_NEXT;
-					}else if(InputMan.checkKey("X")) {
+					} else if(InputMan.checkKey("X")) {
 						AState = ASTATE_IDLE;
 					}
-					
 					selectObjective(sel[2]);
 				break;
 			case 2: // to Enemies
@@ -791,9 +1175,8 @@ public class BattleScreen implements Screen {
 				AState = ASTATE_NEXT;
 				break;
 			case 3: // to Ally
-				
 				antsel = sel[2];
-				sel[2] = InputMan.scrollInt(MenuScrollType.HORIZONTAL, heroes.length, sel[2]);
+				sel[2] = InputMan.scrollInt(MenuScrollType.HORIZONTAL, heroes.length, sel[2], Menu.MenuMove);
 				if (antsel == 0 && sel[2] == heroes.length - 1) {
 				    haciaAdelante = false;
 				} else if (antsel == heroes.length - 1 && sel[2] == 0) {
@@ -820,7 +1203,7 @@ public class BattleScreen implements Screen {
 				if(InputMan.checkKey("Z")) {
 					actionsObj[curr][1] = heroes[sel[2]]; 
 					AState = ASTATE_NEXT;
-				}else if(InputMan.checkKey("X")) {
+				} else if(InputMan.checkKey("X")) {
 					AState = ASTATE_IDLE;
 				}
 				selectAObjective(sel[2]);
@@ -832,7 +1215,7 @@ public class BattleScreen implements Screen {
 			case 5: // To Enemy and Ally
 				if(actionsObj[curr][1] == null) {
 					antsel = sel[2];
-					sel[2] = InputMan.scrollInt(MenuScrollType.HORIZONTAL, heroes.length, sel[2]);
+					sel[2] = InputMan.scrollInt(MenuScrollType.HORIZONTAL, heroes.length, sel[2], Menu.MenuMove);
 					if (antsel == 0 && sel[2] == heroes.length - 1) {
 					    haciaAdelante = false;
 					} else if (antsel == heroes.length - 1 && sel[2] == 0) {
@@ -858,12 +1241,13 @@ public class BattleScreen implements Screen {
 					}
 					if(InputMan.checkKey("Z")) {
 						actionsObj[curr][1] = heroes[sel[2]]; 
-					}else if(InputMan.checkKey("X")) {
+					} else if(InputMan.checkKey("X")) {
 						AState = ASTATE_IDLE;
 					}
-				}else {
+					selectAObjective(sel[2]);
+				} else {
 					antsel = sel[2];
-					sel[2] = InputMan.scrollInt(MenuScrollType.HORIZONTAL, enemies.length, sel[2]);
+					sel[2] = InputMan.scrollInt(MenuScrollType.HORIZONTAL, enemies.length, sel[2], Menu.MenuMove);
 					if (antsel == 0 && sel[2] == enemies.length - 1) {
 					    haciaAdelante = false;
 					} else if (antsel == enemies.length - 1 && sel[2] == 0) {
@@ -887,13 +1271,13 @@ public class BattleScreen implements Screen {
 							sel[2] = antsel;
 						}
 					}
-						if(InputMan.checkKey("Z")) {
-							actionsObj[curr][2] = enemies[sel[2]]; 
-							AState = ASTATE_NEXT;
-						}else if(InputMan.checkKey("X")) {
-							actionsObj[curr][1] = null;
-						}
-						selectObjective(sel[2]);
+					if(InputMan.checkKey("Z")) {
+						actionsObj[curr][2] = enemies[sel[2]]; 
+						AState = ASTATE_NEXT;
+					} else if(InputMan.checkKey("X")) {
+						actionsObj[curr][1] = null;
+					}
+					selectObjective(sel[2]);
 				}
 				break;
 			case 6:
@@ -906,6 +1290,7 @@ public class BattleScreen implements Screen {
 				break;
 			}
 			break;
+
 		case ASTATE_NEXT:
 			curr++;
 			currChar++;
@@ -916,6 +1301,7 @@ public class BattleScreen implements Screen {
 			break;
 		}
 	}
+
 	private void selectAObjective(int sel) {
 		for(int i = 0; i < heroes.length; i++) {
 			float sectionWidth = 320f / heroes.length;
@@ -925,9 +1311,9 @@ public class BattleScreen implements Screen {
 				batch.draw(game.selection, x, 0);
 				Menu.showBattleBars(game, hero);
 			}
-			
 		}
 	}
+
 	private void selectObjective(int sel) {
 		for(int i = 0; i < enemies.length; i++) {
 			float sectionWidth = 320f / enemies.length;
@@ -950,40 +1336,33 @@ public class BattleScreen implements Screen {
 					}
 				}
 			}
-			
 		}
 	}
+
 	@Override
     public void resize(int width, int height) {
-        // If the window is minimized on a desktop (LWJGL3) platform, width and height are 0, which causes problems.
-        // In that case, we don't resize anything, and wait for the window to be a normal size before updating.
         if(width <= 0 || height <= 0) return;
-        
-        // Resize your screen here. The parameters represent the new window size.
         viewport.update(width, height);
     }
 
     @Override
-    public void pause() {
-        // Invoked when your application is paused.
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-        // Invoked when your application is resumed after pause.
-    }
+    public void resume() {}
+
     public void updateGame(Main game) {
     	this.game = game;
     }
+
     @Override
     public void hide() {
-        // This method is called when another screen replaces this one.
+    	Main.updateArrays();
     	game.lastScreen = this;
     }
 
     @Override
     public void dispose() {
-        // Destroy screen's assets here.
     	game.lastScreen = this;
     }
 }
