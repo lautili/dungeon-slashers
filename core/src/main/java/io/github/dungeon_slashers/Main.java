@@ -229,6 +229,7 @@ public class Main extends Game {
     		Save.saveConfig(config);
     	}
     	config.switchRes(this);
+    	config.switchKeys();
         setScreen(new MainMenuScreen(this));
     }
 

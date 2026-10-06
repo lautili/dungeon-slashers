@@ -39,6 +39,7 @@ public class Skill {
 	private static Sound SMOKE_BOMB = Gdx.audio.newSound(Gdx.files.internal("sounds/smokebomb.mp3"));
 	private static Sound BARD = Gdx.audio.newSound(Gdx.files.internal("sounds/bard.mp3"));
 	private static Sound GROWL = Gdx.audio.newSound(Gdx.files.internal("sounds/growl.mp3"));
+	
 	private String shortName; //nombre corto, para hacer mas facil el switch del Use
 	private String name;
 	private String desc;
@@ -51,6 +52,7 @@ public class Skill {
 	private String atkMsg;
 	private transient Random rand = new Random();
 	private int lvl;
+	
 	// skillType sera el tipo de la skill. cada numero determina una cosa distinta:
 	// 0: de Entidad a ella misma
 	// 1: de Entidad a Entidad enemiga
@@ -165,7 +167,7 @@ public class Skill {
 			snd = SHIELD;
 			break;
 		}
-		snd.play(Main.config.volume);
+		snd.play(Main.config.volume * Main.config.volSFX);
 		DialMan.addDialogue(0, BattleScreen.DIAL_BACTION);
 		DialMan.addBDialogue(BattleScreen.DIAL_BACTION, -1, msg);
 	}
@@ -458,7 +460,7 @@ public class Skill {
 			}
 			b.lastDamageTaken += dmg;
 		}
-		snd.play(Main.config.volume);
+		snd.play(Main.config.volume * Main.config.volSFX);
 		DialMan.addDialogue(count, BattleScreen.DIAL_BACTION);
 		DialMan.addDialogue(BattleScreen.DIAL_BACTION, -1);
 	}
@@ -786,7 +788,7 @@ public class Skill {
 				b[i].lastDamageTaken += dmg;
 			}
 		}
-		snd.play(Main.config.volume);
+		snd.play(Main.config.volume * Main.config.volSFX);
 		DialMan.addDialogue(count, BattleScreen.DIAL_BACTION);
 		DialMan.addDialogue(BattleScreen.DIAL_BACTION, -1);
 	}
@@ -809,7 +811,7 @@ public class Skill {
 			enemy.lastDamageTaken = dmg;
 			break;
 		}
-		HEAL.play(Main.config.volume);
+		HEAL.play(Main.config.volume * Main.config.volSFX);
 		DialMan.addDialogue(BattleScreen.DIAL_BACTION, -1);
 	}
 	public void use(Entity a, Entity b, Player player, Item item) { //caso especial para combates donde se usa un item

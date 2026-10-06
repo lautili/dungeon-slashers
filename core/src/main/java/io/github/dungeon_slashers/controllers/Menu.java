@@ -690,9 +690,12 @@ public static void showItemStats(Main game, Item i) {
 		public static void showConfigOptions(Main game, float x, float y, float dif, int sel, Config config) {
 		    game.invFont.getData().setScale(0.4f);
 		    String[] options = {
-		        "Volumen: " + Math.round(config.volume * 100f) + "%",
+		        "Volumen general: " + Math.round(config.volume * 100f) + "%",
+		        "Volumen de efectos: " + Math.round(config.volSFX * 100f) + "%",
+		        "Volumen de musica: " + Math.round(config.volMUSIC * 100f) + "%",
 		        "Pantalla Completa: " + (config.fullScreen ? "SI" : "NO"),
 		        "Resolucion: " + config.getRes(),
+		        "Controles: " + (config.keyConfig == Config.KEYS_ARROWS ? "FLECHAS y ZXC" : "WASD y POL"),
 		        "Salir"
 		    };
 		    

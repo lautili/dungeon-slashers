@@ -118,12 +118,12 @@ public class DialMan {
 					}
 					Dialogue dial = (Dialogue) event;
 					Menu.showDialogue(game, dial);
-					if(!InputMan.checkKey("Z", null)){
+					if(!InputMan.checkKey(Main.config.key_interact, null)){
 						if(!dial.currMsg.equals(dial.msg) && time > (dial.time / 1000)) {
 							dial.currMsg += dial.msg.charAt(dial.nextChar);
 							dial.nextChar++;
 							time = 0;
-							event.snd.play(Main.config.volume * 0.5f);
+							event.snd.play(Main.config.volume * Main.config.volSFX * 0.5f);
 						}
 						return next;	
 					}else {
@@ -144,12 +144,12 @@ public class DialMan {
 				}else {
 					Choice choice = (Choice) event;
 					Menu.showChoice(game, choice);
-					if(!InputMan.checkKey("Z", null)){
+					if(!InputMan.checkKey(Main.config.key_interact, null)){
 						if(!choice.currMsg.equals(choice.msg) && time > (choice.time / 1000)) {
 							choice.currMsg += choice.msg.charAt(choice.nextChar);
 							choice.nextChar++;
 							time = 0;
-							event.snd.play(Main.config.volume * 0.5f);
+							event.snd.play(Main.config.volume * Main.config.volSFX * 0.5f);
 						}
 						if(choice.currMsg.equals(choice.msg)) {
 							Menu.showChoices(game, choice);
@@ -204,7 +204,7 @@ public class DialMan {
 					        dial.currMsg += dial.msg.charAt(dial.nextChar);
 					        dial.nextChar++;
 					        time = 0;
-					        event.snd.play(Main.config.volume * 0.5f);
+					        event.snd.play(Main.config.volume * Main.config.volSFX * 0.5f);
 					    } else if (dial.currMsg.equals(dial.msg)) {
 					        // El texto ya se escribió, empieza a contar el timer de lectura
 					        dial.displayTimer -= delta; 
@@ -216,7 +216,7 @@ public class DialMan {
 					        	return i;
 					        }
 					    }
-					    if(InputMan.checkKey("Z", null)) {
+					    if(InputMan.checkKey(Main.config.key_interact, null)) {
 					    	if(dial.next <= 0) {
 								return -1;
 							}
@@ -225,12 +225,12 @@ public class DialMan {
 					    }
 					    return n;
 					} else {
-						if(!InputMan.checkKey("Z", null)){
+						if(!InputMan.checkKey(Main.config.key_interact, null)){
 							if(!dial.currMsg.equals(dial.msg) && time > (dial.time / 1000)) {
 								dial.currMsg += dial.msg.charAt(dial.nextChar);
 								dial.nextChar++;
 								time = 0;
-								event.snd.play(Main.config.volume * 0.5f);
+								event.snd.play(Main.config.volume * Main.config.volSFX * 0.5f);
 							}
 							return next;	
 						}
@@ -248,12 +248,12 @@ public class DialMan {
 				}else {
 					Choice choice = (Choice) event;
 					Menu.showChoice(game, choice);
-					if(!InputMan.checkKey("Z", null)){
+					if(!InputMan.checkKey(Main.config.key_interact, null)){
 						if(!choice.currMsg.equals(choice.msg) && time > (choice.time / 1000)) {
 							choice.currMsg += choice.msg.charAt(choice.nextChar);
 							choice.nextChar++;
 							time = 0;
-							event.snd.play(Main.config.volume * 0.5f);
+							event.snd.play(Main.config.volume * Main.config.volSFX * 0.5f);
 						}
 						if(choice.currMsg.equals(choice.msg)) {
 							Menu.showChoices(game, choice);

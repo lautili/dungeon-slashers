@@ -15,11 +15,27 @@ public class Config {
 	public static transient final int RES_19201200 = 9;
 	public static transient final int RES_25601440 = 10;
 	
+	public static transient final int KEYS_ARROWS = 0;
+	public static transient final int KEYS_WASD = 1;
+	
 	public float volume = 1.0f;
+	public float volSFX = 1.0f;
+	public float volMUSIC = 1.0f;
 	public boolean fullScreen = false;
 	public int currRes;
 	public transient int resX = 1280;
 	public transient int resY = 720;
+	public int keyConfig = KEYS_ARROWS;
+	public transient String key_interact = "Z";
+	public transient  String key_back = "X";
+	public transient  String key_alt = "C";
+	public transient  String key_up = "UP";
+	public transient  String key_down = "DOWN";
+	public transient  String key_left = "LEFT";
+	public transient  String key_right = "RIGHT";
+	public transient  String key_left2 = "A";
+	public transient  String key_right2 = "D";
+	
 	public Config(int res) {
 		currRes = res;
 	}
@@ -75,6 +91,34 @@ public class Config {
 		}
 		game.checkFullscreen();
 	}
+	
+	public void switchKeys() {
+		switch(keyConfig) {
+		default:
+			key_interact = "Z";
+			key_back = "X";
+			key_alt = "C";
+			key_up = "Up";
+			key_down = "Down";
+			key_left = "Left";
+			key_right = "Right";
+			key_left2 = "A";
+			key_right2 = "D";
+			break;
+		case KEYS_WASD:
+			key_interact = "P";
+			key_back = "O";
+			key_alt = "L";
+			key_up = "W";
+			key_down = "S";
+			key_left = "A";
+			key_right = "D";
+			key_left2 = "Q";
+			key_right2 = "E";
+			break;
+		}
+	}
+	
 	public String getRes() {
 		String res = "";
 		switch(currRes) {

@@ -14,29 +14,29 @@ public class InputMan {
 	public static float[] movement(Screen lastScreen, Main game) {
 		float speed = 150f;
 		float[] floats = new float[2];
-		if(Gdx.input.isKeyPressed(Input.Keys.C)) {
+		if(Gdx.input.isKeyPressed(getKey(Main.config.key_alt))) {
 			speed = 200f;
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
+		if(Gdx.input.isKeyPressed(getKey(Main.config.key_up))) {
 			floats[1] = speed;
-		}else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+		}else if (Gdx.input.isKeyPressed(getKey(Main.config.key_down))) {
 			floats[1] = -speed;
 		}
-		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+		if (Gdx.input.isKeyPressed(getKey(Main.config.key_left))) {
 			floats[0] = -speed;
-		}else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+		}else if (Gdx.input.isKeyPressed(getKey(Main.config.key_right))) {
 			floats[0] = speed;
 		}
-		if(Gdx.input.isKeyJustPressed(Input.Keys.B)) {
-			Save.save();
-		}
-		if(Gdx.input.isKeyJustPressed(Input.Keys.X)) {
+		if(Gdx.input.isKeyJustPressed(getKey(Main.config.key_back))) {
 			game.menuScreen.lastScreen = lastScreen;
 			game.menuScreen.updateGame(game);
 			lastScreen.pause();
 			game.setScreen(game.menuScreen);
 		}
 		return floats;
+	}
+	private static int getKey(String key) {
+		return Input.Keys.valueOf(key);
 	}
 	public static int scanInt() {
 		return 0;
@@ -51,30 +51,30 @@ public class InputMan {
 		max--;
 		switch(type) {
 		case VERTICAL:
-			if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+			if(Gdx.input.isKeyJustPressed(getKey(Main.config.key_up))) {
 				curr--;
-				sound.play(Main.config.volume * 0.5f);
-			}else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+				sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
+			}else if (Gdx.input.isKeyJustPressed(getKey(Main.config.key_down))) {
 				curr++;
-				sound.play(Main.config.volume * 0.5f);
+				sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
 			}
 			break;
 		case VERTICAL_INVERTED:
-			if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+			if(Gdx.input.isKeyJustPressed(getKey(Main.config.key_up))) {
 				curr++;
-				sound.play(Main.config.volume * 0.5f);
-			}else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+				sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
+			}else if (Gdx.input.isKeyJustPressed(getKey(Main.config.key_down))) {
 				curr--;
-				sound.play(Main.config.volume * 0.5f);
+				sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
 			}
 			break;
 		case HORIZONTAL:
-			if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
+			if(Gdx.input.isKeyJustPressed(getKey(Main.config.key_left))) {
 				curr--;
-				sound.play(Main.config.volume * 0.5f);
-			}else if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
+				sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
+			}else if (Gdx.input.isKeyJustPressed(getKey(Main.config.key_right))) {
 				curr++;
-				sound.play(Main.config.volume * 0.5f);
+				sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
 			}
 			break;
 		}
@@ -89,20 +89,20 @@ public class InputMan {
 	public static int[] scrollInt(int maxi, int maxj, int[] pos, Sound sound) {
 		maxi--;
 		maxj--;
-		if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
+		if(Gdx.input.isKeyJustPressed(getKey(Main.config.key_left))) {
 			pos[0]--;
 			pos[1] = 0;
-			sound.play(Main.config.volume * 0.5f);
-		}else if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
+			sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
+		}else if (Gdx.input.isKeyJustPressed(getKey(Main.config.key_right))) {
 			pos[0]++;
 			pos[1] = 0;
-			sound.play(Main.config.volume * 0.5f);
-		}else if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+			sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
+		}else if(Gdx.input.isKeyJustPressed(getKey(Main.config.key_up))) {
 			pos[1]--;
-			sound.play(Main.config.volume * 0.5f);
-		}else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+			sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
+		}else if (Gdx.input.isKeyJustPressed(getKey(Main.config.key_down))) {
 			pos[1]++;
-			sound.play(Main.config.volume * 0.5f);
+			sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
 		}
 		
 		if(pos[0] > maxi) {
@@ -122,31 +122,31 @@ public class InputMan {
 		maxi--;
 		maxj--;
 		maxk--;
-		if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
+		if(Gdx.input.isKeyJustPressed(getKey(Main.config.key_left))) {
 			pos[0]--;
 			pos[1] = 0;
-			sound.play(Main.config.volume * 0.5f);
-		}else if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
+			sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
+		}else if (Gdx.input.isKeyJustPressed(getKey(Main.config.key_right))) {
 			pos[0]++;
 			pos[1] = 0;
-			sound.play(Main.config.volume * 0.5f);
-		}else if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+			sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
+		}else if(Gdx.input.isKeyJustPressed(getKey(Main.config.key_up))) {
 			pos[1]--;
-			sound.play(Main.config.volume * 0.5f);
-		}else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+			sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
+		}else if (Gdx.input.isKeyJustPressed(getKey(Main.config.key_down))) {
 			pos[1]++;
-			sound.play(Main.config.volume * 0.5f);
-		}else if(Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+			sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
+		}else if(Gdx.input.isKeyJustPressed(getKey(Main.config.key_left2))) {
 			if(pos[0] < 4) {
 				pos[2]--;
 			}
-			sound.play(Main.config.volume * 0.5f);
+			sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
 			if(restart) pos[1] = 0;
-		}else if (Gdx.input.isKeyJustPressed(Input.Keys.D)) {
+		}else if (Gdx.input.isKeyJustPressed(getKey(Main.config.key_right2))) {
 			if(pos[0] < 4) {
 				pos[2]++;
 			}
-			sound.play(Main.config.volume * 0.5f);
+			sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
 			if(restart) pos[1] = 0;
 		}
 		
@@ -170,7 +170,7 @@ public class InputMan {
 	}
 	public static boolean checkKey(String string) {
 		if(Gdx.input.isKeyJustPressed(Input.Keys.valueOf(string))) {
-			Menu.MenuOk.play(Main.config.volume * 0.5f);
+			Menu.MenuOk.play(Main.config.volume * Main.config.volSFX * 0.5f);
 			return true;
 		}
 		return false;
@@ -179,7 +179,7 @@ public class InputMan {
 	public static boolean checkKey(String string, Sound sound) {
 		if(Gdx.input.isKeyJustPressed(Input.Keys.valueOf(string))) {
 			if(sound != null) {
-				sound.play(Main.config.volume * 0.5f);
+				sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
 			}
 			return true;
 		}
@@ -188,7 +188,7 @@ public class InputMan {
 	public static boolean checkHold(String string, float time) {
 		if(Gdx.input.isKeyPressed(Input.Keys.valueOf(string))) {
 			if(timer > time*60) {
-				Menu.MenuMove.play(Main.config.volume * 0.5f);
+				Menu.MenuMove.play(Main.config.volume * Main.config.volSFX * 0.5f);
 				return true;
 			}else {
 				timer++;
@@ -202,7 +202,7 @@ public class InputMan {
 		if(Gdx.input.isKeyPressed(Input.Keys.valueOf(string))) {
 			if(timer > time*60) {
 				if(sound != null) {
-					sound.play(Main.config.volume * 0.5f);
+					sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
 				}
 				return true;
 			}else {

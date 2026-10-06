@@ -125,7 +125,7 @@ public class MenuScreen implements Screen {
     	if(Main.player.state == PlayerState.MENU) {
     		int listLength = 0;
     		if(pos[0] == 4) listLength = (bestiaryArray != null) ? bestiaryArray.length : 0;
-    		else if(pos[0] == 5) listLength = 4;
+    		else if(pos[0] == 5) listLength = 7;
     		else if(pos[0] != 3) listLength = (itemArray != null) ? itemArray.length : 0;
     		else listLength = (skillArray != null) ? skillArray.length : 0;
     		
@@ -134,10 +134,11 @@ public class MenuScreen implements Screen {
     		pos[2] = InputMan.scrollInt(MenuScrollType.HORIZONTAL, chars.length, pos[2], Menu.MenuMove);
     	}
     	float dif = 0;
+    	Config config = Main.config;
     	if(pos[0] == 5) {
-    		dif = InputMan.checkKey("A", null) ? -1f : InputMan.checkKey("D", null) ? 1f : 0;
-    		if(pos[1] == 0) {
-    			dif = InputMan.checkHold("A", 0.5f) ? -1f : InputMan.checkHold("D", 0.5f) ? 1f : dif;
+    		dif = InputMan.checkKey(config.key_left2, null) ? -1f : InputMan.checkKey(config.key_right2, null) ? 1f : 0;
+    		if(pos[1] <= 2) {
+    			dif = InputMan.checkHold(config.key_left2, 0.5f) ? -1f : InputMan.checkHold(config.key_right2, 0.5f) ? 1f : dif;
     		}
     		if(dif != 0) {
 	    		if (pos[1] == 0) { // Volumen
@@ -145,7 +146,17 @@ public class MenuScreen implements Screen {
 	    			Main.config.volume += dif;
 	    			Main.config.volume = Math.max(Main.config.volume, 0f);
 	    			Main.config.volume = Math.min(1.0f, Main.config.volume);
-	    		} else if (pos[1] == 2) { // Resolución
+	    		}else if(pos[1] == 1) { 
+	    			dif /= 100f;
+	    			Main.config.volSFX += dif;
+	    			Main.config.volSFX = Math.max(Main.config.volSFX, 0f);
+	    			Main.config.volSFX = Math.min(1.0f, Main.config.volSFX);
+	    		}else if(pos[1] == 2){
+	    			dif /= 100f;
+	    			Main.config.volMUSIC += dif;
+	    			Main.config.volMUSIC = Math.max(Main.config.volMUSIC, 0f);
+	    			Main.config.volMUSIC = Math.min(1.0f, Main.config.volMUSIC);
+	    		}else if (pos[1] == 4) { // Resolución
 	    			Main.config.currRes += dif;        		
 	    			if(Main.config.currRes >= 0 && Main.config.currRes <= 10) {
 	    				Main.config.switchRes(game);
@@ -155,7 +166,7 @@ public class MenuScreen implements Screen {
 	    		}
     		}
     	}
-    	if(InputMan.checkKey("X")) {
+    	if(InputMan.checkKey(config.key_back)) {
     		if(Main.player.state == PlayerState.MENU) {
     			
                 if (Main.config.volume != initialConfigCopy.volume || 
@@ -167,7 +178,7 @@ public class MenuScreen implements Screen {
                 Main.player.state = PlayerState.IDLE;
             }
             dispose();
-    	} else if(InputMan.checkKey("Z")) {
+    	} else if(InputMan.checkKey(config.key_interact)) {
     		if(Main.player.state == PlayerState.MENU && pos[0] == 5) {
                     if (pos[1] == 1) { // Pantalla completa
                         Main.config.fullScreen = !Main.config.fullScreen;
@@ -175,6 +186,13 @@ public class MenuScreen implements Screen {
                     }else if(pos[1] == 3) {
                     	Save.saveConfig(Main.config);
                     	Gdx.app.exit();
+                    }else if(pos[1] == 5) {
+                    	if(config.keyConfig == Config.KEYS_ARROWS) {
+                    		config.keyConfig = Config.KEYS_WASD;
+                    	}else {
+                    		config.keyConfig = Config.KEYS_ARROWS;
+                    	}
+                    	config.switchKeys();
                     }
             }
     		if(Main.player.state == PlayerState.MENU) {
@@ -204,7 +222,7 @@ public class MenuScreen implements Screen {
     				Main.player.state = PlayerState.MENU;
     			}
     		}
-    	} else if(InputMan.checkKey("C")) {
+    	} else if(InputMan.checkKey(config.key_alt)) {
     		chars[pos[2]].modHP(-20);
     	}
     }

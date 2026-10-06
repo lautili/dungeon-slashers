@@ -392,7 +392,7 @@ public class BattleScreen implements Screen {
     		game.batch.draw(game.fightOrFleeBox, 0, 170 - 16);
     		game.batch.draw(game.fightOrFleeBox, 0, 170 - 16 - 25);
     		Menu.showOptionsY(game, game.mainFont, 0.4f, 10, 170, 25, null, sel[0], "ATACAR", "HUIR");
-    		if(InputMan.checkKey("Z")) {
+    		if(InputMan.checkKey(Main.config.key_interact)) {
     			switch(sel[0]) {
     			case 0:
     				AState = ASTATE_IDLE;
@@ -415,7 +415,7 @@ public class BattleScreen implements Screen {
     		break;
 
     	case BSTATE_CHAR_CHOOSE:
-    		if (InputMan.checkKey("C")) {
+    		if (InputMan.checkKey(Main.config.key_alt)) {
     			if(inspectingEnemy) {
     				inspectingEnemy = false;
     			}else {
@@ -582,26 +582,6 @@ public class BattleScreen implements Screen {
     	}
     	batch.end();
 
-    	// DEBUG KEYS
-    	if(InputMan.checkKey("F1")) {
-    		heroes[currChar].setEffect(new Effect("POI"), 0);
-    		heroes[currChar].setEffect(new Effect("CAN"), 0);
-    		heroes[currChar].setEffect(new Effect("ENC"), 0);
-    		heroes[currChar].setEffect(new Effect("BEN"), 0);
-    	}
-    	if(InputMan.checkKey("F2")) {
-    		heroes[currChar].setEffect(new Effect("RAG"), 0);
-    	}
-    	if(InputMan.checkKey("F3")) {
-    		heroes[currChar].setEffect(new Effect("SIL"), 0);
-    	}
-    	if(InputMan.checkKey("F4")) {
-    		heroes[currChar].setEffect(new Effect("SLE"), 0);
-    	}
-    	if(InputMan.checkKey("F5")) {
-    		heroes[currChar].setEffect(new Effect("DWN"), 0);
-    		heroes[currChar].hp = 0;
-    	}
     }
 
 	private boolean isUndefeated(Enemy enemy) {
@@ -1045,7 +1025,7 @@ public class BattleScreen implements Screen {
     		Menu.showBattleBars(game, heroes[currChar]);
 			sel[1] = InputMan.scrollInt(MenuScrollType.HORIZONTAL, 4, sel[1], Menu.MenuMove);
 			sel[2] = 0;
-    		if(InputMan.checkKey("Z")) {
+    		if(InputMan.checkKey(Main.config.key_interact)) {
     			switch(sel[1]) {
     			case ASTATE_ATTACK:
     				AState = ASTATE_SELECT_OBJECTIVE;
@@ -1063,7 +1043,7 @@ public class BattleScreen implements Screen {
     				AState = ASTATE_INVENTORY;
     				break;
     			}
-    		} else if(InputMan.checkKey("X") && currChar > 0) {
+    		} else if(InputMan.checkKey(Main.config.key_back) && currChar > 0) {
     			int ogCurrChar = currChar;
     			actions[curr] = null;
 				actionsObj[curr][0] = null;
@@ -1096,7 +1076,7 @@ public class BattleScreen implements Screen {
 			sel[2] = InputMan.scrollInt(MenuScrollType.VERTICAL, skills.length, sel[2], Menu.MenuMove);
 			game.batch.draw(game.battleMenu, 0, 0);
 			Menu.showBSkills(game, sel[2], skills, hero);
-			if(InputMan.checkKey("Z")) {
+			if(InputMan.checkKey(Main.config.key_interact)) {
 				if(skills[sel[2]].getMP() <= hero.mp && skills[sel[2]].getSP() <= hero.sp) {
 					AState = ASTATE_SELECT_OBJECTIVE;
 					actions[curr] = skills[sel[2]];
@@ -1106,7 +1086,7 @@ public class BattleScreen implements Screen {
 						sel[2] = 0;
 					}
 				}
-			} else if(InputMan.checkKey("X")) {
+			} else if(InputMan.checkKey(Main.config.key_back)) {
 				AState = ASTATE_IDLE;
 			}
 			break;
@@ -1116,13 +1096,13 @@ public class BattleScreen implements Screen {
 			sel[2] = InputMan.scrollInt(MenuScrollType.VERTICAL, items.length, sel[2], Menu.MenuMove);
 			game.batch.draw(game.battleMenu, 0, 0);
 			Menu.showBInventory(game, sel[2], items);
-			if(InputMan.checkKey("Z")) {
+			if(InputMan.checkKey(Main.config.key_interact)) {
 					AState = ASTATE_SELECT_OBJECTIVE;
 					actions[curr] = hero.getSkills()[2];
 					actionsItem[curr] = items[sel[2]];
 					actions[curr].setType(actionsItem[curr].getType());
 					sel[2] = currChar;
-			} else if(InputMan.checkKey("X")) {
+			} else if(InputMan.checkKey(Main.config.key_back)) {
 				AState = ASTATE_IDLE;
 			}
 			break;
@@ -1162,10 +1142,10 @@ public class BattleScreen implements Screen {
 							sel[2] = antsel;
 						}
 					}
-					if(InputMan.checkKey("Z")) {
+					if(InputMan.checkKey(Main.config.key_interact)) {
 						actionsObj[curr][1] = enemies[sel[2]]; 
 						AState = ASTATE_NEXT;
-					} else if(InputMan.checkKey("X")) {
+					} else if(InputMan.checkKey(Main.config.key_back)) {
 						AState = ASTATE_IDLE;
 					}
 					selectObjective(sel[2]);
@@ -1200,10 +1180,10 @@ public class BattleScreen implements Screen {
 						sel[2] = antsel;
 					}
 				}
-				if(InputMan.checkKey("Z")) {
+				if(InputMan.checkKey(Main.config.key_interact)) {
 					actionsObj[curr][1] = heroes[sel[2]]; 
 					AState = ASTATE_NEXT;
-				} else if(InputMan.checkKey("X")) {
+				} else if(InputMan.checkKey(Main.config.key_back)) {
 					AState = ASTATE_IDLE;
 				}
 				selectAObjective(sel[2]);
@@ -1239,9 +1219,9 @@ public class BattleScreen implements Screen {
 							sel[2] = antsel;
 						}
 					}
-					if(InputMan.checkKey("Z")) {
+					if(InputMan.checkKey(Main.config.key_interact)) {
 						actionsObj[curr][1] = heroes[sel[2]]; 
-					} else if(InputMan.checkKey("X")) {
+					} else if(InputMan.checkKey(Main.config.key_back)) {
 						AState = ASTATE_IDLE;
 					}
 					selectAObjective(sel[2]);
@@ -1271,10 +1251,10 @@ public class BattleScreen implements Screen {
 							sel[2] = antsel;
 						}
 					}
-					if(InputMan.checkKey("Z")) {
+					if(InputMan.checkKey(Main.config.key_interact)) {
 						actionsObj[curr][2] = enemies[sel[2]]; 
 						AState = ASTATE_NEXT;
-					} else if(InputMan.checkKey("X")) {
+					} else if(InputMan.checkKey(Main.config.key_back)) {
 						actionsObj[curr][1] = null;
 					}
 					selectObjective(sel[2]);

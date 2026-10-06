@@ -254,7 +254,7 @@ public class floorScreen implements Screen {
             }
         }
     	
-    	if(InputMan.checkKey("Z", null) && Main.player.state == PlayerState.IDLE) {
+    	if(InputMan.checkKey(Main.config.key_interact, null) && Main.player.state == PlayerState.IDLE) {
 	    	switch(chars[0].direction) {
 	    	case "up":
 	    		playerCol.y = y[0] + 10;

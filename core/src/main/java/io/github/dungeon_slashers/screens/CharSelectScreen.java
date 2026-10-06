@@ -57,7 +57,7 @@ public class CharSelectScreen implements Screen {
     	Menu.showOptionsSelScreen(game, game.mainFont, 0.2f, -140, -70, 60, null, sel, selCharacters, characters);
     	
     	game.batch.end();
-    	if(InputMan.checkKey("Z")) {
+    	if(InputMan.checkKey(Main.config.key_interact)) {
     		if(selChars[sel]) {
     			selChars[sel] = false;
     			removeCharacter(characters[sel]);
@@ -69,7 +69,7 @@ public class CharSelectScreen implements Screen {
     			}
     		}
     	}
-    	if(InputMan.checkKey("X")) {
+    	if(InputMan.checkKey(Main.config.key_back)) {
     		if(countChars() == 4) {
     			Main.player.setCharacters(selCharacters);
     			game.setScreen(game.firstScreen);

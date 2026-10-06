@@ -108,7 +108,7 @@ public class StoreScreen implements Screen {
     		actualQ = currQ + 1;
     	}
     	
-    	if(InputMan.checkKey("X")) {
+    	if(InputMan.checkKey(Main.config.key_back)) {
     		if(Main.player.state == PlayerState.MENU) {
 	    		game.setScreen(game.firstScreen);
 	    		Main.player.state = PlayerState.IDLE;
@@ -117,7 +117,7 @@ public class StoreScreen implements Screen {
     			currQ = 0;
     		}
     		dispose();
-    	}else if(InputMan.checkKey("Z")) {
+    	}else if(InputMan.checkKey(Main.config.key_interact)) {
     		if(Main.player.state == PlayerState.MENU) {
 	    		if(itemArray.length > 0 && itemArray != null) {
 		    		switch(pos[0]) {
