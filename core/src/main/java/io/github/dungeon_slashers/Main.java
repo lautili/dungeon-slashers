@@ -284,9 +284,9 @@ public class Main extends Game {
 				Item minHPot = new Item("Pocion menor de salud", "minHPot", "Cura poca cantidad de salud.", 20, 5, 3, false, true);
 				Item minMPot = new Item("Pocion menor de mana", "minMPot", "Cura una poca cantidad de mana.", 20, 5, 3, false, true);
 				Item minSPot = new Item("Pocion menor de stamina", "minSPot", "Cura una poca cantidad de stamina.", 5, 20, 3, false, true);
-				Item minHPven = new Item("Veneno menor de salud", "minHPven", "Quita una poca cantidad de salud.", 3, 20, 1, false, false);
+				Item minHPven = new Item("Veneno menor de salud", "minHPven", "Quita una poca cantidad de salud.", 30, 3, 1, false, false);
 				Item minSPven = new Item("Veneno menor de stamina", "minSPven", "Quita una poca cantidad de stamina.", 2, 20, 1, false, false);
-				Item minMPven = new Item("Veneno menor de mana", "minMPven", "Quita una poca cantidad de mana.", 2, 20, 1, false, false);
+				Item minMPven = new Item("Veneno menor de mana", "minMPven", "Quita una poca cantidad de mana.", 20, 2, 1, false, false);
 
 				initItems(dullSword, dullDaggers, brokenStaff, oldBow, ironSword, woodenStaff,
 

@@ -30,9 +30,10 @@ public abstract class Entity {
 	public int maxsp;
 	public int sp;
 	public int prot; //usada en calculos para ataque. define si se esta protegiendo o no
-	public int lastDamageTaken;
-	public double lastDamageWeakness;
-	public boolean lastIsDamage;
+	public transient int lastDamageTaken;
+	public transient double lastDamageWeakness;
+	public transient boolean lastIsDamage;
+	public transient boolean attacked;
 	
 	//las stats iniciales, usada para formulas (heroes)
 		protected int hpIn;

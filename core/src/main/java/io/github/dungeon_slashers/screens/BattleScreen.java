@@ -121,6 +121,8 @@ public class BattleScreen implements Screen {
 		batch = game.batch;
 		win = false;
 		tried = false;
+		makeAct = true;
+		currAct = 0;
 		turn = 0;
 		sel = new int[4];
 		xp = 0;
@@ -157,7 +159,6 @@ public class BattleScreen implements Screen {
     	game.viewport.apply();
     	game.batch.setProjectionMatrix(game.viewport.getCamera().combined);
     	
-    	// Actualizar temporizadores visuales
     	actTimer += delta;
     	if (hitShakeTimer > 0) hitShakeTimer -= delta;
 
@@ -168,19 +169,17 @@ public class BattleScreen implements Screen {
 
     	for(int i = 0; i < enemies.length; i++) {
     		Enemy enemy = enemies[i];
-    		if((enemy.hp <= 0 || enemy.hasState("DWN")) && !battle.isBoss) {
+    		if(!enemy.draw) {
     			continue;
     		}
     		float sectionWidth = 320f / enemies.length;
     		float x = sectionWidth * i + sectionWidth / 2f - 50f;
     		float y = 50f;
 
-    		// Paso al frente si el enemigo está atacando
     		if (enemy == currentAttacker) {
     			y -= 8f;
     		}
-    		// Sacudida horizontal si está siendo atacado
-    		if (enemy == currentTarget && hitShakeTimer > 0) {
+    		if (enemy.attacked && hitShakeTimer > 0) {
     			x += (float) (Math.sin(actTimer * 40f) * 4f);
     		}
 
@@ -189,14 +188,7 @@ public class BattleScreen implements Screen {
 
     		// Marcador si es el objetivo activo en BSTATE_ACT
     		try {
-	    		if ((BState == BSTATE_ACT && enemy == currentTarget) 
-	    				|| currentTarget == null 
-	    					&& ( 
-	    						(currentAttacker.getClass() == Hero.class && currentSkill.getSkillType() == 2)
-	    						|| (currentAttacker.getClass() == Enemy.class && currentSkill.getSkillType() == 4)
-	    						|| (currentSkill.getSkillType() == 6)
-	    					)
-	    			) {
+	    		if (BState == BSTATE_ACT && enemy.attacked) {
 	    			if(currentSkill == null || !currentSkill.getID().equals("defend")) {
 	    				game.mainFont.getData().setScale(0.3f);
 	    				if(enemy.lastDamageTaken > 0) {
@@ -259,12 +251,10 @@ public class BattleScreen implements Screen {
     			float x = sectionWidth * i + sectionWidth / 2f - 25f;
     			float y = 0f;
 
-    			// El retrato salta si el héroe es el atacante
     			if (heroes[i] == currentAttacker) {
     				y += 10f;
     			}
-    			// Sacudida en el retrato si el héroe recibe daño
-    			if (heroes[i] == currentTarget && hitShakeTimer > 0) {
+    			if (heroes[i].attacked && hitShakeTimer > 0) {
     				x += (float) (Math.sin(actTimer * 30f) * 3f);
     			}
 
@@ -292,16 +282,8 @@ public class BattleScreen implements Screen {
     				}
     			}
 
-    			// Indicador si el héroe es el objetivo activo de un aliado o enemigo
     			try {
-	    			if ((BState == BSTATE_ACT && heroes[i] == currentTarget) 
-	    				|| currentTarget == null 
-	    					&& ( 
-	    						(currentAttacker.getClass() == Enemy.class && currentSkill.getSkillType() == 2)
-	    						|| (currentAttacker.getClass() == Hero.class && currentSkill.getSkillType() == 4)
-	    						|| (currentSkill.getSkillType() == 6)
-	    					)
-	    			) {
+	    			if (BState == BSTATE_ACT && heroes[i].attacked) {
 	    				if(currentSkill == null || !currentSkill.getID().equals("defend")) {
 	    					game.mainFont.getData().setScale(0.3f);
 	    					if(heroes[i].lastDamageTaken > 0) {
@@ -313,7 +295,7 @@ public class BattleScreen implements Screen {
 		    					String dmgText = "";
 		    					if(currentSkill != null) {
 		    						for(int k = 0; k < currentSkill.getAtkTimes(); k++) {
-		    							dmgText += temp + heroes[0].lastDamageTaken + "\n";
+		    							dmgText += temp + heroes[i].lastDamageTaken + "\n";
 		    						}
 		    					}
 		    					game.mainFont.setColor(0f, 0f, 0f, 1f);
@@ -363,6 +345,7 @@ public class BattleScreen implements Screen {
     		break;
 
     	case BSTATE_TURN_START:
+    		System.out.println("Turno empieza: " + turn);
     		currentBossEvent = null;
     		if(battle.isBoss) {
     			currentBossEvent = ((Boss) enemies[0]).checkEvents(game, turn, delta);
@@ -381,6 +364,7 @@ public class BattleScreen implements Screen {
 			}
 			curr = 0;
 			currChar = 0;
+			currAct = 0;
 			sel[0] = 0;
 			sel[1] = 0;
 			sel[2] = 0;
@@ -430,10 +414,15 @@ public class BattleScreen implements Screen {
     		}
     		if (inspectingEnemy) {
     			updateAndDrawEnemyInspect();
+    			if(InputMan.checkKey(Main.config.key_back)){
+    				inspectingEnemy = false;
+    			}
     		} else {
     			characterChoose();
 				if(currChar >= heroes.length) {
 					BState = BSTATE_ENEMY_CHOOSE;
+					currAct = 0;
+					makeAct = true;
 				}
     		}
     		break;
@@ -451,6 +440,7 @@ public class BattleScreen implements Screen {
     		break;
 
     	case BSTATE_TURN_END:
+    		System.out.println("Turno termina: " + turn);
     		tried = false;
     		currentAttacker = null;
     		currentTarget = null;
@@ -513,6 +503,9 @@ public class BattleScreen implements Screen {
 				if(heroes[i].hp <= 0 && !heroes[i].hasState("DWN")) {
 					heroes[i].setEffect(new Effect("DWN"), 0);
 				}
+				if(heroes[i].hasState("DWN")) {
+					heroes[i].hp = 0;
+				}
 				if(heroes[i].hp <= 0) {
 					defeatedHeroes++;
 				}
@@ -545,6 +538,13 @@ public class BattleScreen implements Screen {
     	int dialogues = DialMan.showBDialogues(game, delta);
     	switch(dialogues) {
     	case DIAL_BACTION:
+    		for(Entity entity : entities) {
+    			if(entity.hp <= 0 && entity instanceof Enemy) {
+        			Enemy enemy = (Enemy) entity;
+        			enemy.draw = false;
+        		}
+    			entity.attacked = false;
+    		}
     		currAct++;
     		makeAct = true;
     		if (currAct >= actions.length) {
@@ -674,7 +674,7 @@ public class BattleScreen implements Screen {
 		
 		game.mainFont.getData().setScale(0.3f);
 		game.mainFont.setColor(1f, 1f, 1f, 1f);
-		game.mainFont.draw(batch, enemy.getName(), 10, 175);
+		game.mainFont.draw(batch, enemy.getName(), 10, 175, 100, Align.center, true);
 		float x2 = 115;
 		float num = (90f * enemy.hp / enemy.getHP());
 		game.batch.draw(game.HPbar, x2, 165, num, 5);
@@ -720,6 +720,9 @@ public class BattleScreen implements Screen {
     private void updateEntities() {
 		for(int i = 0; i < enemies.length; i++) {
 			enemies[i].prot = 1;
+			if(enemies[i].hasState("DWN")) {
+				enemies[i].hp = 0;
+			}
 			if((turn % 2) == 0 ) {
 				enemies[i].modMP((int) (enemies[i].getMP() * 0.2 + 10));
 				enemies[i].modSP((int) (enemies[i].getSP() * 0.2 + 10));
@@ -727,6 +730,9 @@ public class BattleScreen implements Screen {
 		}
 		for(int i = 0; i < heroes.length; i++) {
 			heroes[i].prot = 1;
+			if(heroes[i].hasState("DWN")) {
+				heroes[i].hp = 0;
+			}
 		}
 		for(int i = 0; i < actions.length; i++) {
 			actions[i] = null;
@@ -743,28 +749,39 @@ public class BattleScreen implements Screen {
     	}
     	makeAct = false;
 
-    	// Ordenamiento de velocidad en el primer turno de acción
     	if(currAct == 0) {
 	    	for(int i = 0; i < actions.length; i++) {
 				for(int j = 0; j < actions.length-i-1; j++) {
-					if(actions[j] == null || actions[j + 1] == null) {
-						continue;
-					} else {
-						 int spd1 = actionsObj[j][0].getSPD() + actions[j].SPD;
-					     int spd2 = actionsObj[j + 1][0].getSPD() + actions[j + 1].SPD;
-					     if (spd1 < spd2) {
-					         Skill tempSkill = actions[j];
-					         actions[j] = actions[j + 1];
-					         actions[j + 1] = tempSkill;
-					         
-					         Item tempItem = actionsItem[j];
-					         actionsItem[j] = actionsItem[j + 1];
-					         actionsItem[j + 1] = tempItem;
-					         
-					         Entity[] tempObj = actionsObj[j];
-					         actionsObj[j] = actionsObj[j + 1];
-					         actionsObj[j + 1] = tempObj;
-					     }
+					if (actions[j] == null && actions[j + 1] != null) {
+					    Skill tempSkill = actions[j];
+					    actions[j] = actions[j + 1];
+					    actions[j + 1] = tempSkill;
+
+					    Item tempItem = actionsItem[j];
+					    actionsItem[j] = actionsItem[j + 1];
+					    actionsItem[j + 1] = tempItem;
+
+					    Entity[] tempObj = actionsObj[j];
+					    actionsObj[j] = actionsObj[j + 1];
+					    actionsObj[j + 1] = tempObj;
+
+					} else if (actions[j] != null && actions[j + 1] != null) {
+					    int spd1 = actionsObj[j][0].getSPD() + actions[j].SPD;
+					    int spd2 = actionsObj[j + 1][0].getSPD() + actions[j + 1].SPD;
+
+					    if (spd1 < spd2) {
+					        Skill tempSkill = actions[j];
+					        actions[j] = actions[j + 1];
+					        actions[j + 1] = tempSkill;
+
+					        Item tempItem = actionsItem[j];
+					        actionsItem[j] = actionsItem[j + 1];
+					        actionsItem[j + 1] = tempItem;
+
+					        Entity[] tempObj = actionsObj[j];
+					        actionsObj[j] = actionsObj[j + 1];
+					        actionsObj[j + 1] = tempObj;
+					    }
 					}
 				}
 			}
@@ -774,18 +791,41 @@ public class BattleScreen implements Screen {
 		currentTarget = actionsObj[currAct][1];
 		currentSkill = actions[currAct];
 		currentItem = actionsItem[currAct];
-		hitShakeTimer = 0.4f; // Duración del sacudido al impactar
+		hitShakeTimer = 0.4f;
 
 		Skill skill = actions[currAct];
 		if(actionsItem[currAct] == null) {
-			if (skill != null
-			        && actionsObj[currAct][0].hp > 0
-			        && !actionsObj[currAct][0].hasState("DWN")
-			        && (actionsObj[currAct][1] == null ||
-			        actionsObj[currAct][1].hp > 0
-			        	&& !actionsObj[currAct][1].hasState("DWN")
-			        	)
-			) {
+			if (skill != null && actionsObj[currAct][0].hp > 0) {
+				if (skill.getSkillType() == 1) {
+				    Entity target = actionsObj[currAct][1];
+				    
+				    if (target != null && (target.hp <= 0 || target.hasState("DWN"))) {
+				        Entity newObj = null;
+				        if (actionsObj[currAct][0] instanceof Enemy) {
+				            do {
+				            	newObj = heroes[rand.nextInt(heroes.length)];
+				            	if(newObj.hp > 0) {
+				            		break;
+				            	}
+				            }while(true);
+				        } else if (actionsObj[currAct][0] instanceof Hero) {
+				        	do {
+				            	newObj = enemies[rand.nextInt(enemies.length)];
+				            	if(newObj.hp > 0) {
+				            		break;
+				            	}
+				            }while(true);
+				        }
+
+				        actionsObj[currAct][1] = newObj;
+				        currentTarget = newObj;
+				    }
+				}
+				if (skill.getSkillType() == 1 && actionsObj[currAct][1] == null) {
+				    makeAct = true;
+				    currAct++;
+				    return;
+				}
 				switch(skill.getSkillType()) {
 				case 0: // self
 					skill.use(actionsObj[currAct][0]);
@@ -793,6 +833,7 @@ public class BattleScreen implements Screen {
 				case 1: // to enemy
 					if(actionsObj[currAct][0].hasState("CON")) {
 						if(rand.nextInt(2) == 0) {
+							currentTarget = actionsObj[currAct][0];
 							skill.use(actionsObj[currAct][0], actionsObj[currAct][0]);
 							return;
 						}
@@ -849,9 +890,10 @@ public class BattleScreen implements Screen {
 							Entity temp = actionsObj[currAct][1];
 							actionsObj[currAct][1] = actionsObj[currAct][0];
 							actionsObj[currAct][0] = temp;
+							
 						}
 					}
-					skill.use(actionsObj[currAct][0], actionsObj[currAct][2], actionsObj[currAct][1]);
+					skill.use(actionsObj[currAct][0], actionsObj[currAct][1], actionsObj[currAct][2]);
 					break;
 				case 6: // to all entities
 					skill.use(actionsObj[currAct][0], entities);
@@ -862,8 +904,13 @@ public class BattleScreen implements Screen {
 				currAct++;
 			}
 		} else {
-			skill.setType(actionsItem[currAct].getType());
-			skill.use(actionsObj[currAct][0], actionsObj[currAct][1], Main.player, actionsItem[currAct]);
+			if (actionsObj[currAct][0].hp > 0 && actionsObj[currAct][1] != null && actionsObj[currAct][1].hp > 0) {
+		        skill.setType(actionsItem[currAct].getType());
+		        skill.use(actionsObj[currAct][0], actionsObj[currAct][1], Main.player, actionsItem[currAct]);
+		    } else {
+		        makeAct = true;
+		        currAct++;
+		    }
 		}
 	}
 
@@ -962,34 +1009,33 @@ public class BattleScreen implements Screen {
 		}
 	}
 
-	private Skill enemyAct(Enemy enemy) {
-		Skill[] skills = enemy.getSkills();
-		int sel = 0;
-		if(enemy.hasState("SIL")) {
-			sel = rand.nextInt(2);
-			return skills[sel];
-		} else {
-			do {
-				int temp = rand.nextInt(100);
-				if(temp < 50) {
-					return skills[0];
-				} else if(temp < 80) {
-					if(skills.length <= 2) {
-						return skills[0];
-					}
-					sel = rand.nextInt(skills.length);
-					if(skills[sel] != null) {
-						if(enemy.mp < skills[sel].getMP() || enemy.sp < skills[sel].getSP()) {
-							continue;
-						}
-						return skills[sel];
-					}
-				} else {
-					return skills[1];	
-				}
-			} while(true);
-		}
-	}
+    private Skill enemyAct(Enemy enemy) {
+        Skill[] skills = enemy.getSkills();
+        if (skills == null || skills.length == 0) return null;
+
+        if (enemy.hasState("SIL")) {
+            return skills[rand.nextInt(2)];
+        }
+
+        int temp = rand.nextInt(100);
+        if (temp < 50) {
+            return skills[0]; 
+        } else if (temp < 80) {
+            if (skills.length > 2) {
+                int tried = 10;
+                while (tried > 0) {
+                    int sel = 2 + rand.nextInt(skills.length - 2);
+                    if (skills[sel] != null && enemy.mp >= skills[sel].getMP() && enemy.sp >= skills[sel].getSP()) {
+                        return skills[sel];
+                    }
+                    tried--;
+                }
+            }
+            return skills[0];
+        } else {
+            return skills[1];	
+        }
+    }
     
 	private void characterChoose() {
     	Hero hero = heroes[currChar];
@@ -1019,10 +1065,10 @@ public class BattleScreen implements Screen {
 	    	}
     	}
     	Menu.showOptionsX(game, game.mainFont, 0.2f, 10, 70, 80, null, sel[1], "ATACAR", "DEFENDER", "HABILIDADES", "INVENTARIO");
+    	Menu.showBattleBars(game, heroes[currChar]);
     	switch (AState) {
 		case ASTATE_IDLE:
 			actionsItem[curr] = null;
-    		Menu.showBattleBars(game, heroes[currChar]);
 			sel[1] = InputMan.scrollInt(MenuScrollType.HORIZONTAL, 4, sel[1], Menu.MenuMove);
 			sel[2] = 0;
     		if(InputMan.checkKey(Main.config.key_interact)) {
@@ -1056,11 +1102,14 @@ public class BattleScreen implements Screen {
     				while(heroes[currChar].hp <= 0 || heroes[currChar].hasState("DWN")) {
 	    				currChar--;
 	    				curr--;
-	    				actions[curr] = null;
-	    				actionsObj[curr][0] = null;
-	    				actionsObj[curr][1] = null;
-	    				actionsObj[curr][2] = null;
-	    				actionsItem[curr] = null;
+	    				
+	    				if (curr >= 0) {
+		    				actions[curr] = null;
+		    				actionsObj[curr][0] = null;
+		    				actionsObj[curr][1] = null;
+		    				actionsObj[curr][2] = null;
+		    				actionsItem[curr] = null;
+	    				}
 	    				if(currChar < 0) {
 	    					currChar = ogCurrChar;
 	    					break;
@@ -1074,7 +1123,7 @@ public class BattleScreen implements Screen {
 		case ASTATE_SKILL:
 			Skill[] skills = hero.getRealSkills();
 			sel[2] = InputMan.scrollInt(MenuScrollType.VERTICAL, skills.length, sel[2], Menu.MenuMove);
-			game.batch.draw(game.battleMenu, 0, 0);
+			game.batch.draw(game.battleMenu, 0, 10);
 			Menu.showBSkills(game, sel[2], skills, hero);
 			if(InputMan.checkKey(Main.config.key_interact)) {
 				if(skills[sel[2]].getMP() <= hero.mp && skills[sel[2]].getSP() <= hero.sp) {
@@ -1094,7 +1143,7 @@ public class BattleScreen implements Screen {
 		case ASTATE_INVENTORY:
 			Item[] items = Main.player.getInventory();
 			sel[2] = InputMan.scrollInt(MenuScrollType.VERTICAL, items.length, sel[2], Menu.MenuMove);
-			game.batch.draw(game.battleMenu, 0, 0);
+			game.batch.draw(game.battleMenu, 0, 10);
 			Menu.showBInventory(game, sel[2], items);
 			if(InputMan.checkKey(Main.config.key_interact)) {
 					AState = ASTATE_SELECT_OBJECTIVE;

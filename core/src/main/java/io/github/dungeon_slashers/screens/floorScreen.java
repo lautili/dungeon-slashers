@@ -437,11 +437,11 @@ public class floorScreen implements Screen {
 				if(random == 1 || random == 2) {
 					int n = rand.nextInt(100);
 					int n2;
-					if(n > 50) {
+					if(n > 45) {
 						n2 = 1;
-					}else if (n > 25) {
+					}else if (n > 20) {
 						n2 = 2;
-					}else if(n > 8) {
+					}else if(n > 5) {
 						n2 = 3;
 					}else {
 						n2 = 4;

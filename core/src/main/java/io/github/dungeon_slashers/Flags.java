@@ -29,12 +29,12 @@ public class Flags {
 			DialMan.addDialogue(1, 2, "???", null, "Se han tomado su tiempo.", 40, null);
 			DialMan.addDialogue(2, 3, "???", null, "Que mi apariencia no les engañe, camaradas.", 40, null);
 			DialMan.addDialogue(3, 4, "???", null, "La falta de un rostro visible no implica la incapacidad de observar.", 40, null);
-			DialMan.addDialogue(4, 5, entity.getName(), null, "Soy el Jinete sin Cabeza.", 40, null);
-			DialMan.addDialogue(5, 6, entity.getName(), null, "Es una lastima...", 40, null);
-			DialMan.addDialogue(6, 7, entity.getName(), null, "Que nuestra reunion vaya a ser tan... efimera.", 40, null);
-			DialMan.addDialogue(7, 8, entity.getName(), null, "Pues tras este punto, no pasarán.", 40, null);
-			DialMan.addDialogue(8, 100, entity.getName(), null, "Desenfunden sus armas, o rindanse al dolor.", 40, null);
-			DialMan.addDialogue(100, -1, entity.getName(), null, "De todas maneras... Es el final del trayecto.", 40, null);
+			DialMan.addDialogue(4, 5, "Jinete", null, "Soy el Jinete sin Cabeza.", 40, null);
+			DialMan.addDialogue(5, 6, "Jinete", null, "Es una lastima...", 40, null);
+			DialMan.addDialogue(6, 7, "Jinete", null, "Que nuestra reunion vaya a ser tan... efimera.", 40, null);
+			DialMan.addDialogue(7, 8, "Jinete", null, "Pues tras este punto, no pasarán.", 40, null);
+			DialMan.addDialogue(8, 100, "Jinete", null, "Desenfunden sus armas, o rindanse al dolor.", 40, null);
+			DialMan.addDialogue(100, -1, "Jinete", null, "De todas maneras... Es el final del trayecto.", 40, null);
 			break;
 		case FLAG_THIRDBOSS_DIALOGUE:
 			DialMan.addDialogue(0, 1, "Directauro", null, "Damas y caballeros... bienvenidos al tercer acto.", 40, null);

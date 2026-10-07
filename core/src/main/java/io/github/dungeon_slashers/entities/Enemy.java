@@ -17,6 +17,7 @@ public class Enemy extends Entity{
 	public transient int xp; //la xp que dan
 	public transient int gld; //el oro que dan
 	private transient String description;
+	public transient boolean draw = true;
 	public boolean defeated = false;
 	public boolean discovered = false;
 	private boolean[] discWeakness = new boolean[6];

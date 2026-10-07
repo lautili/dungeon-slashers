@@ -178,6 +178,7 @@ public class Skill {
 		}else {
 			DialMan.addDialogue(0, 1);
 		}
+		b.attacked = true;
 		int count = 1;
 		int dmg = 0;
 		String dmgType;
@@ -513,6 +514,7 @@ public class Skill {
 			if(b[i] instanceof Enemy) {
 				((Enemy) b[i]).updateDiscoveries(dmgType);
 			}
+			b[i].attacked = true;
 			b[i].lastDamageTaken = 0; // Se reinicia para acumular el daño en cada objetivo
 			for(int j = 0; j < atkTimes; j++) {
 				double mul = detMul(b[i], dmgType); //multiplicador de daño para chequear resistencias y debilidades
@@ -730,7 +732,11 @@ public class Skill {
 					//sage
 				case "mulHeal":
 					dmg = ( (int) (b[i].getHP() * 0.2)	 +  10);
-					b[i].modHP(dmg);
+					if(b[i].hp > 0) {
+						b[i].modHP(dmg);
+					}else {
+						b[i].modHP(0);
+					}
 					snd = HEAL;
 					break;
 				case "incant":
@@ -758,7 +764,11 @@ public class Skill {
 					break;
 				case "healingRitual":
 					dmg = ( (int) (b[i].getHP() * 0.4)	 +  20);
-					b[i].modHP(dmg);
+					if(b[i].hp > 0) {
+						b[i].modHP(dmg);
+					}else {
+						b[i].modHP(0);
+					}
 					snd = HEAL;
 					break;
 				case "divineEx":
@@ -794,6 +804,10 @@ public class Skill {
 	}
 	public void use(Entity a, Entity ally, Entity enemy) { //caso particular, skillType 5
 		checkRand();
+		ally.attacked = true;
+		enemy.attacked = true;
+		ally.lastDamageTaken = 0;
+		enemy.lastDamageTaken = 0;
 		if(atkMsg != null) {
 			DialMan.addBDialogue(0, BattleScreen.DIAL_BACTION, a.getName() + atkMsg + enemy.getName()); //muestra el mensaje de la skill
 		}else {
