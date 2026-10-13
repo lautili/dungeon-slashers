@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 import io.github.dungeon_slashers.Main;
 import io.github.dungeon_slashers.MenuScrollType;
+import io.github.dungeon_slashers.controllers.DialMan;
 import io.github.dungeon_slashers.controllers.InputMan;
 import io.github.dungeon_slashers.controllers.Menu;
 import io.github.dungeon_slashers.controllers.Save;
@@ -14,6 +15,8 @@ import io.github.dungeon_slashers.controllers.Save;
 public class MainMenuScreen implements Screen {
 	private int sel;
     private Main game;
+    
+    
     public MainMenuScreen(Main game) {
 		this.game = game;
 	}
@@ -31,31 +34,32 @@ public class MainMenuScreen implements Screen {
     	ScreenUtils.clear(0, 0, 0, 1); //limpia el buffer de colores
     	
     	game.viewport.apply();
-    	game.batch.setProjectionMatrix(game.viewport.getCamera().combined);
-    	
-    	sel = InputMan.scrollInt(MenuScrollType.VERTICAL, 3, sel, Menu.MenuMove);
     	game.batch.begin();
     	
-    	game.titleFont.draw(game.batch, "DUNGEON SLASHERS", -75, 80f);
-    	
-    	Menu.showOptionsY(game, game.mainFont, 0.3f, -140, -20, 20, null, sel, "NUEVA PARTIDA", "CARGAR PARTIDA", "SALIR");
-    	
-    	game.batch.end();
-    	if(InputMan.checkKey("Z")) {
-    		switch(sel) {
-    		case 0:
-    			game.setScreen(game.charSelectScreen);
-    			dispose();
-    			break;
-    		case 1:
-    			Save.load();
-    			dispose();
-    			break;
-    		case 2:
-    			Gdx.app.exit();
-    			break;
-    		}
-    	}
+	    	game.batch.setProjectionMatrix(game.viewport.getCamera().combined);
+	    	
+	    	sel = InputMan.scrollInt(MenuScrollType.VERTICAL, 3, sel, Menu.MenuMove);
+	    	
+	    	game.titleFont.draw(game.batch, "DUNGEON SLASHERS", -75, 80f);
+	    	
+	    	Menu.showOptionsY(game, game.mainFont, 0.3f, -140, -20, 20, null, sel, "NUEVA PARTIDA", "CARGAR PARTIDA", "SALIR");
+	    	
+	    	game.batch.end();
+	    	if(InputMan.checkKey("Z")) {
+	    		switch(sel) {
+	    		case 0:
+	    			game.setScreen(game.charSelectScreen);
+	    			dispose();
+	    			break;
+	    		case 1:
+	    			Save.load();
+	    			dispose();
+	    			break;
+	    		case 2:
+	    			Gdx.app.exit();
+	    			break;
+	    		}
+	    	}
     }
 
     @Override

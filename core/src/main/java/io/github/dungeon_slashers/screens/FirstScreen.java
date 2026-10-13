@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Array;
 import io.github.dungeon_slashers.Flags;
 import io.github.dungeon_slashers.Main;
 import io.github.dungeon_slashers.PlayerState;
+import io.github.dungeon_slashers.controllers.Config;
 import io.github.dungeon_slashers.controllers.DialMan;
 import io.github.dungeon_slashers.controllers.InputMan;
 import io.github.dungeon_slashers.controllers.Save;
@@ -103,13 +104,39 @@ public class FirstScreen implements Screen {
 		camera.setToOrtho(false, 320, 180);
 		camera.zoom = 1f;
 		if(!Main.player.flags[Flags.FLAG_FIRSTSCREEN_DIALOGUE_START]) {
-			DialMan.addDialogue(0, 1, chars[0].getName(), chars[0].getPortrait(), "Esta es una prueba de dialogos. asjdaajsd s d d adoalalala lalalalaallala lolololololololo", 20, null);
-			DialMan.addDialogue(1, 2, chars[1].getName(), chars[1].getPortrait(), "Esta es una prueba de dialogos con otra foto. Hola", 60, null);
-			DialMan.addChoice(2, 20, "A quien preferis", null, new String[] {chars[0].getName(), chars[1].getName(), "Los 2", "Ninguno"}, new int[] {3, 4, 5, 6});
-			DialMan.addDialogue(3, -1, chars[0].getName(), chars[0].getPortrait(), "Gracias", 20, null);
-			DialMan.addDialogue(4, -1, chars[1].getName(), chars[1].getPortrait(), "Gracias", 20, null);
-			DialMan.addDialogue(5, -1, "Los 2", null, "Gracias", 20, null);
-			DialMan.addDialogue(6, -1, null, null, "Te miran con cara de culo", 20, null);
+			DialMan.addDialogue(0, 1, chars[0].getName(), chars[0].getPortrait(), "Asi que... este es el lugar, no?", 20, null);
+			DialMan.addDialogue(1, 2, chars[1].getName(), chars[1].getPortrait(), "Antes, cuando entramos al lugar, vimos esa tienda...", 60, null);
+			DialMan.addDialogue(0, 1, chars[1].getName(), chars[1].getPortrait(), "Parece no tener dependiente... pero no podemos robarla", 20, null);
+			DialMan.addChoice(2, 20, "Que deberiamos hacer? ", null, 
+					new String[] {"Ir a la tienda", "Avanzar en la mazmorra", "Descansar en la fogata", "Irnos de la mazmorra"}, new int[] {3, 4, 5, 6});
+			DialMan.addDialogue(3, -1, "Dante", null, "Deberiamos investigar la tienda, tengo algunas monedas...", 20, null);
+			DialMan.addDialogue(0, 1, chars[0].getName(), chars[0].getPortrait(), "Es lo que yo opino...", 20, null);
+			DialMan.addDialogue(3, -1, "Dante", null, "Podemos empezar a tantear la mazmorra, despues investigamos la tienda.", 20, null);
+			DialMan.addDialogue(4, -1, chars[1].getName(), chars[1].getPortrait(), "Me gusta mas esa idea.", 20, null);
+			DialMan.addDialogue(5, -1, "Dante", null, "Descansemos en la fogata.", 20, null);
+			DialMan.addDialogue(6, -1, "Dante", null, "Podriamos irn-", 20, null);
+			DialMan.addDialogue(4, -1, chars[3].getName(), chars[3].getPortrait(), "No.", 20, null);
+			DialMan.addDialogue(6, -1, "Dante (mente)", null, "Comienza esta aventura.", 20, null);
+			DialMan.addDialogue(6, -1, "Dante (mente)", null, "emprenderemos un viaje a esta mazmorra... pero, por que?", 20, null);
+			DialMan.addDialogue(6, -1, "Dante (mente)", null, "Una organizacion anonima nos encargo recuperar un artefacto en el fondo de la mazmorra...", 20, null);
+			DialMan.addDialogue(6, -1, "Dante (mente)", null, "Una 'Raiz Dorada'. Nadie sabe que es.", 20, null);
+			DialMan.addDialogue(6, -1, "Dante (mente)", null, "Para conseguirlo, me dieron este reloj... al girarlo, todos "
+					+ "volvemos al ultimo punto de menor riesgo, con nuestras vidas intactas...", 20, null);
+			DialMan.addDialogue(6, -1, "Dante (mente)", null, "Como si rebobinase el tiempo...", 20, null);
+			DialMan.addDialogue(6, -1, "Dante (mente)", null, "No se como funciona, pero estoy seguro que "
+					+ "lo averiguaremos aqui.", 20, null);
+			DialMan.addDialogue(6, -1, null, null, "Bienvenido a Dungeon Slashers!", 20, null);
+			DialMan.addDialogue(6, -1, null, null, "Antes de empezar, un par de cosas a tener en cuenta...", 20, null);
+			DialMan.addDialogue(6, -1, null, null, 
+					"Muevete con " + (Main.config.keyConfig == Config.KEYS_ARROWS ? "las Flechas" : "WASD") + ".", 20, null);
+			DialMan.addDialogue(6, -1, null, null, "Para interactuar con el mundo, usa " + Main.config.key_interact, 20, null);
+			DialMan.addDialogue(6, -1, null, null, "Para abrir el menu, usa " + Main.config.key_back, 20, null);
+			DialMan.addDialogue(6, -1, null, null, "Puedes correr (e inspeccionar a los enemigos en combate) con la " + Main.config.key_alt, 20, null);
+			DialMan.addDialogue(6, -1, null, null, "La mazmorra esta compuesta por 5 pisos.", 20, null);
+			DialMan.addDialogue(6, -1, null, null, "Cada uno con habitaciones, encuentros, tesoros y un jefe.", 20, null);
+			DialMan.addDialogue(6, -1, null, null, "Si te encuentras con el jefe y mueres, la proxima vez que ingreses a ese piso se mostrara todo el mapa.", 20, null);
+			DialMan.addDialogue(6, -1, null, null, "Pulse M para abrir el mapa (en la mazmorra).", 20, null);
+
 			Main.player.flags[Flags.FLAG_FIRSTSCREEN_DIALOGUE_START] = true;
 		}
 		

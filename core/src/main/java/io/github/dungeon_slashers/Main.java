@@ -563,17 +563,17 @@ public class Main extends Game {
 						6, 0, false, 1, 260, 0, 10);
 
 				//initialize personajes
-				Hero warrior = new Hero("Robert", "warrior", "Warrior", "PHY", 150, 20, 120, 30, 25, 10, 15, 15, dullSword, rags, defAtt, defend,
+				Hero warrior = new Hero("Miller", "warrior", "Warrior", "PHY", 150, 20, 120, 30, 25, 10, 15, 15, dullSword, rags, defAtt, defend,
 						knockout, crossCut, skullCracker, brutalBlow, moralDest, lunge, heavyTackle, hustle, backhand, heavyLand, warCry, crushAtk);
-				Hero mage = new Hero("Noelle", "mage", "Mage", "FIR", 100, 100, 30, 10, 15, 15, 25, 20, brokenStaff, rags, defMat, defend,
+				Hero mage = new Hero("Eva", "mage", "Mage", "FIR", 100, 100, 30, 10, 15, 15, 25, 20, brokenStaff, rags, defMat, defend,
 						fireplace, blizzard, poisoning, pressure, incantation, tides, tiresome, fireHur, collapse, decibels, seaquake, tornado, curse,
 						blessing, lastPrism);
-				Hero thief = new Hero("Myriam", "thief", "Thief", "PHY", 100, 60, 90, 20, 20, 15, 15, 30, dullDaggers, rags, defAtt, defend,
+				Hero thief = new Hero("Rachael", "thief", "Thief", "PHY", 100, 60, 90, 20, 20, 15, 15, 30, dullDaggers, rags, defAtt, defend,
 						smokeBomb, sneakAtk, venomEdge, bladeRain, magicTheft, vitalTheft, bladeSweep, sleepPll, finisher, bladeTornado, hitman, chaos,
 						throatSlice);
-				Hero explorer = new Hero("Reed", "explorer", "Explorer", "RAN", 125, 40, 100, 20, 20, 15, 15, 25, oldBow, rags, defAtt, defend,
+				Hero explorer = new Hero("Ocelot", "explorer", "Explorer", "RAN", 125, 40, 100, 20, 20, 15, 15, 25, oldBow, rags, defAtt, defend,
 						arrowRain, calTrap, decoy, slimeDust, nailIt, expTorment, tarPit, debrisShower, worldRevolving, sleepGas, allyTotem, finalTrial);
-				Hero sage = new Hero("Dough", "sage", "Sage", "WIN", 120, 100, 30, 10, 10, 15, 15, 35, brokenStaff, rags, defMat, defend,
+				Hero sage = new Hero("Mercer", "sage", "Sage", "WIN", 120, 100, 30, 10, 10, 15, 15, 35, brokenStaff, rags, defMat, defend,
 						staThief, incant, silence, deaftones, toxicDust, bardSong, shadowSpell, godOffering, healingRitual, purification, vitalLust, revive,
 						divineEx, sacrifice);
 
@@ -590,8 +590,6 @@ public class Main extends Game {
 				sage.addSkills(healing, mulHeal);
 
 				//initialize enemigos
-				// Piso 1: criaturas de entrada. Para el equipo son la primera señal de que la mazmorra
-				// no es un lugar abandonado: alguien o algo sigue manteniendo una fuerza organizada aqui.
 				Enemy slime = new Enemy("Slime", "slime", "WAT",
 						90, 0, 40,
 						12, 10, 0, 10, 8,
@@ -663,7 +661,6 @@ public class Main extends Game {
 		                        "Necesitaran...")
 		        );
 
-				// Piso 2: la necromancia deja de ser una sospecha y pasa a ser una estructura.
 				Enemy armoredSkel = new Enemy("Esqueleto Acorazado", "armoredSkel", "RAN",
 						260, 0, 0,
 						38, 40, 10, 25, 16,
@@ -671,7 +668,8 @@ public class Main extends Game {
 						0.5, 1.0, 0.75, 1.0, 1.0, 1.0,
 						defAtt, defend);
 				armoredSkel.setDesc("Otro esqueleto, pero esta vez con armadura.\n"
-		        + "Viendo la destreza y proeza de este tipo de enemigo en comparacion a los del piso anterior, parece que estos fueron cadaveres de valientes que malaventuraron hasta esta zona.\n"
+		        + "Viendo la destreza y proeza de este tipo de enemigo en comparacion a los del piso anterior, "
+		        + "parece que estos fueron cadaveres de valientes que malaventuraron hasta esta zona.\n"
 		        + "Estaban mejor armados y preparados para un desafio que los que habitaban el piso anterior.\n"
 		        + "Seguramente encontremos no-muertos mas fuertes conforme descendamos.\n"
 		        + "No me gusta como suena.");
@@ -768,7 +766,6 @@ public class Main extends Game {
 		                        "...Adelante, Rocinante..!")
 		        );
 
-				// Piso 3: la dungeon ya parece un experimento de combate.
 				Enemy ghostBow = new Enemy("Arquero Fantasma", "ghostBow", "RAN",
 						340, 60, 120,
 						52, 35, 30, 34, 42,

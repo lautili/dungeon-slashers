@@ -35,6 +35,7 @@ public class Hero extends Entity{
 	public int xp;
 	private int nextXp;
 	private int lvl;
+	public int lastOpt;
 	
 	//armas y armaduras
 	private Weapon weapon;

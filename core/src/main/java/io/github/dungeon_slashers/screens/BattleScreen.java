@@ -18,6 +18,7 @@ import io.github.dungeon_slashers.controllers.Battle;
 import io.github.dungeon_slashers.controllers.DialMan;
 import io.github.dungeon_slashers.controllers.InputMan;
 import io.github.dungeon_slashers.controllers.Menu;
+import io.github.dungeon_slashers.controllers.Save;
 import io.github.dungeon_slashers.entities.Boss;
 import io.github.dungeon_slashers.entities.BossEvent;
 import io.github.dungeon_slashers.entities.Enemy;
@@ -482,6 +483,7 @@ public class BattleScreen implements Screen {
 				cont2++;
 				int winCont = cont2;
 				for(int i = 0; i < heroes.length; i++) {
+					heroes[i].lastOpt = 0;
 					heroes[i].clearEffects();
 					if(heroes[i].hp == 0) {
 						heroes[i].hp++;
@@ -515,8 +517,10 @@ public class BattleScreen implements Screen {
 				DialMan.addDialogue(0, DIAL_DEFEAT, null, null, "Has perdido.", 20, null);
 				DialMan.addDialogue(DIAL_DEFEAT, -1);
 				for(int i = 0; i < heroes.length; i++) {
+					heroes[i].lastOpt = 0;
 					heroes[i].hp++;
 					heroes[i].clearEffects();
+					
 				}
 				BState = BSTATE_BATTLE_END;
 				win = false;
@@ -1068,8 +1072,10 @@ public class BattleScreen implements Screen {
     	Menu.showBattleBars(game, heroes[currChar]);
     	switch (AState) {
 		case ASTATE_IDLE:
+			sel[1] = hero.lastOpt;
 			actionsItem[curr] = null;
 			sel[1] = InputMan.scrollInt(MenuScrollType.HORIZONTAL, 4, sel[1], Menu.MenuMove);
+			hero.lastOpt = sel[1];
 			sel[2] = 0;
     		if(InputMan.checkKey(Main.config.key_interact)) {
     			switch(sel[1]) {
@@ -1323,7 +1329,6 @@ public class BattleScreen implements Screen {
 		case ASTATE_NEXT:
 			curr++;
 			currChar++;
-			sel[1] = 0;
 			sel[2] = 0;
 			sel[3] = 0;
 			AState = ASTATE_IDLE;
@@ -1387,6 +1392,7 @@ public class BattleScreen implements Screen {
     @Override
     public void hide() {
     	Main.updateArrays();
+    	Save.save();
     	game.lastScreen = this;
     }
 
