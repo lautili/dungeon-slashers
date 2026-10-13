@@ -106,36 +106,38 @@ public class FirstScreen implements Screen {
 		if(!Main.player.flags[Flags.FLAG_FIRSTSCREEN_DIALOGUE_START]) {
 			DialMan.addDialogue(0, 1, chars[0].getName(), chars[0].getPortrait(), "Asi que... este es el lugar, no?", 20, null);
 			DialMan.addDialogue(1, 2, chars[1].getName(), chars[1].getPortrait(), "Antes, cuando entramos al lugar, vimos esa tienda...", 60, null);
-			DialMan.addDialogue(0, 1, chars[1].getName(), chars[1].getPortrait(), "Parece no tener dependiente... pero no podemos robarla", 20, null);
-			DialMan.addChoice(2, 20, "Que deberiamos hacer? ", null, 
-					new String[] {"Ir a la tienda", "Avanzar en la mazmorra", "Descansar en la fogata", "Irnos de la mazmorra"}, new int[] {3, 4, 5, 6});
-			DialMan.addDialogue(3, -1, "Dante", null, "Deberiamos investigar la tienda, tengo algunas monedas...", 20, null);
-			DialMan.addDialogue(0, 1, chars[0].getName(), chars[0].getPortrait(), "Es lo que yo opino...", 20, null);
-			DialMan.addDialogue(3, -1, "Dante", null, "Podemos empezar a tantear la mazmorra, despues investigamos la tienda.", 20, null);
-			DialMan.addDialogue(4, -1, chars[1].getName(), chars[1].getPortrait(), "Me gusta mas esa idea.", 20, null);
-			DialMan.addDialogue(5, -1, "Dante", null, "Descansemos en la fogata.", 20, null);
-			DialMan.addDialogue(6, -1, "Dante", null, "Podriamos irn-", 20, null);
-			DialMan.addDialogue(4, -1, chars[3].getName(), chars[3].getPortrait(), "No.", 20, null);
-			DialMan.addDialogue(6, -1, "Dante (mente)", null, "Comienza esta aventura.", 20, null);
-			DialMan.addDialogue(6, -1, "Dante (mente)", null, "emprenderemos un viaje a esta mazmorra... pero, por que?", 20, null);
-			DialMan.addDialogue(6, -1, "Dante (mente)", null, "Una organizacion anonima nos encargo recuperar un artefacto en el fondo de la mazmorra...", 20, null);
-			DialMan.addDialogue(6, -1, "Dante (mente)", null, "Una 'Raiz Dorada'. Nadie sabe que es.", 20, null);
-			DialMan.addDialogue(6, -1, "Dante (mente)", null, "Para conseguirlo, me dieron este reloj... al girarlo, todos "
+			DialMan.addDialogue(2, 3, chars[1].getName(), chars[1].getPortrait(), "Parece no tener dependiente... pero no podemos robarla", 20, null);
+			DialMan.addChoice(3, 20, "Que deberiamos hacer? ", null, 
+					new String[] {"Ir a la tienda", "Avanzar", "Descansar", "Irnos"}, new int[] {4, 5, 6, 7});
+			DialMan.addDialogue(4, 9, "Dante", null, "Deberiamos investigar la tienda, tengo algunas monedas...", 20, null);
+			DialMan.addDialogue(9, 11, chars[0].getName(), chars[0].getPortrait(), "Es lo que yo opino...", 20, null);
+			DialMan.addDialogue(5, 10, "Dante", null, "Podemos empezar a tantear la mazmorra, despues investigamos la tienda.", 20, null);
+			DialMan.addDialogue(10, 11, chars[1].getName(), chars[1].getPortrait(), "Me gusta mas esa idea.", 20, null);
+			DialMan.addDialogue(6, 11, "Dante", null, "Descansemos en la fogata.", 20, null);
+			DialMan.addDialogue(7, 8, "Dante", null, "Podriamos irn-", 20, null);
+			DialMan.addDialogue(8, 3, chars[3].getName(), chars[3].getPortrait(), "No.", 20, null);
+			DialMan.addDialogue(11, 12, "(mente)", null, "Comienza esta aventura.", 20, null);
+			DialMan.addDialogue(12, 13, "(mente)", null, "emprenderemos un viaje a esta mazmorra... pero, por que?", 20, null);
+			DialMan.addDialogue(13, 14, "(mente)", null, "Una organizacion anonima nos encargo recuperar un artefacto en el fondo de la mazmorra...", 20, null);
+			DialMan.addDialogue(14, 15, "(mente)", null, "Una 'Raiz Dorada'. Nadie sabe que es.", 20, null);
+			DialMan.addDialogue(15, 16, "(mente)", null, "Para conseguirlo, me dieron este reloj... al girarlo, todos "
 					+ "volvemos al ultimo punto de menor riesgo, con nuestras vidas intactas...", 20, null);
-			DialMan.addDialogue(6, -1, "Dante (mente)", null, "Como si rebobinase el tiempo...", 20, null);
-			DialMan.addDialogue(6, -1, "Dante (mente)", null, "No se como funciona, pero estoy seguro que "
+			DialMan.addDialogue(16, 17, "(mente)", null, "Como si rebobinase el tiempo...", 20, null);
+			DialMan.addDialogue(17, 18, "(mente)", null, "No se como funciona, pero estoy seguro que "
 					+ "lo averiguaremos aqui.", 20, null);
-			DialMan.addDialogue(6, -1, null, null, "Bienvenido a Dungeon Slashers!", 20, null);
-			DialMan.addDialogue(6, -1, null, null, "Antes de empezar, un par de cosas a tener en cuenta...", 20, null);
-			DialMan.addDialogue(6, -1, null, null, 
+			DialMan.addDialogue(18, 19, null, null, "Bienvenido a Dungeon Slashers!", 20, null);
+			DialMan.addDialogue(19, 20, null, null, "Antes de empezar, un par de cosas a tener en cuenta...", 20, null);
+			DialMan.addDialogue(20, 21, null, null, 
 					"Muevete con " + (Main.config.keyConfig == Config.KEYS_ARROWS ? "las Flechas" : "WASD") + ".", 20, null);
-			DialMan.addDialogue(6, -1, null, null, "Para interactuar con el mundo, usa " + Main.config.key_interact, 20, null);
-			DialMan.addDialogue(6, -1, null, null, "Para abrir el menu, usa " + Main.config.key_back, 20, null);
-			DialMan.addDialogue(6, -1, null, null, "Puedes correr (e inspeccionar a los enemigos en combate) con la " + Main.config.key_alt, 20, null);
-			DialMan.addDialogue(6, -1, null, null, "La mazmorra esta compuesta por 5 pisos.", 20, null);
-			DialMan.addDialogue(6, -1, null, null, "Cada uno con habitaciones, encuentros, tesoros y un jefe.", 20, null);
-			DialMan.addDialogue(6, -1, null, null, "Si te encuentras con el jefe y mueres, la proxima vez que ingreses a ese piso se mostrara todo el mapa.", 20, null);
-			DialMan.addDialogue(6, -1, null, null, "Pulse M para abrir el mapa (en la mazmorra).", 20, null);
+			DialMan.addDialogue(21, 22, null, null, "Para interactuar con el mundo, usa " + Main.config.key_interact, 20, null);
+			DialMan.addDialogue(22, 23, null, null, "Para abrir el menu, usa " + Main.config.key_back, 20, null);
+			DialMan.addDialogue(23, 24, null, null, "Puedes correr (e inspeccionar a los enemigos en combate) con la " + Main.config.key_alt, 20, null);
+			DialMan.addDialogue(24, 25, null, null, "La mazmorra esta compuesta por 5 pisos.", 20, null);
+			DialMan.addDialogue(25, 26, null, null, "Cada uno con habitaciones, encuentros, tesoros y un jefe.", 20, null);
+			DialMan.addDialogue(26, 27, null, null, "Si te encuentras con el jefe y mueres, la proxima vez que ingreses a ese piso se mostrara todo el mapa.", 20, null);
+			DialMan.addDialogue(27, 28, null, null, "Pulse M para abrir el mapa (en la mazmorra).", 20, null);
+			DialMan.addDialogue(28, 29, null, null, "La habitacion de la izquierda es una tienda.", 20, null);
+			DialMan.addDialogue(29, -1, null, null, "Ahora, disfrute del juego!", 20, null);
 
 			Main.player.flags[Flags.FLAG_FIRSTSCREEN_DIALOGUE_START] = true;
 		}

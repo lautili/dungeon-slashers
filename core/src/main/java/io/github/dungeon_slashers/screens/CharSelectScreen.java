@@ -84,7 +84,7 @@ public class CharSelectScreen implements Screen {
     					"Cuando una piedra cayo sobre usted y lo noqueo.", 20, null);
     			DialMan.addDialogue(11, 12, "Dante", null, "El resto... estan bien?", 20, null);
     			DialMan.addDialogue(12, 13, "Robert", robert.getPortrait(), 
-    					"Si, pero lamentablemente encontramos un problema al acceder" + 
+    					"Si, pero lamentablemente encontramos un problema al acceder " + 
     			"a la mazmorra...", 20, null);
     			DialMan.addDialogue(13, 14, "Robert", robert.getPortrait(), 
     					"Solo 4 de nosotros, sin incluirlo a usted, podran ingresar.", 20, null);
