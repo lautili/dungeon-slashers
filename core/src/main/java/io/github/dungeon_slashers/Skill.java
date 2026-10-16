@@ -167,17 +167,14 @@ public class Skill {
 			snd = SHIELD;
 			break;
 		}
-		snd.play(Main.config.volume * Main.config.volSFX);
+		if(snd != null) {
+			snd.play(Main.config.volume * Main.config.volSFX);
+		}
 		DialMan.addDialogue(0, BattleScreen.DIAL_BACTION);
 		DialMan.addBDialogue(BattleScreen.DIAL_BACTION, -1, msg);
 	}
 	public void use(Entity a, Entity b) { //A otra entidad
 		checkRand();
-		if(atkMsg != null) {
-			DialMan.addBDialogue(0, 1, a.getName() + atkMsg + b.getName()); //muestra el mensaje de la skill
-		}else {
-			DialMan.addDialogue(0, 1);
-		}
 		b.attacked = true;
 		int count = 1;
 		int dmg = 0;
@@ -187,10 +184,19 @@ public class Skill {
 		//Si la skill no tiene un tipo definido, usa la del que la castea.
 		// por ejemplo, los ataques comunes no tienen tipo, asi que a pesar de que el explorador y 
 		// el ladron usan el mismo ataque, el tipo del primero es RAN y del segundo es PHY
-		if(type == null ) {
+		if(type == null) {
 			dmgType = a.getType();
 		}else {
 			dmgType = type;
+		}
+		if(atkMsg != null) {
+			if(dmgType.equals("CUR")) {
+				DialMan.addBDialogue(0, 1, a.getName() + " cura a " + b.getName());
+			}else {
+				DialMan.addBDialogue(0, 1, a.getName() + atkMsg + b.getName()); //muestra el mensaje de la skill
+			}
+		}else {
+			DialMan.addDialogue(0, 1);
 		}
 		Sound snd;
 		switch(dmgType) {
@@ -232,9 +238,15 @@ public class Skill {
 				break;
 			//ataque normal magico
 			case "defMat":
-				dmg = ((a.getMAT()*4) / ( (b.getMDF() / 10) + 1 )) / b.prot ;
-				dmg *= mul;
-				b.modHP(-dmg);
+				if(dmgType.equals("CUR")) {
+					Hero hero = (Hero) a;
+					dmg = (hero.getWeapon().getMAT() * 10) + (int) (hero.getMAT() * 0.1);
+					b.modHP(dmg);
+				}else {
+					dmg = ((a.getMAT()*4) / ( (b.getMDF() / 10) + 1 )) / b.prot ;
+					dmg *= mul;
+					b.modHP(-dmg);
+				}
 				break;
 				
 			//warrior
@@ -426,7 +438,7 @@ public class Skill {
 				
 				//Sage
 			case "healing":
-				dmg = ( (int) (b.getHP() * 0.4)	 +  10);
+				dmg = ( (int) (b.getHP() * 0.4)	 +  (int) (a.getMAT() / (2 * a.getMAT())));
 				b.modHP(dmg);
 				snd = HEAL;
 				break;
@@ -436,7 +448,7 @@ public class Skill {
 				snd = HEAL;
 				break;
 			case "bardSong":
-				dmg = ( (int) (b.getHP() * 0.6)	 +  20);
+				dmg = ( (int) (b.getHP() * 0.6)	 +  (int) (a.getMAT() / (2 * a.getMAT())));
 				b.modHP(dmg);
 				snd = BARD;
 				break;
@@ -731,7 +743,7 @@ public class Skill {
 					
 					//sage
 				case "mulHeal":
-					dmg = ( (int) (b[i].getHP() * 0.2)	 +  10);
+					dmg = ( (int) (b[i].getHP() * 0.3) +  (int) (a.getMAT() / (2 * a.getMAT())));
 					if(b[i].hp > 0) {
 						b[i].modHP(dmg);
 					}else {
@@ -763,7 +775,7 @@ public class Skill {
 					snd = HEAL;
 					break;
 				case "healingRitual":
-					dmg = ( (int) (b[i].getHP() * 0.4)	 +  20);
+					dmg = ( (int) (b[i].getHP() * 0.4)	 +  (int) (a.getMAT() / (2 * a.getMAT())));
 					if(b[i].hp > 0) {
 						b[i].modHP(dmg);
 					}else {

@@ -119,7 +119,7 @@ public class FirstScreen implements Screen {
 			DialMan.addDialogue(11, 12, "(mente)", null, "Comienza esta aventura.", 20, null);
 			DialMan.addDialogue(12, 13, "(mente)", null, "emprenderemos un viaje a esta mazmorra... pero, por que?", 20, null);
 			DialMan.addDialogue(13, 14, "(mente)", null, "Una organizacion anonima nos encargo recuperar un artefacto en el fondo de la mazmorra...", 20, null);
-			DialMan.addDialogue(14, 15, "(mente)", null, "Una 'Raiz Dorada'. Nadie sabe que es.", 20, null);
+			DialMan.addDialogue(14, 15, "(mente)", null, "Una... cosa... dorada... Nadie sabe que es.", 20, null);
 			DialMan.addDialogue(15, 16, "(mente)", null, "Para conseguirlo, me dieron este reloj... al girarlo, todos "
 					+ "volvemos al ultimo punto de menor riesgo, con nuestras vidas intactas...", 20, null);
 			DialMan.addDialogue(16, 17, "(mente)", null, "Como si rebobinase el tiempo...", 20, null);

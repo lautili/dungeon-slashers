@@ -25,6 +25,7 @@ import io.github.dungeon_slashers.item.Item;
 import io.github.dungeon_slashers.item.Weapon;
 import io.github.dungeon_slashers.screens.BattleScreen;
 import io.github.dungeon_slashers.screens.CharSelectScreen;
+import io.github.dungeon_slashers.screens.FinalScreen;
 import io.github.dungeon_slashers.screens.FirstScreen;
 import io.github.dungeon_slashers.screens.MainMenuScreen;
 import io.github.dungeon_slashers.screens.MenuScreen;
@@ -85,6 +86,7 @@ public class Main extends Game {
 
 	//screens
 	public FirstScreen firstScreen;
+	public FinalScreen finalScreen;
 	public CharSelectScreen charSelectScreen;
 	public MenuScreen menuScreen;
 	public StoreScreen storeScreen;
@@ -184,6 +186,7 @@ public class Main extends Game {
 
 
     	firstScreen = new FirstScreen(this);
+    	finalScreen = new FinalScreen(this);
     	menuScreen = new MenuScreen(this);
     	storeScreen = new StoreScreen(this);
     	charSelectScreen = new CharSelectScreen(this);
@@ -191,35 +194,46 @@ public class Main extends Game {
     	fifthFloor = new Floor(25, 25, 200, 300, defBattle5Screen, fifthBossFight, 1, 25,
     			getItem("minHPot"), getItem("minMPot"), getItem("minSPot"),
     			getItem("minHPven"), getItem("minSPven"), getItem("minMPven"),
+    			
     			getItem("ironSword"), getItem("woodenStaff"),
+    			
     			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"));
-    	fifthFloorScreen = new floorScreen(this, fifthFloor, firstScreen, firstScreen, Flags.FLAG_FIFTHBOSS_DIALOGUE);
+    	fifthFloorScreen = new floorScreen(this, fifthFloor, finalScreen, firstScreen, Flags.FLAG_FIFTHBOSS_DIALOGUE);
     	
     	fourthFloor = new Floor(25, 25, 200, 250, defBattle4Screen, fourthBossFight, 1, 25,
     			getItem("minHPot"), getItem("minMPot"), getItem("minSPot"),
     			getItem("minHPven"), getItem("minSPven"), getItem("minMPven"),
+    			
     			getItem("ironSword"), getItem("woodenStaff"),
+    			
     			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"));
     	fourthFloorScreen = new floorScreen(this, fourthFloor, fifthFloorScreen, firstScreen, Flags.FLAG_FOURTHBOSS_DIALOGUE);
     	
     	thirdFloor = new Floor(20, 20, 150, 200, defBattle3Screen, thirdBossFight, 1, 25,
     			getItem("minHPot"), getItem("minMPot"), getItem("minSPot"),
     			getItem("minHPven"), getItem("minSPven"), getItem("minMPven"),
+    			
     			getItem("ironSword"), getItem("woodenStaff"),
+    			
     			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"));
     	thirdFloorScreen = new floorScreen(this, thirdFloor, fourthFloorScreen, firstScreen, Flags.FLAG_THIRDBOSS_DIALOGUE);
     	
     	secondFloor = new Floor(20, 20, 50, 100, defBattle2Screen, secondBossFight, 1, 25,
     			getItem("minHPot"), getItem("minMPot"), getItem("minSPot"),
     			getItem("minHPven"), getItem("minSPven"), getItem("minMPven"),
+    			
     			getItem("ironSword"), getItem("woodenStaff"),
+    			
     			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"));
     	secondFloorScreen = new floorScreen(this, secondFloor, thirdFloorScreen, firstScreen, Flags.FLAG_SECONDBOSS_DIALOGUE);
 
     	firstFloor = new Floor(15, 15, 25, 50, defBattleScreen, firstBossFight, 1, 25,
     			getItem("minHPot"), getItem("minMPot"), getItem("minSPot"),
     			getItem("minHPven"), getItem("minSPven"), getItem("minMPven"),
-    			getItem("ironSword"), getItem("woodenStaff"),
+    			
+    			getItem("ironSword"), getItem("woodenStaff"), getItem("bow"), getItem("daggers"),
+    			getItem("encBow"), getItem("curStaff"),
+    			
     			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"));
     	firstFloorScreen = new floorScreen(this, firstFloor, secondFloorScreen, firstScreen, Flags.FLAG_FIRSTBOSS_DIALOGUE);
     	
@@ -260,35 +274,36 @@ public class Main extends Game {
 
 	private void initializeGame() {
 		//initialize armas
-				Weapon dullSword = new Weapon("Espada Desafilada", "dullSword", "Espada antigua y desafilada.", 0, 0, 0, 15, "Warrior");
-				Weapon dullDaggers = new Weapon("Dagas Desgastadas", "dullDaggers", "Un par de dagas desgastadas.", 0, 0, 0, 15, "Thief");
-				Weapon brokenStaff = new Weapon("Baculo Roto", "brokenStaff", "Un baculo que apenas funciona.", 0, 0, 0, 15, "Mage", "Sage");
-				Weapon oldBow = new Weapon("Arco Viejo", "oldBow", "Un arco que ya tiene sus años.", 0, 0, 0, 15, "Explorer");
+				Weapon dullSword = new Weapon("Espada Desafilada", "dullSword", "Espada antigua y desafilada.", null, 0, 0, 0, 15, "Warrior");
+				Weapon dullDaggers = new Weapon("Dagas Desgastadas", "dullDaggers", "Un par de dagas desgastadas.", null, 0, 0, 0, 15, "Thief");
+				Weapon brokenStaff = new Weapon("Baculo Roto", "brokenStaff", "Un baculo que apenas funciona.", null, 0, 0, 0, 15, "Mage", "Sage");
+				Weapon oldBow = new Weapon("Arco Viejo", "oldBow", "Un arco que ya tiene sus años.", null, 0, 0, 0, 15, "Explorer");
 
-				Weapon ironSword = new Weapon("Espada de Hierro", "ironSword", "Una espada comun de hierro. no destaca en nada.", 5, 0, 0, 30, "Warrior");
-				Weapon woodenStaff = new Weapon("Baston de Madera", "woodenStaff", "Un baston de roble de segunda mano.", 0, 5, 0, 30, "Mage", "Sage");
-
+				Weapon ironSword = new Weapon("Espada de Hierro", "ironSword", "Una espada comun de hierro. no destaca en nada.", "PHY", 5, 0, 0, 70, "Warrior");
+				Weapon woodenStaff = new Weapon("Baston de Madera", "woodenStaff", "Un baston de roble de segunda mano.", "FIR", 0, 5, 0, 70, "Mage", "Sage");
+				Weapon bow = new Weapon("Arco de madera", "bow", "Un arco de madera de roble comun.", "RAN", 5, 0, 0, 70, "Explorer");
+				Weapon daggers = new Weapon("Dagas de hierro", "daggers", "Un par de dagas en un buen estado.", "PHY", 2, 0, 5, 70, "Thief");
+				Weapon encBow = new Weapon("Arco de Fuego", "encBow", "Un arco creado a partir de una madera ignifiuga.", "FIR", 0, 5, 0, 100, "Explorer");
+				Weapon curStaff = new Weapon("Baston curativo", "curStaff", "Un baston con propiedades curativas.", "CUR", 0, 2, 0, 100, "Sage");
+				
+				
 				//initialize armaduras
 				Armor rags = new Armor("Harapos", "rags", "Ropas viejas.", 0, 0, 0, 0, 0, 5);
-				Armor leatherArmor = new Armor("Armadura de Cuero", "leatherArmor", "Armadura de cuero. Da algo de resistencia.", 0, 0, 5, 0, 0, 30);
-				Armor ironArmor = new Armor("Armadura de Hierro", "ironArmor", "Armadura de hierro. Resistente, pero lenta.", 0, 0, 10, 0, -5, 50);
-				Armor wizRobes = new Armor("Bata de Mago", "wizRobes", "Una bata de mago. Da resistencia magica.", 0, 0, 0, 5, 0, 40);
+				Armor leatherArmor = new Armor("Armadura de Cuero", "leatherArmor", "Armadura de cuero. Da algo de resistencia.", 0, 0, 5, 0, 0, 60);
+				Armor ironArmor = new Armor("Armadura de Hierro", "ironArmor", "Armadura de hierro. Resistente, pero lenta.", 0, 0, 10, 0, -5, 90);
+				Armor wizRobes = new Armor("Bata de Mago", "wizRobes", "Una bata de mago. Da resistencia magica.", 0, 0, 0, 5, 0, 100);
 
-				player.addArmors(ironArmor);
-				player.addArmors(wizRobes);
-
-				player.addWeapons(woodenStaff);
-				player.addWeapons(ironSword);
 
 				//initialize items
 				Item minHPot = new Item("Pocion menor de salud", "minHPot", "Cura poca cantidad de salud.", 20, 5, 3, false, true);
 				Item minMPot = new Item("Pocion menor de mana", "minMPot", "Cura una poca cantidad de mana.", 20, 5, 3, false, true);
 				Item minSPot = new Item("Pocion menor de stamina", "minSPot", "Cura una poca cantidad de stamina.", 5, 20, 3, false, true);
-				Item minHPven = new Item("Veneno menor de salud", "minHPven", "Quita una poca cantidad de salud.", 30, 3, 1, false, false);
-				Item minSPven = new Item("Veneno menor de stamina", "minSPven", "Quita una poca cantidad de stamina.", 2, 20, 1, false, false);
-				Item minMPven = new Item("Veneno menor de mana", "minMPven", "Quita una poca cantidad de mana.", 20, 2, 1, false, false);
+				Item minHPven = new Item("Veneno menor de salud", "minHPven", "Quita una poca cantidad de salud.", 50, 3, 1, false, false);
+				Item minSPven = new Item("Veneno menor de stamina", "minSPven", "Quita una poca cantidad de stamina.", 50, 2, 1, false, false);
+				Item minMPven = new Item("Veneno menor de mana", "minMPven", "Quita una poca cantidad de mana.", 50, 2, 1, false, false);
 
-				initItems(dullSword, dullDaggers, brokenStaff, oldBow, ironSword, woodenStaff,
+				initItems(dullSword, dullDaggers, brokenStaff, oldBow, ironSword, woodenStaff, bow, daggers, 
+						encBow, curStaff,
 
 						rags, leatherArmor, ironArmor, wizRobes,
 
@@ -1135,14 +1150,14 @@ public class Main extends Game {
 		                        "Te tendria que haber hecho caso... Marie...",
 		                        "Que sentido tiene...?",
 		                        "Por que... hay honor... en la muerte..?",
-		                        "No tiene... nada de honorifico... arrebatarle la vida a otro ser...",
+		                        "No tiene... nada de honorifico... arrebatarle la vida a un igual...",
 		                        "Ojala lo hubiese entendido...",
 		                        "El significado...",
-		                        "No existe...",
+		                        "...no existe...",
 		                        "La Muerte...",
 		                        "La vida...",
 		                        "Es todo...",
-		                        "Absurdo...",
+		                        "...absurdo...",
 		                        "Tengo un nombre...",
 		                        "Pero a nadie le importa...",
 		                        "No existen hombres, ni sus nombres...",
@@ -1209,6 +1224,9 @@ public class Main extends Game {
 					items[j] = player.getInventory()[i];
 				}
 			}
+		}
+		for(Hero hero : player.getCharacters()) {
+			hero.updateFinalStats();
 		}
 		for(int i = 0; i < player.getWeapons().length; i++) {
 			for(int j = 0; j < items.length; j++) {

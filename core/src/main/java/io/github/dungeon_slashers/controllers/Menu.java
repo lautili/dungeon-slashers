@@ -92,6 +92,7 @@ public static void showItemStats(Main game, Item i) {
 		game.invFont.getData().setScale(0.4f);
 		Weapon w = (Weapon) i;
 		String msg = "";
+		game.invFont.draw(game.batch, "TIPO: " + (w.getBaseType() == null ? "NONE" : w.getBaseType()), 360, 150);
 		game.invFont.draw(game.batch, "ATK " + w.getATK(), 350, 200);
 		game.invFont.draw(game.batch, "MAT " + w.getMAT(), 420, 200);
 		game.invFont.draw(game.batch, "SPD " + w.getSPD(), 390, 180);
@@ -117,8 +118,8 @@ public static void showItemStats(Main game, Item i) {
 		game.invFont.draw(game.batch, "MDF " + a.getMDF(), 420, 180);
 		game.invFont.draw(game.batch, "SPD " + a.getSPD(), 390, 160);
 	}
-	game.invFont.getData().setScale(0.5f);
-	game.invFont.draw(game.batch, i.getCost() + "G", 440, 224);
+	game.invFont.getData().setScale(0.4f);
+	game.invFont.draw(game.batch, i.getCost() + "G", 420, 224, 100, Align.left, true);
 	game.invFont.getData().setScale(0.35f);
 	layout.setText(
 		    game.invFont,

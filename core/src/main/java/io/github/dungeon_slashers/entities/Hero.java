@@ -37,6 +37,10 @@ public class Hero extends Entity{
 	private int lvl;
 	public int lastOpt;
 	
+	//otro
+	private String type;
+	public int tempType;
+	
 	//armas y armaduras
 	private Weapon weapon;
 	private Armor armor;
@@ -51,6 +55,8 @@ public class Hero extends Entity{
 		this.IDname = IDname;
 		this.className = className;
 		this.baseType = baseType;
+		this.tempType = -1;
+		this.type = baseType;
 		this.maxhp = maxhp;
 		this.hpIn = maxhp;
 		this.hp = maxhp;
@@ -125,6 +131,10 @@ public class Hero extends Entity{
 		return portrait;
 	}
 	
+	@Override 
+	public String getType() {
+		return type;
+	}
 	//Verifica si la XP ya pasó el límite del nivel, y si lo hace sube el nivel y updatea las stats y las skills
 	public int checkLvl(int cont) {
 		while(xp >= nextXp){
@@ -178,6 +188,16 @@ public class Hero extends Entity{
 	
 	//calcular las stats con armas y armaduras agregado
 	public void updateFinalStats() {
+		if(weapon.getBaseType() != null) {
+			type = weapon.getBaseType();
+		}else {
+			type = baseType;
+		}
+		if(type.equals("CUR")) {
+			tempType = 3;
+		}else {
+			tempType = -1;
+		}
 		atkF = atk + weapon.getATK() + armor.getATK();
 		matF = mat + weapon.getMAT() + armor.getMAT();
 		defF = def + armor.getDEF();

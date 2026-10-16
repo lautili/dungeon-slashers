@@ -1069,7 +1069,9 @@ public class BattleScreen implements Screen {
 	    	}
     	}
     	Menu.showOptionsX(game, game.mainFont, 0.2f, 10, 70, 80, null, sel[1], "ATACAR", "DEFENDER", "HABILIDADES", "INVENTARIO");
-    	Menu.showBattleBars(game, heroes[currChar]);
+    	if(AState != ASTATE_SELECT_OBJECTIVE) {
+    		Menu.showBattleBars(game, heroes[currChar]);
+    	}
     	switch (AState) {
 		case ASTATE_IDLE:
 			sel[1] = hero.lastOpt;
@@ -1082,6 +1084,11 @@ public class BattleScreen implements Screen {
     			case ASTATE_ATTACK:
     				AState = ASTATE_SELECT_OBJECTIVE;
     				actions[curr] = hero.getSkills()[0];
+    				if(hero.tempType == 3) {
+    					sel[2] = currChar;
+    				} else {
+    					sel[2] = 0;
+    				}
     				break;
     			case ASTATE_DEFEND:
     				AState = ASTATE_SELECT_OBJECTIVE;
@@ -1092,7 +1099,9 @@ public class BattleScreen implements Screen {
     					AState = ASTATE_SKILL;
     				break;
     			case ASTATE_INVENTORY:
-    				AState = ASTATE_INVENTORY;
+    				if(Main.player.getInventory().length > 0) {
+    					AState = ASTATE_INVENTORY;
+    				}
     				break;
     			}
     		} else if(InputMan.checkKey(Main.config.key_back) && currChar > 0) {
@@ -1165,8 +1174,14 @@ public class BattleScreen implements Screen {
 		case ASTATE_SELECT_OBJECTIVE:
 			actionsObj[curr][0] = hero;
 			int antsel;
+			int type;
+			if(hero.tempType != -1 && actions[curr] == hero.getSkills()[0]) {
+				type = hero.tempType;
+			}else {
+				type = actions[curr].getSkillType();
+			}
 			boolean haciaAdelante;
-			switch(actions[curr].getSkillType()) {
+			switch(type) {
 			case 0: // Self
 				actionsObj[curr][1] = hero; 
 				AState = ASTATE_NEXT;

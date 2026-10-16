@@ -11,11 +11,13 @@ public class Weapon extends Item {
 	private int atk;
 	private int mat;
 	private int spd;
+	private String type;
 	private String[] className; //las clases que pueden usarlo
 	
 	//constructor
-	public Weapon(String name, String IDname, String desc, int atk, int mat, int spd, int cost, String... className) {
+	public Weapon(String name, String IDname, String desc, String type, int atk, int mat, int spd, int cost, String... className) {
 		super(name, IDname, desc, cost, true);
+		this.type = type;
 		this.atk = atk;
 		this.mat = mat;
 		this.spd = spd;
@@ -24,6 +26,10 @@ public class Weapon extends Item {
 	//getters
 	public String getName() {
 		return this.name;
+	}
+	
+	public String getBaseType() {
+		return type;
 	}
 	public String getDesc() {
 		return desc;
