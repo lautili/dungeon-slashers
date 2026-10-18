@@ -82,6 +82,12 @@
 - Se agregó un tutorial al inicio.
 - Se agregó el guardado de las opciones de combate.
 
+## [0.5.0] 18-10-2026
+### Added
+- Se agregó nuevo sistema de tipos para las armas. Uno de ellos tipo CUR, que permite al curandero usar su ataque para curar aliados.
+- Se agregaron los sprites de los enemigos comunes del piso 3.
+- Se agregó una pantalla final al terminar el juego. 
+
 Beta Testers:
 - Macarena Panasiuk.
 - Lautili.
