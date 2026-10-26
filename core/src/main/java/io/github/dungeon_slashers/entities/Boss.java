@@ -2,6 +2,7 @@ package io.github.dungeon_slashers.entities;
 
 import com.badlogic.gdx.graphics.Texture;
 
+import io.github.dungeon_slashers.Flags;
 import io.github.dungeon_slashers.Main;
 import io.github.dungeon_slashers.Skill;
 
@@ -28,6 +29,33 @@ public class Boss extends Enemy{
 		}
 	}
 	
+	public Boss(Boss boss) {
+		super(boss.name, boss.IDname, boss.baseType, boss.getHP(), boss.getMP(), boss.getSP(),
+				boss.atk, boss.def, boss.mat, boss.mdf, boss.spd,
+				boss.xp, boss.gld, boss.priority, boss.PHY, boss.RAN, boss.FIR, boss.WAT, boss.WIN, boss.EAR,
+				boss.getSkills()[0],
+				boss.getSkills()[1]);
+		this.bossFlag = boss.bossFlag;
+		this.skills = boss.skills;
+		if(boss.events != null) {
+			this.events = new BossEvent[boss.events.length];
+			for(int i = 0; i < boss.events.length; i++) {
+				this.events[i] = new BossEvent(boss.events[i]);
+				if(boss.events[i] == boss.finalEvent) {
+					this.finalEvent = this.events[i];
+				}
+			}
+		}
+		if(this.finalEvent == null && boss.finalEvent != null) {
+			this.finalEvent = new BossEvent(boss.finalEvent);
+		}
+		try {
+			bossIdle = new Texture("sprites/enemies/" + IDname + "-down.png");
+		}catch(Exception e) {
+			bossIdle = new Texture("sprites/enemies/ogre-down.png");
+		}
+	}
+
 	//settear los Eventos de Boss
 	public void setEvents(BossEvent... events) {
 		this.events = events;
@@ -47,7 +75,7 @@ public class Boss extends Enemy{
 	}
 
 	public void setDefeat() {
-		
+		Flags.DialogueFlag(bossFlag, null);
 	}
 
 	public void activateFlag() {

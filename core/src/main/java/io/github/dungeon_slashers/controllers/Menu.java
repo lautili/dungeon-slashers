@@ -187,7 +187,7 @@ public static void showItemStats(Main game, Item i) {
 			    Align.left,
 			    true      // wrap
 			);
-		game.invFont.draw(game.batch, layout, 140, 200);
+		game.invFont.draw(game.batch, layout, 140, 180);
 	}
 	
 	//metodos varios del menu
@@ -561,7 +561,7 @@ public static void showItemStats(Main game, Item i) {
 	        Align.left,
 	        true             // Wrap
 	    );
-	    game.invFont.draw(game.batch, layout, x, y - 25);
+	    game.invFont.draw(game.batch, layout, x, y - 45);
 	}
 
 	public static void showOptionsSelScreen(Main game, BitmapFont font, float fontSize, float x, float y, float dif, String msg,
@@ -653,7 +653,7 @@ public static void showItemStats(Main game, Item i) {
 			String SPD = (enemy.defeated) ? "" + enemy.getSPD() : "?";
 			String statsStr = "ATK: " + ATK + "   DEF: " + DEF + "\nMAT: " + MAT + " MDF: " + MDF + "\nSPD: " + SPD;
 			
-			game.mainFont.draw(game.batch, statsStr, 350, 120, 200, Align.center, false);
+			game.mainFont.draw(game.batch, statsStr, 310, 120, 200, Align.center, false);
 			
 			game.mainFont.getData().setScale(0.3f);
 			

@@ -51,6 +51,7 @@ public class StoreScreen implements Screen {
         // Draw your screen here. "delta" is the time since last render in seconds.
     	ScreenUtils.clear(0, 0, 0, 1); //limpia el buffer de colores
     	Store.player = Main.player;
+    	updatePlayerItems();
     	int actualQ = currQ+1;
     	Item[] itemArray = null;
     	
@@ -66,7 +67,7 @@ public class StoreScreen implements Screen {
     	if(pos[1] >= itemArray.length) {
     		pos[1] = (pos[1] <= 0) ? 0 : pos[1] - 1;
     	}
-    	
+    	currItem = itemArray[pos[1]];
     	game.viewport.apply();
     	game.batch.setProjectionMatrix(game.viewport.getCamera().combined);
     	
@@ -123,7 +124,7 @@ public class StoreScreen implements Screen {
 		    		switch(pos[0]) {
 		    		case 0:
 		    			if(itemArray[pos[1]].unique) {
-		    				Store.buy(itemArray[pos[1]]);
+		    				Store.buy(currItem);
 		    			}else {
 		    				currItem = itemArray[pos[1]];
 		    				maxQ = (int) Main.player.gold / currItem.getCost();
@@ -132,7 +133,7 @@ public class StoreScreen implements Screen {
 		    			break;
 		    		case 1:
 		    			if(itemArray[pos[1]].unique) {
-		    				Store.sell(itemArray[pos[1]]);
+		    				Store.sell(currItem);
 		    			}else {
 		    				currItem = itemArray[pos[1]];
 		    				maxQ = currItem.q;

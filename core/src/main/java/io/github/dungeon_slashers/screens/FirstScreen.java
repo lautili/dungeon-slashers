@@ -90,11 +90,7 @@ public class FirstScreen implements Screen {
         		chars[i].sp = chars[i].maxsp;
         		chars[i].mp = chars[i].maxmp;
     		}
-			game.firstFloor.generateNewLayout();
-			game.secondFloor.generateNewLayout();
-			game.thirdFloor.generateNewLayout();
-			game.fourthFloor.generateNewLayout();
-			game.fifthFloor.generateNewLayout();
+			game.restartLayouts();
     		Save.save();
 		}
 		Main.player.currScreen = "FIRST_SCREEN";
@@ -105,7 +101,7 @@ public class FirstScreen implements Screen {
 		camera.zoom = 1f;
 		if(!Main.player.flags[Flags.FLAG_FIRSTSCREEN_DIALOGUE_START]) {
 			DialMan.addDialogue(0, 1, chars[0].getName(), chars[0].getPortrait(), "Asi que... este es el lugar, no?", 20, null);
-			DialMan.addDialogue(1, 2, chars[1].getName(), chars[1].getPortrait(), "Antes, cuando entramos al lugar, vimos esa tienda...", 60, null);
+			DialMan.addDialogue(1, 2, chars[1].getName(), chars[1].getPortrait(), "Antes, cuando entramos al lugar, vimos esa tienda...", 20, null);
 			DialMan.addDialogue(2, 3, chars[1].getName(), chars[1].getPortrait(), "Parece no tener dependiente... pero no podemos robarla", 20, null);
 			DialMan.addChoice(3, 20, "Que deberiamos hacer? ", null, 
 					new String[] {"Ir a la tienda", "Avanzar", "Descansar", "Irnos"}, new int[] {4, 5, 6, 7});

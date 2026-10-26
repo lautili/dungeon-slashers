@@ -273,9 +273,13 @@ public class Floor {
 		}while(true);
 	}
 	public void removeFromPool(Item item) {
-		for(Item item1 : itemsPool) {
-			if (item1 == item) {
-				item1 = null;
+		if(item == null) {
+			return;
+		}
+		for(int i = 0; i < itemsPool.length; i++) {
+			Item poolItem = itemsPool[i];
+			if(poolItem == item || (poolItem != null && poolItem.getIDName().equals(item.getIDName()))) {
+				itemsPool[i] = null;
 			}
 		}
 	}

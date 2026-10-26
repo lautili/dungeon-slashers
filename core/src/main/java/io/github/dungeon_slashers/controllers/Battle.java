@@ -20,12 +20,9 @@ será la clase encargada de controlar las batallas.
 public class Battle {
 	
 	//todo lo necesario
-	private Player player;
 	public Enemy[] possibleEnemy; //lista de enemigos posibles
 	public boolean isBoss; //(si es un jefe o no)
 	private transient Random rand; //Random para aleatoriedades
-	private int xp; //xp total
-	private int gld; //oro total
 	private int quant; //cantidad de enemigos posibles en el combate
 		
 	public Battle(boolean isBoss, int quant, Enemy...enemies) {
@@ -39,8 +36,6 @@ public class Battle {
 	public Enemy[] initEnemies() {
 		Enemy[] enemies;
 		if(!isBoss) {
-		xp = 0;
-		gld = 0;
 			enemies = new Enemy[rand.nextInt(quant) + 1]; //genera la cantidad de enemigos. varia del 1 al 3
 			for(int i = 0; i < enemies.length; i++) {
 				if(possibleEnemy.length > 1) {
@@ -50,7 +45,8 @@ public class Battle {
 				}
 			}
 		}else {
-			enemies = possibleEnemy;
+			enemies = new Enemy[1];
+			enemies[0] = new Boss((Boss) possibleEnemy[0]);
 		}
 		return enemies;
 	}

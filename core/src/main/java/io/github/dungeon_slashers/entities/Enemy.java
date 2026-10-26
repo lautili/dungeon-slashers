@@ -27,9 +27,10 @@ public class Enemy extends Entity{
 	public transient final int WEAK_WAT = 3;
 	public transient final int WEAK_WIN = 4;
 	public transient final int WEAK_EAR = 5;
+	public transient int offset;
 	
 	//constructor
-	public Enemy(String name, String IDname, String baseType, int hp, int mp, int sp, int atk, int def, int mat, int mdf, int spd, 
+	public Enemy(String name, String IDname, String baseType, int hp, int mp, int sp, int atk, int def, int mat, int mdf, int spd,
 			int xp, int gld, int priority,
 			double PHY, double RAN, double FIR, double WAT, double WIN, double EAR,
 			Skill attack, Skill defend) {
@@ -97,6 +98,7 @@ public class Enemy extends Entity{
 		this.xp = enemy.xp;
 		this.gld = enemy.gld;
 		this.priority = enemy.priority;
+		this.offset = enemy.offset;
 		this.description = enemy.description;
 		this.discWeakness = enemy.discWeakness;
 		defeated = enemy.defeated;
@@ -114,6 +116,50 @@ public class Enemy extends Entity{
 		this.EAR = enemy.EAR;
 		effects = new Effect[3];
 		skills = enemy.skills;
+		prot = 1;
+	}
+
+	public Enemy(String name, String IDname, String baseType, int hp, int mp, int sp, int atk, int def, int mat, int mdf, int spd, 
+			int xp, int gld, int priority, int offset,
+			double PHY, double RAN, double FIR, double WAT, double WIN, double EAR,
+			Skill attack, Skill defend) {
+		this.name = name;
+		this.IDname = IDname;
+		this.baseType = baseType;
+		this.maxhp = hp;
+		this.hp = hp;
+		this.maxsp = sp;
+		this.sp = sp;
+		this.maxmp = mp;
+		this.mp = mp;
+		this.atk = atk;
+		this.def = def;
+		this.mat = mat;
+		this.mdf = mdf;
+		this.spd = spd;
+		this.xp = xp;
+		this.gld = gld;
+		this.priority = priority;
+		atkF = atk;
+		defF = def;
+		matF = mat;
+		mdfF = mdf;
+		spdF = spd;
+		this.PHY = PHY;
+		this.RAN = RAN;
+		this.FIR = FIR;
+		this.WAT = WAT;
+		this.WIN = WIN;
+		this.EAR = EAR;
+		this.offset = offset;
+		try {
+			texture = new Texture("sprites/enemies/" + IDname + ".png");
+		}catch(Exception e) {
+			texture = new Texture("sprites/enemies/something.png");
+		}
+		skills = new Skill[2];
+		skills[0] = attack;
+		skills[1] = defend;
 		prot = 1;
 	}
 

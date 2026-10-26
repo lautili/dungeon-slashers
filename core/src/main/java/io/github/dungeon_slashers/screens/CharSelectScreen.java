@@ -68,7 +68,7 @@ public class CharSelectScreen implements Screen {
     	switch(screenState) {
     	case STATE_FIRSTDIALOGUE:
     		if(!check) {
-    			Hero robert = searchCharacter("warrior");
+    			Hero tarrou = searchCharacter("warrior");
     			DialMan.addDialogue(0, 1, "???", null, "...", 20, null);
     			DialMan.addDialogue(1, 2, "???", null, "Hola..?", 20, null);
     			DialMan.addDialogue(2, 3, "???", null, "Dante...", 20, null);
@@ -76,22 +76,22 @@ public class CharSelectScreen implements Screen {
     			DialMan.addDialogue(4, 5, "???", null, "Dante!!", 20, null);
     			DialMan.addDialogue(5, 6, "Dante", null, "Ugh...", 20, null);
     			DialMan.addDialogue(6, 7, "???", null, "Dante, señor.", 20, null);
-    			DialMan.addDialogue(7, 8, "???", null, "Soy yo, Robert.", 20, null);
+    			DialMan.addDialogue(7, 8, "???", null, "Soy yo, Tarrou.", 20, null);
     			DialMan.addDialogue(8, 9, "Dante", null, "Que... que paso?", 20, null);
-    			DialMan.addDialogue(9, 10, "Robert", robert.getPortrait(), 
+    			DialMan.addDialogue(9, 10, "Tarrou", tarrou.getPortrait(), 
     					"Estabamos en camino a la mazmorra del contrato...", 20, null);
-    			DialMan.addDialogue(10, 11, "Robert", robert.getPortrait(), 
+    			DialMan.addDialogue(10, 11, "Tarrou", tarrou.getPortrait(), 
     					"Cuando una piedra cayo sobre usted y lo noqueo.", 20, null);
     			DialMan.addDialogue(11, 12, "Dante", null, "El resto... estan bien?", 20, null);
-    			DialMan.addDialogue(12, 13, "Robert", robert.getPortrait(), 
+    			DialMan.addDialogue(12, 13, "Tarrou", tarrou.getPortrait(), 
     					"Si, pero lamentablemente encontramos un problema al acceder " + 
     			"a la mazmorra...", 20, null);
-    			DialMan.addDialogue(13, 14, "Robert", robert.getPortrait(), 
+    			DialMan.addDialogue(13, 14, "Tarrou", tarrou.getPortrait(), 
     					"Solo 4 de nosotros, sin incluirlo a usted, podran ingresar.", 20, null);
-    			DialMan.addDialogue(14, 15, "Robert", robert.getPortrait(), 
+    			DialMan.addDialogue(14, 15, "Tarrou", tarrou.getPortrait(), 
     					"La puerta se cierra cuando una quinta persona entra.", 20, null);
     			DialMan.addDialogue(15, 16, "Dante", null, "Asi que... uno quedara afuera, verdad?", 20, null);
-    			DialMan.addDialogue(16, DIAL_FIRST, "Robert", robert.getPortrait(), 
+    			DialMan.addDialogue(16, DIAL_FIRST, "Tarrou", tarrou.getPortrait(), 
     					"Lamentablemente es el caso.", 20, null);
     			DialMan.addDialogue(DIAL_FIRST, -1, "Dante", null, "Bueno, entonces... veamos...", 20, null);
     			check = true;
@@ -181,7 +181,7 @@ public class CharSelectScreen implements Screen {
 					+ "magico o si un enemigo es fuerte contra ataques fisicos. A pesar de moverse lento, "
 					+ "si su ataque te alcanza, date por muerto. \n"
 					+ "Por suerte, nunca tuve problemas con el por mi cuenta, y es bastante amable de hecho! "
-					+ "Pero, si he tenido que rebobinar varias veces mi reloj para revivir a Noelle cuando "
+					+ "Pero, si he tenido que rebobinar varias veces mi reloj para revivir a Eva cuando "
 					+ "estos dos tuvieron alguna pelea en el trayecto a aqui...";
 			break;
 		case "mage":
@@ -202,7 +202,7 @@ public class CharSelectScreen implements Screen {
 			break;
 		case "thief":
 			desc = "Es escurridiza... la encontramos cuando me robo un artefacto investigando un asesinato "
-					+ "en las afueras de la Capital y si no fuese por un flechazo gelido de Ocelot "
+					+ "en las afueras de la Capital y si no fuese por un flechazo gelido de Rieux "
 					+ "se habria escapado con el. Pensamos en llevarla a las autoridades, pero parecia bastante "
 					+ "arrepentida de lo que hacia... y solo lo hacia para comer. Decidi, en contra de la "
 					+ "voluntad de los muchachos, contratarla. Hice bien, fue una gran adicion al equipo y "

@@ -258,6 +258,7 @@ public class Skill {
 			case "deepCut":
 				dmg = ((a.getMAT()*5) / ( (b.getMDF() / 10) + 1 )) / b.prot ;
 				dmg *= mul;
+				if(rand.nextInt(100) < 20)
 				count = b.setEffect(new Effect("BLE"), count);
 				
 				b.modHP(-dmg);
@@ -265,6 +266,7 @@ public class Skill {
 			case "knockout":
 				dmg = ((a.getATK()*5) / ( (b.getDEF() / 10) + 1 )) / b.prot ;
 				dmg *= mul;
+				if(rand.nextInt(100) < 30)
 				count = b.setEffect(new Effect("CON"), count);
 				
 				b.modHP(-dmg);
@@ -272,6 +274,7 @@ public class Skill {
 			case "skullCracker":
 				dmg = ((a.getATK()*6) / ( (b.getDEF() / 10) + 1 )) / b.prot ;
 				dmg *= mul;
+				if(rand.nextInt(100) < 35)
 				count = b.setEffect(new Effect("CON"), count);
 				
 				b.modHP(-dmg);
@@ -284,12 +287,14 @@ public class Skill {
 			case "lunge":
 				dmg = ((a.getATK()*6) / ( (b.getDEF() / 10) + 1 )) / b.prot ;
 				dmg *= mul; 
+				if(rand.nextInt(100) < 40)
 				count = b.setEffect(new Effect("CON"), count);
 				b.modHP(-dmg);
 				break;
 			case "hustle":
 				dmg = ((a.getATK()*8) / ( (b.getDEF() / 10) + 1 )) / b.prot ;
 				dmg *= mul;
+				if(rand.nextInt(100) < 40)
 				count = b.setEffect(new Effect("RAG"), count);
 				
 				b.modHP(-dmg);
@@ -341,6 +346,7 @@ public class Skill {
 			case "decCut":
 				dmg = ((a.getATK()*6) / ( (b.getDEF() / 10) + 1 )) / b.prot ;
 				dmg *= mul; 
+				if(rand.nextInt(100) < 35)
 				count = b.setEffect(new Effect("BLE"), count);
 				
 				b.modHP(-dmg);
@@ -352,6 +358,7 @@ public class Skill {
 				break;
 			case "smokeBomb":
 				count = b.setEffect(new Effect("SIL"), count);
+				if(rand.nextInt(100) < 20)
 				count = b.setEffect(new Effect("CON"), count);
 				snd = SMOKE_BOMB;
 				break;
@@ -444,6 +451,7 @@ public class Skill {
 				break;
 			case "deaftones":
 				count = b.setEffect(new Effect("CON"), count);
+				if(rand.nextInt(100) < 40)
 				count = b.setEffect(new Effect("POI"), count);
 				snd = HEAL;
 				break;
@@ -557,12 +565,14 @@ public class Skill {
 					dmg = ((a.getATK()*6) / ( (b[i].getDEF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
+					if(rand.nextInt(100) < 50)
 					count = b[i].setEffect(new Effect("TIR"), count);
 					break;
 				case "heavyLand":
 					dmg = ((a.getATK()*8) / ( (b[i].getDEF() / 10))) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
+					if(rand.nextInt(100) < 30)
 					count = b[i].setEffect(new Effect("CON"), count);
 					break;
 				case "warCry":
@@ -619,24 +629,28 @@ public class Skill {
 					dmg = ((a.getMAT()*8) / ( (b[i].getMDF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
+					if(rand.nextInt(100) < 40)
 					count = b[i].setEffect(new Effect("RAG"), count);
 					break;
 				case "collapse":
 					dmg = ((a.getMAT()*8) / ( (b[i].getMDF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
+					if(rand.nextInt(100) < 30)
 					count = b[i].setEffect(new Effect("SIL"), count);
 					break;
 				case "seaquake":
 					dmg = ((a.getMAT()*8) / ( (b[i].getMDF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
+					if(rand.nextInt(100) < 25)
 					count = b[i].setEffect(new Effect("SLE"), count);
 					break;
 				case "tornado":
 					dmg = ((a.getMAT()*8) / ( (b[i].getMDF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
+					if(rand.nextInt(100) < 40)
 					count = b[i].setEffect(new Effect("CON"), count);
 					break;
 				case "curse":
@@ -665,18 +679,21 @@ public class Skill {
 					dmg = ((a.getATK()*6) / ( (b[i].getDEF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
+					if(rand.nextInt(100) < 25)
 					count = b[i].setEffect(new Effect("BLE"), count);
 					break;
 				case "bladeSweep":
 					dmg = ((a.getATK()*6) / ( (b[i].getDEF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
+					if(rand.nextInt(100) < 5)
 					count = b[i].setEffect(new Effect("BLE"), count);
 					break;
 				case "bladeTornado":
 					dmg = ((a.getATK()*7) / ( (b[i].getDEF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
+					if(rand.nextInt(100) < 50)
 					count = b[i].setEffect(new Effect("BLE"), count);
 					break;
 				case "chaos":
@@ -702,6 +719,7 @@ public class Skill {
 					dmg = ((a.getATK()*5) / ( (b[i].getDEF() / 10) + 1 )) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
+					if(rand.nextInt(100) < 40)
 					count = b[i].setEffect(new Effect("BLE"), count);
 					break;
 				case "slimeDust":
@@ -841,6 +859,7 @@ public class Skill {
 		DialMan.addDialogue(BattleScreen.DIAL_BACTION, -1);
 	}
 	public void use(Entity a, Entity b, Player player, Item item) { //caso especial para combates donde se usa un item
+		
 		checkRand();
 		String msg = null;
 		String msg2 = null;
@@ -848,10 +867,10 @@ public class Skill {
 		if(item.q >= 0) {
 			if(a == b) {
 				msg = (a.getName() + " usa " + item.getName() +"!");
-				msg2 = item.Use(b, player);
+				msg2 = item.Use(b, player, true);
 			}else {
 				msg = (a.getName() + " usa " + item.getName() + " sobre " + b.getName() + "!");
-				msg2 = item.Use(b, player);
+				msg2 = item.Use(b, player, true);
 			}
 		}else {
 			msg = (a.getName() + " no pudo usar" + item.getName() + " porque se termino.\n");

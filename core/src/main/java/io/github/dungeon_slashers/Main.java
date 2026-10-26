@@ -264,7 +264,7 @@ public class Main extends Game {
 
     public Item getItem(String IDname) {
     	for(Item item : items) {
-    		if (item.getIDName() == IDname) {
+    		if (item.getIDName().equals(IDname)) {
     			return item;
     		}
     	}
@@ -297,7 +297,7 @@ public class Main extends Game {
 				//initialize items
 				Item minHPot = new Item("Pocion menor de salud", "minHPot", "Cura poca cantidad de salud.", 20, 5, 3, false, true);
 				Item minMPot = new Item("Pocion menor de mana", "minMPot", "Cura una poca cantidad de mana.", 20, 5, 3, false, true);
-				Item minSPot = new Item("Pocion menor de stamina", "minSPot", "Cura una poca cantidad de stamina.", 5, 20, 3, false, true);
+				Item minSPot = new Item("Pocion menor de stamina", "minSPot", "Cura una poca cantidad de stamina.", 20, 5, 3, false, true);
 				Item minHPven = new Item("Veneno menor de salud", "minHPven", "Quita una poca cantidad de salud.", 50, 3, 1, false, false);
 				Item minSPven = new Item("Veneno menor de stamina", "minSPven", "Quita una poca cantidad de stamina.", 50, 2, 1, false, false);
 				Item minMPven = new Item("Veneno menor de mana", "minMPven", "Quita una poca cantidad de mana.", 50, 2, 1, false, false);
@@ -309,7 +309,7 @@ public class Main extends Game {
 
 						minHPot, minMPot, minSPot, minHPven, minSPven, minMPven);
 
-				Store.addItems(minHPot, minMPot, minHPven, ironSword, woodenStaff, leatherArmor, ironArmor, wizRobes);
+				Store.addItems(minHPot, minMPot, minSPot, minHPven, ironSword, woodenStaff, leatherArmor, ironArmor, wizRobes);
 
 				//initialize habilidades
 				Skill defAtt = new Skill("defAtt", "Ataque comun", "Un ataque fisico basico.", null, " ataca a ", 1, 0, false, 1);
@@ -487,7 +487,7 @@ public class Main extends Game {
 				Skill iceArrow = new Skill("iceArrow", "Flecha Escarchada", "Inflinge daño medio de agua a un enemigo. ", "WAT",
 						" le lanza una flecha congelada a ",
 						1, 0, false, 1, 10, 25);
-				Skill arrowRain = new Skill("arrowRain", "LLuvia de flechas", "Inflinge daño bajo a todos los enemigos. ", "RAN",
+				Skill arrowRain = new Skill("arrowRain", "LLuvia de flechas", "Inflinge daño bajo a todos los enemigos con chances de aplicar sangrado. ", "RAN",
 						" nubla el cielo de flechas.",
 						2, 0, false, 1, 0, 45, 2);
 				Skill calTrap = new Skill("calTrap", "Trampa de Abrojos", "Envenena a un enemigo. ", "NONE",
@@ -578,7 +578,7 @@ public class Main extends Game {
 						6, 0, false, 1, 260, 0, 10);
 
 				//initialize personajes
-				Hero warrior = new Hero("Miller", "warrior", "Warrior", "PHY", 150, 20, 120, 30, 25, 10, 15, 15, dullSword, rags, defAtt, defend,
+				Hero warrior = new Hero("Tarrou", "warrior", "Warrior", "PHY", 150, 20, 120, 30, 25, 10, 15, 15, dullSword, rags, defAtt, defend,
 						knockout, crossCut, skullCracker, brutalBlow, moralDest, lunge, heavyTackle, hustle, backhand, heavyLand, warCry, crushAtk);
 				Hero mage = new Hero("Eva", "mage", "Mage", "FIR", 100, 100, 30, 10, 15, 15, 25, 20, brokenStaff, rags, defMat, defend,
 						fireplace, blizzard, poisoning, pressure, incantation, tides, tiresome, fireHur, collapse, decibels, seaquake, tornado, curse,
@@ -586,7 +586,7 @@ public class Main extends Game {
 				Hero thief = new Hero("Rachael", "thief", "Thief", "PHY", 100, 60, 90, 20, 20, 15, 15, 30, dullDaggers, rags, defAtt, defend,
 						smokeBomb, sneakAtk, venomEdge, bladeRain, magicTheft, vitalTheft, bladeSweep, sleepPll, finisher, bladeTornado, hitman, chaos,
 						throatSlice);
-				Hero explorer = new Hero("Ocelot", "explorer", "Explorer", "RAN", 125, 40, 100, 20, 20, 15, 15, 25, oldBow, rags, defAtt, defend,
+				Hero explorer = new Hero("Rieux", "explorer", "Explorer", "RAN", 125, 40, 100, 20, 20, 15, 15, 25, oldBow, rags, defAtt, defend,
 						arrowRain, calTrap, decoy, slimeDust, nailIt, expTorment, tarPit, debrisShower, worldRevolving, sleepGas, allyTotem, finalTrial);
 				Hero sage = new Hero("Mercer", "sage", "Sage", "WIN", 120, 100, 30, 10, 10, 15, 15, 35, brokenStaff, rags, defMat, defend,
 						staThief, incant, silence, deaftones, toxicDust, bardSong, shadowSpell, godOffering, healingRitual, purification, vitalLust, revive,
@@ -608,7 +608,7 @@ public class Main extends Game {
 				Enemy slime = new Enemy("Slime", "slime", "WAT",
 						90, 0, 40,
 						12, 10, 0, 10, 8,
-						18, 8, 50,
+						18, 8, 50, -20,
 						1.0, 1.0, 2.0, 0.75, 0.5, 1.0,
 						defAtt, defend);
 				slime.setDesc("Una masa de una sustancia... similar al moco (no voy a anotar por que).\n"
@@ -619,7 +619,7 @@ public class Main extends Game {
 				slime.addSkill(charAtk);
 
 				Enemy goblin = new Enemy("Goblin", "goblin", "PHY",
-						120, 40, 80, 20, 15, 8, 12, 20,
+						120, 40, 80, 12, 15, 8, 12, 20,
 						24, 12, 30,
 						1.5, 0.75, 1.0, 1.5, 0.5, 1.0,
 						defAtt, defend);
@@ -629,7 +629,7 @@ public class Main extends Game {
 				goblin.addSkills(decCut, fastAtk);
 
 				Enemy skeleton = new Enemy("Esqueleto", "skeleton", "RAN",
-						105, 50, 60, 22, 15, 17, 16, 18,
+						105, 50, 60, 14, 15, 17, 16, 18,
 						26, 15, 15,
 						1.0, 2.0, 0.75, 0.75, 1.5, 1.0,
 						defAtt, defend);
@@ -1217,40 +1217,83 @@ public class Main extends Game {
 		items = items1;
 	}
 
+	private static Item findItemByID(String IDname) {
+		for (Item item : items) {
+			if (item != null && item.getIDName().equals(IDname)) {
+				return item;
+			}
+		}
+		return null;
+	}
+
 	public static void updateArrays() {
-		for(int i = 0; i < player.getInventory().length; i++) {
-			for(int j = 0; j < items.length; j++) {
-				if(player.getInventory()[i].getIDName().equals(items[j].getIDName())) {
-					items[j] = player.getInventory()[i];
-				}
+		Item[] storeItems = Store.getItems();
+		for (int i = 0; i < storeItems.length; i++) {
+			Item savedItem = storeItems[i];
+			if (savedItem == null) {
+				continue;
+			}
+			Item currentItem = findItemByID(savedItem.getIDName());
+			if (currentItem != null) {
+				currentItem.q = savedItem.q;
+				currentItem.grabbed = savedItem.grabbed;
+				storeItems[i] = currentItem;
 			}
 		}
-		for(Hero hero : player.getCharacters()) {
+
+		Item[] inventory = player.getInventory();
+		for (int i = 0; i < inventory.length; i++) {
+			Item savedItem = inventory[i];
+			if (savedItem == null) {
+				continue;
+			}
+			Item currentItem = findItemByID(savedItem.getIDName());
+			if (currentItem != null) {
+				currentItem.q = savedItem.q;
+				currentItem.grabbed = true;
+				inventory[i] = currentItem;
+			}
+		}
+		Weapon[] weapons = player.getWeapons();
+		for (int i = 0; i < weapons.length; i++) {
+			Weapon savedWeapon = weapons[i];
+			if (savedWeapon == null) {
+				continue;
+			}
+			Item currentItem = findItemByID(savedWeapon.getIDName());
+			if (currentItem instanceof Weapon) {
+				currentItem.grabbed = true;
+				weapons[i] = (Weapon) currentItem;
+			}
+		}
+
+		Armor[] armors = player.getArmors();
+		for (int i = 0; i < armors.length; i++) {
+			Armor savedArmor = armors[i];
+			if (savedArmor == null) {
+				continue;
+			}
+			Item currentItem = findItemByID(savedArmor.getIDName());
+			if (currentItem instanceof Armor) {
+				currentItem.grabbed = true;
+				armors[i] = (Armor) currentItem;
+			}
+		}
+		for (Hero hero : player.getCharacters()) {
+			if (hero == null) {
+				continue;
+			}
+			Item weapon = findItemByID(hero.getWeapon().getIDName());
+			if (weapon instanceof Weapon) {
+				hero.changeWeapon((Weapon) weapon);
+				weapon.grabbed = true;
+			}
+			Item armor = findItemByID(hero.getArmor().getIDName());
+			if (armor instanceof Armor) {
+				hero.changeArmor((Armor) armor);
+				armor.grabbed = true;
+			}
 			hero.updateFinalStats();
-		}
-		for(int i = 0; i < player.getWeapons().length; i++) {
-			for(int j = 0; j < items.length; j++) {
-				if(player.getWeapons()[i].getIDName().equals(items[j].getIDName())) {
-					items[j] = player.getWeapons()[i];
-				}
-			}
-		}
-		for(int i = 0; i < player.getArmors().length; i++) {
-			for(int j = 0; j < items.length; j++) {
-				if(player.getArmors()[i].getIDName().equals(items[j].getIDName())) {
-					items[j] = player.getArmors()[i];
-				}
-			}
-		}
-		for(int i = 0; i < player.getCharacters().length; i++) {
-			for(int j = 0; j < items.length; j++) {
-				if(player.getCharacters()[i].getArmor().getIDName().equals(items[j].getIDName())) {
-					items[j] = player.getCharacters()[i].getArmor();
-				}
-				if(player.getCharacters()[i].getWeapon().getIDName().equals(items[j].getIDName())) {
-					items[j] = player.getCharacters()[i].getWeapon();
-				}
-			}
 		}
 		for(int i = 0; i < enemies.length; i++) {
 			if(player.getBestiary() != null) {
@@ -1291,5 +1334,26 @@ public class Main extends Game {
 	public void saveConfig(Config config) {
 		Main.config = config;
 		Save.saveConfig(config);
+	}
+
+	public void updateFloorPools() {
+		firstFloorScreen.updatePool(items);
+		secondFloorScreen.updatePool(items);
+		thirdFloorScreen.updatePool(items);
+		fourthFloorScreen.updatePool(items);
+		fifthFloorScreen.updatePool(items);
+	}
+
+	public void restartLayouts() {
+		firstFloor.generateNewLayout();
+		firstFloorScreen.floor = firstFloor;
+		secondFloor.generateNewLayout();
+		secondFloorScreen.floor = secondFloor;
+		thirdFloor.generateNewLayout();
+		thirdFloorScreen.floor = thirdFloor;
+		fourthFloor.generateNewLayout();
+		fourthFloorScreen.floor = fourthFloor;
+		fifthFloor.generateNewLayout();
+		fifthFloorScreen.floor = fifthFloor;
 	}
 }

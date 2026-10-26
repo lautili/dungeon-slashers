@@ -195,11 +195,18 @@ public abstract class Entity {
 						cont++;
 						effects[i] = null; //limpia el efecto
 					}else { //si no termino
-						if(effect.getTurnMsg() != null) {
-							DialMan.addDialogue(cont, cont+1, null, null, name + effect.getTurnMsg(), 20, null);
+						int hpBeforeEffect = hp;
+						effect.use(this); //aplica el efecto antes de construir el mensaje para poder medir el daño real
+						int hpLost = hpBeforeEffect - hp;
+						String turnMsg = effect.getTurnMsg();
+						if(turnMsg != null || (this instanceof Enemy && hpLost > 0)) {
+							String message = name + (turnMsg != null ? turnMsg : " sufre daño por " + effect.getName().toLowerCase() + ".");
+							if(this instanceof Enemy && hpLost > 0) {
+								message += " Pierde " + hpLost + " HP.";
+							}
+							DialMan.addDialogue(cont, cont+1, null, null, message, 20, null);
 							cont++;
 						}
-						effect.use(this); //y si es POS, BLE, BEN, ENC o TIR, hace lo que el efecto haria.
 					}
 				}
 			}

@@ -15,7 +15,7 @@ import io.github.dungeon_slashers.item.Weapon;
 
 public class Store {
 	public static Player player;
-	private static Item[] items = new Item[0];
+	public static Item[] items = new Item[0];
 	
 	// para agregar items a la tienda
 	public static void addItems(Item...newItems) {
@@ -59,34 +59,22 @@ public class Store {
 	}
 
 	//controlador de la tienda
-	public static void buy(Item item) { //comprar
-		/*
-				if(!item.unique) {
-					Menu.msg("Ingrese la cantidad que va a comprar");
-					int q = InputMan.scanInt(1, 9999999);
-					if(player.gold < item.getCost() * q) {
-						Menu.msg("No tiene suficiente dinero.");
-					}else {
-						player.gold -= item.getCost() * q;
-						player.addItems(item, q);
-					}
-				}else {
-		*/
+	public static void buy(Item item) {
 					if(player.gold < item.getCost()) {
+						
 					}else {
 						player.gold -= item.getCost();
-						if(item.getClass() == Item.class) {
-							player.addItems(item);
-						}else if (item.getClass() == Weapon.class) {
+						if (item instanceof Weapon) {
 							player.addWeapons((Weapon) item);
-						}else {
+						}else if (item instanceof Armor){
 							player.addArmors((Armor) item);
+						}else {
+							player.addItems(item);
 						}
 						if(item.unique) {
 							removeItem(item);
 						}
 					}
-				//}
 	}
 	
 	public static void buy(Item item, int q) {
@@ -98,24 +86,16 @@ public class Store {
 		}
 	}
 	
-	public static void sell(Item item) { //vender
-		/*
-		if(item.q > 1) {
-			Menu.msg("Ingrese la cantidad que piensa vender:");
-			int q = InputMan.scanInt(1, item.q);
-			player.gold += item.getCost() * q;
-			player.removeItems(item, q);
-		}else {
-		*/
+	public static void sell(Item item) {
+		
 			player.gold += item.getCost();
-			if(item.getClass() == Item.class) {
-				player.removeItems(item);
-			}else if (item.getClass() == Weapon.class) {
+			if (item instanceof Weapon) {
 				player.subWeapons((Weapon) item);
-			}else {
+			}else if(item instanceof Armor){
 				player.subArmors((Armor) item);
+			}else {
+				player.removeItems(item);
 			}
-		//}
 		if(item.unique) addItems(item);
 	}
 	
@@ -137,21 +117,30 @@ public class Store {
 			int length = items.length;
 			Item[] temp = items;
 			boolean check = false;
-			items = new Item[length-1];
+			int index = getItemIndex(item);
 			int k = 0;
+			if(index == -1) {
+				return;
+			}
+			items = new Item[length-1];
 			for(int i = 0; i < temp.length; i++) {
-				if(temp[i] != item || !check) {
-					//Siempre y cuando k no sea mayor a la length del array, 
-					//y el espacio no esta ocupado por el item a eliminar,
-					//	pasara los items del viejo array al nuevo
+				if(i != index) {
 					if(k < items.length) {
 						items[k] = temp[i];
 						k++;
 					}
-				}else {
-					check = true;
 				}
 		}
+	}
+	private static int getItemIndex(Item item) {
+		for(int i = 0; i < items.length; i++) {
+			Item item1 = items[i];
+			if(item1 == null) continue;
+			if(item1.getIDName().equals(item.getIDName())) {
+				return i;
+			}
+		}
+		return -1;
 	}
 	public static void setItems(Item[] items2) {
 		items = items2;

@@ -92,6 +92,7 @@ public class Player {
 	
 	//actualizar inventarios
 	public void addWeapons(Weapon weapon) {
+		weapon.grabbed = true;
 		//Crea un nuevo array con un espacio extra y agrega la nueva arma en ese lugar
 		int length = weapons.length;
 		Weapon[] temp = weapons;
@@ -138,6 +139,7 @@ public class Player {
 	public void addArmors(Armor armor) {
 		//Crea un nuevo array con un espacio extra y agrega la nueva armadura en ese lugar
 		int length = armors.length;
+		armor.grabbed = true;
 		Armor[] temp = armors;
 		armors = new Armor[length+1];
 		for(int i = 0; i < length; i++) {
@@ -179,129 +181,116 @@ public class Player {
 		}
 	}
 	
+	private int findInventoryIndex(Item item) {
+		if(item == null) {
+			return -1;
+		}
+		for(int i = 0; i < inventory.length; i++) {
+			if(inventory[i] == item || (inventory[i] != null && inventory[i].getIDName().equals(item.getIDName()))) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 	//Si no se especifica la cantidad, se agrega solo 1
 	public void addItems(Item item) {
-		boolean check = false;
-		//chequea si el item ya se encuentra en el inventario. si lo está, guarda su ubicacion
-		for(int i = 0; i < inventory.length; i++) {
-			if(inventory[i].getName().equals(item.getName())) {
-				inventory[i] = item;
-				check = true;
-				break;
-			}
+		if(item == null) {
+			return;
 		}
-		if(check) {
-			//Si el item esta en el inventario, simplemente agrega uno mas a su cantidad
+		item.grabbed = true;
+		int index = findInventoryIndex(item);
+		if(index >= 0) {
+			inventory[index] = item;
 			item.q++;
-		}else {
-			item.q = 1;
-			//Crea un nuevo array con un espacio extra y agrega el nuevo item en ese lugar
-			int length = inventory.length;
-			Item[] temp = inventory;
-			inventory = new Item[length+1];
-			for(int i = 0; i < length; i++) {
-				inventory[i] = temp[i];
-			}
-			inventory[length] = item;
+			return;
 		}
+		item.q = 1;
+		int length = inventory.length;
+		Item[] temp = inventory;
+		inventory = new Item[length + 1];
+		for(int i = 0; i < length; i++) {
+			inventory[i] = temp[i];
+		}
+		inventory[length] = item;
 	}
 	//Si se agrega el parametro cantidad, agrega esa cantidad al inventario
 	public void addItems(Item item, int q) {
-		boolean check = false;
-		//chequea si el item ya se encuentra en el inventario. si lo está, guarda su ubicacion
-		for(int i = 0; i < inventory.length; i++) {
-			if(inventory[i].getName().equals(item.getName())) {
-				inventory[i] = item;
-				check = true;
-				break;
-			}
+		if(item == null || q <= 0) {
+			return;
 		}
-		if(check) {
-			//Si el item a� en el inventario, simplemente agrega q a su cantidad
+		item.grabbed = true;
+		int index = findInventoryIndex(item);
+		if(index >= 0) {
+			inventory[index] = item;
 			item.q += q;
-		}else {
-			item.q = q;
-			//Crea un nuevo array con el espacio extra y agrega el nuevo item en ese lugar
-			int length = inventory.length;
-			Item[] temp = inventory;
-			inventory = new Item[length+1];
-			for(int i = 0; i < length; i++) {
-				inventory[i] = temp[i];
-			}
-			inventory[length] = item;
+			return;
 		}
+		item.q = q;
+		int length = inventory.length;
+		Item[] temp = inventory;
+		inventory = new Item[length + 1];
+		for(int i = 0; i < length; i++) {
+			inventory[i] = temp[i];
+		}
+		inventory[length] = item;
 	}
 	//Si no se especifica la cantidad, se quita solo 1
 	public void removeItems(Item item) {
-		boolean check = false;
-		//chequea si el item ya se encuentra en el inventario. si lo esta, guarda su ubicacion
-		for(int i = 0; i < inventory.length; i++) {
-			if(inventory[i] == item) {
-				check = true;
-				break;
-			}
+		if(item == null) {
+			return;
 		}
-		if(check) {
-			//Si el item esta en el inventario y tiene mas de 1 unidad, simplemente quita 1 de su cantidad
-			if(item.q > 1) {
-				item.q--;
-			}else {
-				item.q = 0;
-				//Crea un nuevo array con un espacio menos 
-				int length = inventory.length;
-				Item[] temp = inventory;
-				inventory = new Item[length-1];
-				int k = 0;
-				for(int i = 0; i < temp.length; i++) {
-					if(temp[i] != item) {
-						//Siempre y cuando k no sea mayor a la length del array, 
-						//y el espacio no esta ocupado por el item a eliminar,
-						//	pasara los items del viejo array al nuevo
-						if(k < inventory.length) {
-							inventory[k] = temp[i];
-							k++;
-						}
-					}
+		int index = findInventoryIndex(item);
+		if(index < 0) {
+			return;
+		}
+		Item target = inventory[index];
+		if(target.q > 1) {
+			target.q--;
+			return;
+		}
+		target.q = 0;
+		int length = inventory.length;
+		Item[] temp = inventory;
+		inventory = new Item[length - 1];
+		int k = 0;
+		for(int i = 0; i < temp.length; i++) {
+			if(i != index) {
+				if(k < inventory.length) {
+					inventory[k] = temp[i];
+					k++;
 				}
 			}
-		}		
+		}
 	}
 	//Si se especifica la cantidad, se saca q
-		public void removeItems(Item item, int q) {
-			boolean check = false;
-			//chequea si el item ya se encuentra en el inventario.
-			for(int i = 0; i < inventory.length; i++) {
-				if(inventory[i] == item) {
-					item = inventory[i];
-					check = true;
-					break;
+	public void removeItems(Item item, int q) {
+		if(item == null || q <= 0) {
+			return;
+		}
+		int index = findInventoryIndex(item);
+		if(index < 0) {
+			return;
+		}
+		Item target = inventory[index];
+		if(target.q > q) {
+			target.q -= q;
+			return;
+		}
+		target.q = 0;
+		int length = inventory.length;
+		Item[] temp = inventory;
+		inventory = new Item[length - 1];
+		int k = 0;
+		for(int i = 0; i < temp.length; i++) {
+			if(i != index) {
+				if(k < inventory.length) {
+					inventory[k] = temp[i];
+					k++;
 				}
 			}
-			if(check) {
-				//Si el item esta en el inventario y tiene mas de 1 unidad, simplemente quita q de su cantidad
-				if(item.q > q) {
-					item.q -= q;
-				}else if(item.q == q){
-					item.q = 0;
-					//Crea un nuevo array con un espacio menos 
-					int length = inventory.length;
-					Item[] temp = inventory;
-					inventory = new Item[length-1];
-					int k = 0;
-					for(int i = 0; i < temp.length; i++) {
-						if(temp[i] != item) {
-							//Siempre y cuando k no sea mayor a la length del array, 
-							//y el espacio no este ocupado por el item a eliminar,
-							//	pasara los items del viejo array al nuevo
-							if(k < inventory.length) {
-								inventory[k] = temp[i];
-								k++;
-							}
-						}
-					}
-				}
-			}		
 		}
+	}
 	
 	
 	public void loadCharacters() {

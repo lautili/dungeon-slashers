@@ -58,7 +58,7 @@ public class floorScreen implements Screen {
     private final int WALL_RIGHT = 3;
     
     private Main game;
-    private Floor floor;
+    public Floor floor;
     private boolean colboxes;
     Rectangle playerCol;
     Rectangle[] collisions;
@@ -359,29 +359,27 @@ public class floorScreen implements Screen {
     
     private void showMap() {
     	game.batch.draw(game.mapBackground, 0, 0);
-    	int roomSize = 8;
-        int spacing = 2;
 
-        int mapWidth = floor.layout.length * (roomSize + spacing);
-        int mapHeight = floor.layout[0].length * (roomSize + spacing);
+	int gridRows = floor.layout.length;
+	int gridColumns = floor.layout[0].length;
+	int spacing = 1;
+	int roomSize = Math.max(1, Math.min(
+			(320 - 20 - (gridColumns - 1) * spacing) / gridColumns,
+			(180 - 20 - (gridRows - 1) * spacing) / gridRows));
+	int mapWidth = (gridColumns * roomSize) + ((gridColumns - 1) * spacing);
+	int mapHeight = (gridRows * roomSize) + ((gridRows - 1) * spacing);
 
-        int startX = 320 - mapWidth - 5;
-        int startY = 180 - mapHeight - 5;
+	int startX = (320 - mapWidth) / 2;
+	int startY = (180 - mapHeight) / 2;
 
-        for(int i = 0; i < floor.layout.length; i++) {
-
-            for(int j = 0; j < floor.layout[0].length; j++) {
-
+	for(int i = 0; i < gridRows; i++) {
+            for(int j = 0; j < gridColumns; j++) {
                 if(floor.layout[i][j] != null) {
-
                     int roomX = startX + j * (roomSize + spacing);
-                    int roomY = startY + (floor.layout[0].length - 1 - i) * (roomSize + spacing);
+                    int roomY = startY + (gridRows - 1 - i) * (roomSize + spacing);
 
                     if(i == currPosition[0] && j == currPosition[1]) {
-
-                        // habitación actual
                         game.batch.draw(game.roomCurr, roomX, roomY, roomSize, roomSize);
-                        game.batch.draw(game.roomDisc, roomX, roomY, roomSize, roomSize);
                         switch(floor.layout[i][j].roomType) {
                         case Room.ROOM_START:
                         	game.batch.draw(game.roomStart, roomX, roomY, roomSize, roomSize);
@@ -397,7 +395,6 @@ public class floorScreen implements Screen {
                         	break;
                         }
                     } else if(floor.layout[i][j].discovered == Room.DISC_TOTAL) {
-                        // habitación descubierta
                         game.batch.draw(game.roomDisc, roomX, roomY, roomSize, roomSize);
                         switch(floor.layout[i][j].roomType) {
                         case Room.ROOM_START:
@@ -414,7 +411,6 @@ public class floorScreen implements Screen {
                         	break;
                         }
                     } else if (floor.layout[i][j].discovered == Room.DISC_PART){
-                    	// habitación descubierta a la que no se entro
                     	game.batch.draw(game.roomUnd, roomX, roomY, roomSize, roomSize);
                     }
                 }
@@ -523,14 +519,14 @@ public class floorScreen implements Screen {
             if (col != null && player.overlaps(col)) {
             	if(col == doors[WALL_LEFT]) {
             		currPosition[1]--;
-            		x[0] = doors[WALL_RIGHT].x - 15;
+            		x[0] = doors[WALL_RIGHT].x - 20;
             	}
             	if(col == doors[WALL_UP]) {
             		if(floor.layout[currPosition[0]][currPosition[1]].roomType == Room.ROOM_BOSS) {
             			game.setScreen(nextScreen);
             		}else {
             			currPosition[0]--;
-	            		y[0] = doors[WALL_DOWN].y + 15;
+	            		y[0] = doors[WALL_DOWN].y + 20;
             		}
             	}
             	if(col == doors[WALL_DOWN]) {
@@ -538,12 +534,12 @@ public class floorScreen implements Screen {
             			game.setScreen(game.firstScreen);
             		}else{
 	            		currPosition[0]++;
-	            		y[0] = doors[WALL_UP].y - 15;
+	            		y[0] = doors[WALL_UP].y - 20;
             		}
             	}
             	if(col == doors[WALL_RIGHT]) {
             		currPosition[1]++;
-            		x[0] = doors[WALL_LEFT].x + 15;
+            		x[0] = doors[WALL_LEFT].x + 20;
             	}
             	floor.layout[currPosition[0]][currPosition[1]].discovered = Room.DISC_TOTAL;
             	posHistory = new Array<>(); // inicializa el ArrayList
@@ -652,4 +648,16 @@ public class floorScreen implements Screen {
     	int flag = boss.getFlag();
     	return Main.player.flags[flag];
     }
+	public void updatePool(Item[] items) {
+		for(Item item : items) {
+			for(Item item1 : floor.itemsPool) {
+				if(item == null || item1 == null) {
+					continue;
+				}
+				if(item.getIDName().equals(item1.getIDName()) && item.grabbed && item.unique) {
+					floor.removeFromPool(item1);
+				}
+			}
+		}
+	}
 }

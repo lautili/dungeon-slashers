@@ -34,6 +34,12 @@ public class BossEvent {
 		this.skill = skill;
 		this.msgs = msgs;
 	}
+	public BossEvent(BossEvent event) {
+		this.isHP = event.isHP;
+		this.num = event.num;
+		this.skill = event.skill;
+		this.msgs = event.msgs != null ? event.msgs.clone() : null;
+	}
 	
 	//getters
 	public Skill getSkill() {

@@ -1,6 +1,7 @@
 package io.github.dungeon_slashers;
 
 import io.github.dungeon_slashers.controllers.DialMan;
+import io.github.dungeon_slashers.controllers.Store;
 import io.github.dungeon_slashers.entities.Entity;
 
 public class Flags {
@@ -18,6 +19,31 @@ public class Flags {
 	
 	public static void DialogueFlag(int flag, Entity entity) {
 		switch(flag) {
+		case FLAG_FIRSTBOSS_DEFEATED:
+			if(Main.player.flags[FLAG_FIRSTBOSS_DEFEATED]) {
+				Store.addItems();
+			}
+			break;
+		case FLAG_SECONDBOSS_DEFEATED:
+			if(Main.player.flags[FLAG_SECONDBOSS_DEFEATED]) {
+				Store.addItems();
+			}
+			break;
+		case FLAG_THIRDBOSS_DEFEATED:
+			if(Main.player.flags[FLAG_THIRDBOSS_DEFEATED]) {
+				Store.addItems();
+			}
+			break;
+		case FLAG_FOURTHBOSS_DEFEATED:
+			if(Main.player.flags[FLAG_FOURTHBOSS_DEFEATED]) {
+				Store.addItems();
+			}
+			break;
+		case FLAG_FIFTHBOSS_DEFEATED:
+			if(Main.player.flags[FLAG_FIFTHBOSS_DEFEATED]) {
+				Store.addItems();
+			}
+			break;
 		case FLAG_FIRSTBOSS_DIALOGUE:
 			DialMan.addDialogue(0, 1, "???", null, "Hola...", 20, null);
         	DialMan.addDialogue(1, 2, entity.getName(), null, "Soy... Ogro...", 20, null);

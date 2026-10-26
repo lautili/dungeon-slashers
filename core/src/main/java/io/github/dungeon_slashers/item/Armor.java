@@ -22,6 +22,7 @@ public class Armor extends Item {
 		this.mdf = mdf;
 		this.spd = spd;
 		this.mat = mat;
+		this.typeIt = TYPE_ARMOR;
 	}
 	
 	//getters

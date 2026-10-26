@@ -90,7 +90,6 @@ public class BattleScreen implements Screen {
 	private Entity currentAttacker = null;
 	private Entity currentTarget = null;
 	private Skill currentSkill = null;
-	private Item currentItem = null;
 	private float actTimer = 0f;
 	private float hitShakeTimer = 0f;
 
@@ -446,7 +445,6 @@ public class BattleScreen implements Screen {
     		currentAttacker = null;
     		currentTarget = null;
     		currentSkill = null;
-    		currentItem = null;
     		
     		int dialCont = 0;
 			for(int i = 0; i < entities.length; i++) {
@@ -458,17 +456,20 @@ public class BattleScreen implements Screen {
 			int defeatedEnemies = 0;
 			for(int i = 0; i < enemies.length; i++) {
 				if(enemies[i].hp <= 0 && !enemies[i].hasState("DWN")) {
-					enemies[i].setEffect(new Effect("DWN"), 0);
+					enemies[i].setEffect(new Effect("DWN"), dialCont);
 				}
 				if(enemies[i].hp <= 0) {
 					defeatedEnemies++;
 					enemies[i].defeated = true;
+					if(!(enemies[i] instanceof Boss)) {
+						enemies[i].draw = false;
+					}
 				}
 				Main.player.updateBestiary(enemies[i]);
 			}
 			
 			if(defeatedEnemies == enemies.length) {
-				int cont2 = 0;
+				int cont2 = dialCont;
 				if(battle.isBoss) {
 					Boss boss = (Boss) enemies[0];
 					if(boss.finalEvent != null) {
@@ -503,7 +504,7 @@ public class BattleScreen implements Screen {
 			int defeatedHeroes = 0;
 			for(int i = 0; i < heroes.length; i++) {
 				if(heroes[i].hp <= 0 && !heroes[i].hasState("DWN")) {
-					heroes[i].setEffect(new Effect("DWN"), 0);
+					heroes[i].setEffect(new Effect("DWN"), dialCont);
 				}
 				if(heroes[i].hasState("DWN")) {
 					heroes[i].hp = 0;
@@ -514,7 +515,7 @@ public class BattleScreen implements Screen {
 			}
 			
 			if(defeatedHeroes == heroes.length) {
-				DialMan.addDialogue(0, DIAL_DEFEAT, null, null, "Has perdido.", 20, null);
+				DialMan.addDialogue(dialCont, DIAL_DEFEAT, null, null, "Has perdido.", 20, null);
 				DialMan.addDialogue(DIAL_DEFEAT, -1);
 				for(int i = 0; i < heroes.length; i++) {
 					heroes[i].lastOpt = 0;
@@ -555,7 +556,6 @@ public class BattleScreen implements Screen {
     			currentAttacker = null;
     			currentTarget = null;
     			currentSkill = null;
-    			currentItem = null;
     		}
     		if(endTurn()) {
     			currAct = actions.length;
@@ -794,7 +794,6 @@ public class BattleScreen implements Screen {
 		currentAttacker = actionsObj[currAct][0];
 		currentTarget = actionsObj[currAct][1];
 		currentSkill = actions[currAct];
-		currentItem = actionsItem[currAct];
 		hitShakeTimer = 0.4f;
 
 		Skill skill = actions[currAct];
@@ -1043,7 +1042,7 @@ public class BattleScreen implements Screen {
     
 	private void characterChoose() {
     	Hero hero = heroes[currChar];
-    	while(hero.hp <= 0 || hero.hasState("DWN") || hero.hasState("SLE") || hero.hasState("RAG")) {
+    	while(!canChoose(hero)) {
 	    	if(hero.hp <= 0 || hero.hasState("DWN") || hero.hasState("SLE")) {
 	    		curr++;
 	    		currChar++;
@@ -1105,33 +1104,25 @@ public class BattleScreen implements Screen {
     				break;
     			}
     		} else if(InputMan.checkKey(Main.config.key_back) && currChar > 0) {
-    			int ogCurrChar = currChar;
-    			actions[curr] = null;
-				actionsObj[curr][0] = null;
-				actionsObj[curr][1] = null;
-				actionsObj[curr][2] = null;
-				actionsItem[curr] = null;
-    			currChar--;
-    			curr--;
+    			
     			if(currChar > 0 ) {
-    				while(heroes[currChar].hp <= 0 || heroes[currChar].hasState("DWN")) {
-	    				currChar--;
-	    				curr--;
-	    				
-	    				if (curr >= 0) {
-		    				actions[curr] = null;
-		    				actionsObj[curr][0] = null;
-		    				actionsObj[curr][1] = null;
-		    				actionsObj[curr][2] = null;
-		    				actionsItem[curr] = null;
-	    				}
-	    				if(currChar < 0) {
-	    					currChar = ogCurrChar;
-	    					break;
-	    				}
+    				int previous = currChar - 1;
+    				while (previous >= 0 && (heroes[previous].hp <= 0 || heroes[previous].hasState("SLE"))) {
+    				    previous--;
+    				}
+    				if (previous >= 0) {
+    				    while (currChar > previous) {
+    				    	actions[curr] = null;
+    						actionsObj[curr][0] = null;
+    						actionsObj[curr][1] = null;
+    						actionsObj[curr][2] = null;
+    						actionsItem[curr] = null;
+    				        curr--;
+    				        currChar--;
+    				    }
+    				    AState = ASTATE_IDLE;
     				}
     			}
-    			AState = ASTATE_IDLE;
     		}
     		break;
 
@@ -1369,7 +1360,7 @@ public class BattleScreen implements Screen {
 			float x = sectionWidth * i + sectionWidth / 2f - 25f;
 			float x2 = sectionWidth * i + sectionWidth / 2f - 45f;
 			if(i == sel) {
-				batch.draw(game.selection, x, 50 + 50);
+				batch.draw(game.selection, x, 50 + 50 + enemies[i].offset);
 				float num = (90f * enemies[i].hp / enemies[i].getHP());
 				game.batch.draw(game.HPbar, x2, 155, num, 5);
 				game.mainFont.getData().setScale(0.15f);
@@ -1388,6 +1379,13 @@ public class BattleScreen implements Screen {
 		}
 	}
 
+	private boolean canChoose(Hero hero) {
+	    return hero.hp > 0
+	            && !hero.hasState("DWN")
+	            && !hero.hasState("SLE")
+	            && !hero.hasState("RAG");
+	}
+	
 	@Override
     public void resize(int width, int height) {
         if(width <= 0 || height <= 0) return;

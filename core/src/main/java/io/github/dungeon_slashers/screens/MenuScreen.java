@@ -202,7 +202,7 @@ public class MenuScreen implements Screen {
 		    		}else if(itemArray[pos[1]].getClass() == Armor.class) {
 		    			Main.player.changeArmors(chars[pos[2]], (Armor) itemArray[pos[1]]);
 		    		}else {
-		    			itemArray[pos[1]].Use(chars[pos[2]], Main.player);
+		    			itemArray[pos[1]].Use(chars[pos[2]], Main.player, false);
 		    		}
 	    		}else if (pos[0] == 3 && skillArray != null && skillArray.length > 0){
 	    			if(skillArray[pos[1]].getMenu()) {

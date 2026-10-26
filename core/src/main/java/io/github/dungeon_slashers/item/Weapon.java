@@ -22,6 +22,7 @@ public class Weapon extends Item {
 		this.mat = mat;
 		this.spd = spd;
 		this.className = className;
+		this.typeIt = TYPE_WEAPON;
 	}
 	//getters
 	public String getName() {

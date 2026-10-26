@@ -13,6 +13,10 @@ import io.github.dungeon_slashers.entities.Entity;
 
 public class Item {
 	protected String name;
+	public static transient final int TYPE_ITEM = 0;
+	public static transient final int TYPE_WEAPON = 1;
+	public static transient final int TYPE_ARMOR = 2;
+	public int typeIt;
 	protected String IDname;
 	protected String desc;
 	protected int cost;
@@ -22,6 +26,7 @@ public class Item {
 	//la cantidad que se encuentra en el inventario, solo usada al operar en el inventario
 	public int q;
 	public int maxQ;
+	public boolean grabbed;
 	
 	//constructores
 	public Item(String name, String IDname, String desc, int cost, boolean unique) { //para armas y armaduras
@@ -30,6 +35,7 @@ public class Item {
 		this.desc = desc;
 		this.cost = cost;
 		this.unique = unique;
+		this.typeIt = TYPE_ITEM;
 	}
 	public Item(String name, String IDname, String desc, int cost, int maxQ, int type, boolean unique, boolean useMenu) { //para items de verdad
 		this.name = name;
@@ -61,15 +67,21 @@ public class Item {
 		return IDname;
 	}
 	
-	public String Use(Entity a, Player player) {
+	public String Use(Entity a, Player player, boolean isBattle) {
 		boolean use = true;
 		String msg = "Placeholder message"; //esto es en caso de que hayan errores
 		String errMsg = "Placeholder error message"; //esto es en caso de que hayan errores
+		if(isBattle) {
+			a.attacked = true;
+			a.lastDamageTaken = 0;
+		}
+		int dmg = 0;
 		switch(IDname) {
 		//Al no saber usar Interfaces aun, tendra que ser suficiente un enorme switch por item	
 		case "minHPot":
 			if(a.hp<a.getHP()) {
-				a.modHP((int) (a.getHP() * 0.2 + 5));
+				dmg = (int) (a.getHP() * 0.2 + 5);
+				a.modHP(dmg);
 				msg = ( a.getName() + " recupera " + (int) (a.getHP() * 0.2 + 5) + " HP! (" + a.hp + "/" + a.getHP() + ")");
 			}else {
 				 use = false;
@@ -79,7 +91,8 @@ public class Item {
 			
 		case "minMPot":
 			if(a.mp<a.getMP()) {
-				a.modMP((int) (a.getMP() * 0.2 + 10));
+				dmg = (int) (a.getMP() * 0.2 + 10);
+				a.modMP(dmg);
 				msg = ( a.getName() + " recupera " + (int) (a.getMP() * 0.2 + 10) + " MP! (" + a.mp + "/" + a.getMP() + ")");
 			}else {
 				 use = false;
@@ -89,7 +102,8 @@ public class Item {
 			
 		case "minSPot":
 			if(a.sp<a.getSP()) {
-				a.modSP((int) (a.getSP() * 0.2 + 10));
+				dmg = (int) (a.getSP() * 0.2 + 10);
+				a.modSP(dmg);
 				msg = ( a.getName() + " recupera " + (int) (a.getSP() * 0.2 + 10) + " MS! (" + a.sp + "/" + a.getSP() + ")");				
 			}else {
 			 use = false;
@@ -98,7 +112,8 @@ public class Item {
 			break;
 		case "minHPven":
 			if(a.hp>0) {
-				a.modHP( -(int) (a.getHP() * 0.2 + 10));
+				dmg =  -(int) (a.getHP() * 0.2 + 10);
+				a.modHP(dmg);
 				msg = ( a.getName() + " pierde " + (int) (a.getHP() * 0.2 + 10) + " HP! (" + a.hp + "/" + a.getHP() + ")");				
 			}else {
 			 use = false;
@@ -107,7 +122,8 @@ public class Item {
 			break;
 		case "minMPven":
 			if(a.mp>0) {
-				a.modMP( -(int) (a.getMP() * 0.2 + 10));
+				dmg =  -(int) (a.getMP() * 0.2 + 10);
+				a.modMP(dmg);
 				msg = ( a.getName() + " pierde " + (int) (a.getMP() * 0.2 + 10) + " MP! (" + a.mp + "/" + a.getMP() + ")");				
 			}else {
 			 use = false;
@@ -116,7 +132,8 @@ public class Item {
 			break;
 		case "minSPven":
 			if(a.sp>0) {
-				a.modSP( -(int) (a.getSP() * 0.2 + 10));
+				dmg =  -(int) (a.getSP() * 0.2 + 10);
+				a.modSP(dmg);
 				msg = ( a.getName() + " pierde " + (int) (a.getSP() * 0.2 + 10) + " HP! (" + a.sp + "/" + a.getSP() + ")");				
 			}else {
 			 use = false;
@@ -125,6 +142,9 @@ public class Item {
 			break;
 		}
 		if(use) {
+			if(isBattle) {
+				a.lastDamageTaken += dmg;
+			}
 			player.removeItems(this); //si se puede usar "saca" el item
 			return msg;
 		}else {

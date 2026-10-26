@@ -31,9 +31,9 @@ public class Save {
 		if (saveFile.exists()) {
 		    String json = saveFile.readString();
 		    Player temp = gson.fromJson(json, Player.class);
+		    Item[] savedStoreItems = null;
 		    try {
-			    Item[] temp2 = gson.fromJson(shopFile.readString(), Item[].class);
-			    Store.setItems(temp2);
+			    savedStoreItems = gson.fromJson(shopFile.readString(), Item[].class);
 			}catch(Exception e) {
 				
 			}
@@ -56,8 +56,12 @@ public class Save {
 		    }
 		    Main.player = temp;
 		    Main.player.flags = newFlags;
+		    if(savedStoreItems != null) {
+		    	Store.setItems(savedStoreItems);
+		    }
 		    Main.player.loadCharacters();
 		    Main.updateArrays();
+		    game.updateFloorPools();
 		    game.setScreen(game.firstScreen);
 		    
 		    return true;
