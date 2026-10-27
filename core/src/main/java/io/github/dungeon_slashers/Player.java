@@ -10,22 +10,15 @@ import io.github.dungeon_slashers.item.Armor;
 import io.github.dungeon_slashers.item.Item;
 import io.github.dungeon_slashers.item.Weapon;
 
-/*
-		CLASE PLAYER
-
-	sera la clase encargada de controlar los inventarios, el dinero y los personajes como conjunto.
-
-*/
-
 public class Player {
-	private Item[] inventory; //inventario de items
-	private Weapon[] weapons; //inventario de armas
-	private Armor[] armors; //inventario de armaduras
-	private Hero[] characters; //los personajes
+	private Item[] inventory;
+	private Weapon[] weapons;
+	private Armor[] armors;
+	private Hero[] characters;
 	private Enemy[] bestiary;
 	public String currScreen;
 	public PlayerState state;
-	public boolean[] flags = new boolean[11]; // las flags
+	public boolean[] flags = new boolean[Flags.LENGTH];
 	public int gold;
 	
 	//constructor

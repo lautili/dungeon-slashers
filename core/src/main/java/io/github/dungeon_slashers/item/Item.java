@@ -21,10 +21,17 @@ public class Item {
 	protected String desc;
 	protected int cost;
 	public boolean unique; //si al comprarse desaparece de la tienda
-	private boolean useMenu; //si se puede usar en el menu
+	
+	public static transient final int USE_MENU = 0;
+	public static transient final int USE_BATTLE = 1;
+	public static transient final int USE_BOTH = 2;
+	public static transient final int USE_NONE = 4;
+	
+	private int use; 
 	private int skillType; //el tipo que deber� tener la skill cuando se use con este item
 	//la cantidad que se encuentra en el inventario, solo usada al operar en el inventario
 	public int q;
+	public boolean canDead;
 	public int maxQ;
 	public boolean grabbed;
 	
@@ -37,13 +44,14 @@ public class Item {
 		this.unique = unique;
 		this.typeIt = TYPE_ITEM;
 	}
-	public Item(String name, String IDname, String desc, int cost, int maxQ, int type, boolean unique, boolean useMenu) { //para items de verdad
+	public Item(String name, String IDname, String desc, int cost, int maxQ, int type, boolean unique, int use, boolean canDead) { //para items de verdad
 		this.name = name;
 		this.IDname = IDname;
 		this.desc = desc;
 		this.skillType = type;
 		this.cost = cost;
-		this.useMenu = useMenu;
+		this.use = use;
+		this.canDead = canDead;
 		this.maxQ = maxQ;
 	}
 	
@@ -60,20 +68,32 @@ public class Item {
 	public int getCost() {
 		return cost;
 	}
-	public boolean getMenu() {
-		return useMenu;
+	public int getUse() {
+		return use;
 	}
 	public String getIDName() {
 		return IDname;
 	}
 	
 	public String Use(Entity a, Player player, boolean isBattle) {
-		boolean use = true;
+		boolean use = false;
 		String msg = "Placeholder message"; //esto es en caso de que hayan errores
 		String errMsg = "Placeholder error message"; //esto es en caso de que hayan errores
+		
 		if(isBattle) {
 			a.attacked = true;
 			a.lastDamageTaken = 0;
+			if(this.use == USE_BOTH || this.use == USE_BATTLE) {
+				use = true;
+			}
+		}else {
+			if(this.use == USE_BOTH || this.use == USE_MENU) {
+				use = true;
+			}
+		}
+		
+		if(use == false) {
+			return "No se puede usar el item";
 		}
 		int dmg = 0;
 		switch(IDname) {

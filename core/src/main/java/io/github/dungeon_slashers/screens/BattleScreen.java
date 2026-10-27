@@ -1152,11 +1152,13 @@ public class BattleScreen implements Screen {
 			game.batch.draw(game.battleMenu, 0, 10);
 			Menu.showBInventory(game, sel[2], items);
 			if(InputMan.checkKey(Main.config.key_interact)) {
+				if(items[sel[2]].getUse() == Item.USE_BOTH || items[sel[2]].getUse() == Item.USE_BATTLE) {
 					AState = ASTATE_SELECT_OBJECTIVE;
 					actions[curr] = hero.getSkills()[2];
 					actionsItem[curr] = items[sel[2]];
 					actions[curr].setType(actionsItem[curr].getType());
 					sel[2] = currChar;
+				}
 			} else if(InputMan.checkKey(Main.config.key_back)) {
 				AState = ASTATE_IDLE;
 			}
@@ -1164,6 +1166,12 @@ public class BattleScreen implements Screen {
 			
 		case ASTATE_SELECT_OBJECTIVE:
 			actionsObj[curr][0] = hero;
+			boolean check = false;
+			Skill skill = actions[curr];
+			if((skill.getID() != null && skill.getID().equals("revive")) 
+					|| (actionsItem[curr] != null && actionsItem[curr].canDead)) {
+				check = true;
+			}
 			int antsel;
 			int type;
 			if(hero.tempType != -1 && actions[curr] == hero.getSkills()[0]) {
@@ -1187,7 +1195,7 @@ public class BattleScreen implements Screen {
 					} else {
 					    haciaAdelante = sel[2] > antsel;
 					}
-					while(enemies[sel[2]].hp <= 0 || enemies[sel[2]].hasState("DWN")) {
+					while(!check && (enemies[sel[2]].hp <= 0 || enemies[sel[2]].hasState("DWN"))) {
 						if (haciaAdelante) {
 					        sel[2]++;
 					        if (sel[2] >= enemies.length) {
@@ -1218,14 +1226,14 @@ public class BattleScreen implements Screen {
 			case 3: // to Ally
 				antsel = sel[2];
 				sel[2] = InputMan.scrollInt(MenuScrollType.HORIZONTAL, heroes.length, sel[2], Menu.MenuMove);
-				if (antsel == 0 && sel[2] == heroes.length - 1) {
+				if (!check || antsel == 0 && sel[2] == heroes.length - 1) {
 				    haciaAdelante = false;
 				} else if (antsel == heroes.length - 1 && sel[2] == 0) {
 				    haciaAdelante = true;
 				} else {
 				    haciaAdelante = sel[2] > antsel;
 				}
-				while(heroes[sel[2]].hp <= 0 || heroes[sel[2]].hasState("DWN")) {
+				while(!check && heroes[sel[2]].hp <= 0 || heroes[sel[2]].hasState("DWN")) {
 					if (haciaAdelante) {
 				        sel[2]++;
 				        if (sel[2] >= heroes.length) {

@@ -197,7 +197,9 @@ public class Main extends Game {
     			
     			getItem("ironSword"), getItem("woodenStaff"),
     			
-    			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"));
+    			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"),
+    			
+    			getItem("gold"));
     	fifthFloorScreen = new floorScreen(this, fifthFloor, finalScreen, firstScreen, Flags.FLAG_FIFTHBOSS_DIALOGUE);
     	
     	fourthFloor = new Floor(25, 25, 200, 250, defBattle4Screen, fourthBossFight, 1, 25,
@@ -206,7 +208,9 @@ public class Main extends Game {
     			
     			getItem("ironSword"), getItem("woodenStaff"),
     			
-    			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"));
+    			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"),
+    			
+    			getItem("gold"));
     	fourthFloorScreen = new floorScreen(this, fourthFloor, fifthFloorScreen, firstScreen, Flags.FLAG_FOURTHBOSS_DIALOGUE);
     	
     	thirdFloor = new Floor(20, 20, 150, 200, defBattle3Screen, thirdBossFight, 1, 25,
@@ -215,7 +219,9 @@ public class Main extends Game {
     			
     			getItem("ironSword"), getItem("woodenStaff"),
     			
-    			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"));
+    			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"),
+    			
+    			getItem("gold"));
     	thirdFloorScreen = new floorScreen(this, thirdFloor, fourthFloorScreen, firstScreen, Flags.FLAG_THIRDBOSS_DIALOGUE);
     	
     	secondFloor = new Floor(20, 20, 50, 100, defBattle2Screen, secondBossFight, 1, 25,
@@ -224,7 +230,9 @@ public class Main extends Game {
     			
     			getItem("ironSword"), getItem("woodenStaff"),
     			
-    			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"));
+    			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"),
+    			
+    			getItem("gold"));
     	secondFloorScreen = new floorScreen(this, secondFloor, thirdFloorScreen, firstScreen, Flags.FLAG_SECONDBOSS_DIALOGUE);
 
     	firstFloor = new Floor(15, 15, 25, 50, defBattleScreen, firstBossFight, 1, 25,
@@ -234,7 +242,9 @@ public class Main extends Game {
     			getItem("ironSword"), getItem("woodenStaff"), getItem("bow"), getItem("daggers"),
     			getItem("encBow"), getItem("curStaff"),
     			
-    			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"));
+    			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"),
+    			
+    			getItem("gold"));
     	firstFloorScreen = new floorScreen(this, firstFloor, secondFloorScreen, firstScreen, Flags.FLAG_FIRSTBOSS_DIALOGUE);
     	
     	Save.loadConfig();
@@ -295,19 +305,21 @@ public class Main extends Game {
 
 
 				//initialize items
-				Item minHPot = new Item("Pocion menor de salud", "minHPot", "Cura poca cantidad de salud.", 20, 5, 3, false, true);
-				Item minMPot = new Item("Pocion menor de mana", "minMPot", "Cura una poca cantidad de mana.", 20, 5, 3, false, true);
-				Item minSPot = new Item("Pocion menor de stamina", "minSPot", "Cura una poca cantidad de stamina.", 20, 5, 3, false, true);
-				Item minHPven = new Item("Veneno menor de salud", "minHPven", "Quita una poca cantidad de salud.", 50, 3, 1, false, false);
-				Item minSPven = new Item("Veneno menor de stamina", "minSPven", "Quita una poca cantidad de stamina.", 50, 2, 1, false, false);
-				Item minMPven = new Item("Veneno menor de mana", "minMPven", "Quita una poca cantidad de mana.", 50, 2, 1, false, false);
-
+				Item minHPot = new Item("Pocion menor de salud", "minHPot", "Cura poca cantidad de salud.", 20, 5, 3, false, Item.USE_BOTH, false);
+				Item minMPot = new Item("Pocion menor de mana", "minMPot", "Cura una poca cantidad de mana.", 20, 5, 3, false, Item.USE_BOTH, false);
+				Item minSPot = new Item("Pocion menor de stamina", "minSPot", "Cura una poca cantidad de stamina.", 20, 5, 3, false, Item.USE_BOTH, false);
+				Item minHPven = new Item("Veneno menor de salud", "minHPven", "Quita una poca cantidad de salud.", 50, 3, 1, false, Item.USE_BATTLE, false);
+				Item minSPven = new Item("Veneno menor de stamina", "minSPven", "Quita una poca cantidad de stamina.", 50, 2, 1, false, Item.USE_BATTLE, false);
+				Item minMPven = new Item("Veneno menor de mana", "minMPven", "Quita una poca cantidad de mana.", 50, 2, 1, false, Item.USE_BATTLE, false);
+				Item gold = new Item("Ladrillo de oro de 20 kilates", "gold", "Pesa bastante.", 180, 1, -1, false, Item.USE_NONE, false);
 				initItems(dullSword, dullDaggers, brokenStaff, oldBow, ironSword, woodenStaff, bow, daggers, 
 						encBow, curStaff,
 
 						rags, leatherArmor, ironArmor, wizRobes,
 
-						minHPot, minMPot, minSPot, minHPven, minSPven, minMPven);
+						minHPot, minMPot, minSPot, minHPven, minSPven, minMPven,
+						
+						gold);
 
 				Store.addItems(minHPot, minMPot, minSPot, minHPven, ironSword, woodenStaff, leatherArmor, ironArmor, wizRobes);
 
@@ -1071,10 +1083,10 @@ public class Main extends Game {
 						350, 200, 10,
 						0.75, 0.5, 0.5, 0.5, 0.5, 1.0,
 						defAtt, defend);
-				grandMaster.setDesc("Un guerrero que parece haber estudiado todos los estilos que usamos.\n"
+				grandMaster.setDesc("Un guerrero etereo que parece haber estudiado todos los estilos que usamos.\n"
 		        + "Bloquea, responde y cambia de objetivo con una precision preocupante. Incluso parece anticiparse a nuestras decisiones.\n"
-		        + "Si fue contratado por la organizacion, seguramente sabe que tipo de mercenarios llegan hasta aqui y prepara la defensa para ellos.\n"
-		        + "Si no fue contratado... entonces tenemos otro problema.");
+		        + "Realmente la necromancia de esta organizacion es increible, cuanto menos.\n"
+		        + "Y si no fue revivido... entonces tenemos otro problema.");
 				grandMaster.addSkills(warCry, backhand);
 
 				Boss nameless = new Boss("El Innombrable", "nameless", "PHY",

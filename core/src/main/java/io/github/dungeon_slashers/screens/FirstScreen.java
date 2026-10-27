@@ -82,6 +82,29 @@ public class FirstScreen implements Screen {
 			y[0] = 120;
 			chars[0].direction = "down";
 		}else if(Main.player.currScreen == "LOOSE") {
+			if(!Main.player.flags[Flags.FLAG_FIRSTDEATH]) {
+				DialMan.addDialogue(0, 1, 
+						"Dante", null, 
+						"Ugh...", 20, null);
+				DialMan.addDialogue(1, 2, 
+						"Dante", null, 
+						"Estabamos tan cerca...", 20, null);
+				DialMan.addDialogue(2, 3, 
+						Main.player.getCharacters()[0].getName(), Main.player.getCharacters()[0].getPortrait(), 
+						"Asi que este es el 'lugar de menor riesgo'.", 20, null);
+				DialMan.addDialogue(3, 4, 
+						Main.player.getCharacters()[0].getName(), Main.player.getCharacters()[0].getPortrait(), 
+						"Cada vez que muramos volveremos aqui.", 20, null);
+				DialMan.addDialogue(4, 5, 
+						Main.player.getCharacters()[1].getName(), Main.player.getCharacters()[1].getPortrait(), 
+						"Que?! Pero habiamos llegado a lugares seguros mas cerca de la meta!", 20, null);
+				DialMan.addDialogue(5, 6, 
+						"Dante", null, 
+						"Es lo que hay...", 20, null);
+				DialMan.addDialogue(6, -1, 
+						"Dante", null, 
+						"Ahora, sigamos. tenemos trabajo por hacer.", 20, null);
+			}
 			x[0] = 125;
 			y[0] = 70;
 			chars[0].direction = "right";

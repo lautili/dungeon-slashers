@@ -196,7 +196,7 @@ public class MenuScreen implements Screen {
                     }
             }
     		if(Main.player.state == PlayerState.MENU) {
-	    		if(pos[0] != 4 && itemArray != null && itemArray.length > 0) { // Si no es bestiario
+	    		if(pos[0] != 4 && itemArray != null && itemArray.length > 0) {
 		    		if(itemArray[pos[1]].getClass() == Weapon.class) {
 		    			Main.player.changeWeapons(chars[pos[2]], (Weapon) itemArray[pos[1]]);
 		    		}else if(itemArray[pos[1]].getClass() == Armor.class) {

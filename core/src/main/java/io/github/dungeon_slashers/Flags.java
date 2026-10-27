@@ -16,6 +16,8 @@ public class Flags {
 	public static final int FLAG_THIRDBOSS_DIALOGUE = 8;
 	public static final int FLAG_FOURTHBOSS_DIALOGUE = 9;
 	public static final int FLAG_FIFTHBOSS_DIALOGUE = 10;
+	public static final int FLAG_FIRSTDEATH = 11;
+	public static final int LENGTH = 12;
 	
 	public static void DialogueFlag(int flag, Entity entity) {
 		switch(flag) {
