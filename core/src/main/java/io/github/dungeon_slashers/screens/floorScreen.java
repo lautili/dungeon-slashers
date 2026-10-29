@@ -122,7 +122,7 @@ public class floorScreen implements Screen {
     public void show() {
         // Prepare your screen here.
 		this.resume();
-		if(Main.player.currScreen == "FIRST_SCREEN") {
+		if(Main.player.currScreen != "BATTLE_SCREEN" && Main.player.currScreen != "MENU_SCREEN") {
 			currPosition = floor.getRoomPosition(Room.ROOM_START);
 			x[0] = 150;
 			y[0] = 20;
@@ -403,9 +403,9 @@ public class floorScreen implements Screen {
                         case Room.ROOM_TREASURE:
                         	game.batch.draw(game.roomTreasure, roomX, roomY, roomSize, roomSize);
                         	break;
-                        case Room.ROOM_SECRET:
+                     /* case Room.ROOM_SECRET:
                         	game.batch.draw(game.roomSecret, roomX, roomY, roomSize, roomSize);
-                        	break;
+                        	break; */
                         case Room.ROOM_BOSS:
                         	game.batch.draw(game.roomBoss, roomX, roomY, roomSize, roomSize);
                         	break;
@@ -442,6 +442,7 @@ public class floorScreen implements Screen {
 					}else {
 						n2 = 4;
 					}
+					Item lastItem = null;
 					for(int i = 1; i <= n2; i++) {
 						if(!msg.equals("")) {
 							if(i < n2) {
@@ -452,11 +453,16 @@ public class floorScreen implements Screen {
 						}
 						Item item = floor.getRandomItem();
 						if (!item.unique) {
-							int q = rand.nextInt(item.maxQ) + 1;
-							if(q > 1) {
-								msg += q + " ";
+							if(!item.getIDName().equals(lastItem.getIDName())) {
+								int q = rand.nextInt(item.maxQ) + 1;
+								if(q > 1) {
+									msg += q + " ";
+								}
+								Main.player.addItems(item, q);
+							}else {
+								i--;
+								continue;
 							}
-							Main.player.addItems(item, q);
 						}else {
 							floor.removeFromPool(item);
 							if (item instanceof Armor) {
@@ -467,6 +473,7 @@ public class floorScreen implements Screen {
 								Main.player.addItems(item);
 							}
 						}
+						lastItem = item;
 						msg += item.getName();
 					}
 				}

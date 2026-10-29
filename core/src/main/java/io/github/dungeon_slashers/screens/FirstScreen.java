@@ -200,12 +200,10 @@ public class FirstScreen implements Screen {
     	if(InputMan.checkKey("F2")) {
 			game.setScreen(game.defBattleScreen);
 			game.defBattleScreen.lastScreen = this;
-			this.pause();
 		}
     	if(InputMan.checkKey("F3")) {
 			game.setScreen(game.firstBossFight);
 			game.firstBossFight.lastScreen = this;
-			this.pause();
 		}
     	float moveX = floats[0] * delta;
     	float moveY = floats[1] * delta;

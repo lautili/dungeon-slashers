@@ -37,6 +37,9 @@ public class Boss extends Enemy{
 				boss.getSkills()[1]);
 		this.bossFlag = boss.bossFlag;
 		this.skills = boss.skills;
+		this.discWeakness = boss.discWeakness;
+		defeated = boss.defeated;
+		discovered = boss.discovered;
 		if(boss.events != null) {
 			this.events = new BossEvent[boss.events.length];
 			for(int i = 0; i < boss.events.length; i++) {

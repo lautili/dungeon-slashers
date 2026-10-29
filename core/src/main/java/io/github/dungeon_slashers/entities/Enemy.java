@@ -20,7 +20,7 @@ public class Enemy extends Entity{
 	public transient boolean draw = true;
 	public boolean defeated = false;
 	public boolean discovered = false;
-	private boolean[] discWeakness = new boolean[6];
+	protected boolean[] discWeakness = new boolean[6];
 	public transient final int WEAK_PHY = 0;
 	public transient final int WEAK_RAN = 1;
 	public transient final int WEAK_FIR = 2;

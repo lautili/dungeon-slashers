@@ -287,8 +287,11 @@ public class Player {
 	
 	
 	public void loadCharacters() {
-		for(int i = 0; i < characters.length; i++) {
-			characters[i].loadTextures();
+		for(Hero character : characters) {
+			character.loadTextures();
+			character.hp = character.getHP();
+			character.mp = character.getMP();
+			character.sp = character.getSP();
 		}
 	}
 

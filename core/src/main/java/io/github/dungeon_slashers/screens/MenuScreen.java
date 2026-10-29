@@ -105,7 +105,9 @@ public class MenuScreen implements Screen {
         } else if(pos[0] != 3) {
 	    	Menu.showItems(game, -100, 220, 10, pos[1], itemArray);
 	    	if(itemArray.length > 0) {
-	    		Menu.showItemStats(game, itemArray[pos[1]]);
+	    		if(itemArray[pos[1]] != null) {
+	    			Menu.showItemStats(game, itemArray[pos[1]]);
+	    		}
 	    	}
     	} else {
     		Menu.showSkills(game, -100, 220, 10, pos[1], skillArray);
@@ -180,10 +182,10 @@ public class MenuScreen implements Screen {
             dispose();
     	} else if(InputMan.checkKey(config.key_interact)) {
     		if(Main.player.state == PlayerState.MENU && pos[0] == 5) {
-                    if (pos[1] == 1) { // Pantalla completa
+                    if (pos[1] == 3) { // Pantalla completa
                         Main.config.fullScreen = !Main.config.fullScreen;
                         game.checkFullscreen();
-                    }else if(pos[1] == 3) {
+                    }else if(pos[1] == 6) {
                     	Save.saveConfig(Main.config);
                     	Gdx.app.exit();
                     }else if(pos[1] == 5) {

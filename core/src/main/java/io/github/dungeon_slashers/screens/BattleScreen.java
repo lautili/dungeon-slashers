@@ -486,7 +486,7 @@ public class BattleScreen implements Screen {
 				for(int i = 0; i < heroes.length; i++) {
 					heroes[i].lastOpt = 0;
 					heroes[i].clearEffects();
-					if(heroes[i].hp == 0) {
+					if(heroes[i].hp <= 0) {
 						heroes[i].hp++;
 						continue;
 					}

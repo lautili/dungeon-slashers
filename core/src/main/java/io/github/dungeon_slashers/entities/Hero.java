@@ -175,12 +175,12 @@ public class Hero extends Entity{
 	//Actualizar las stats
 	public void updateStats() {
 		//Math.pow es para hacer potencias. el 1er parametro es la base, el 2do la potencia
-		atk   = atkIn*( (int)Math.pow(1.15,(lvl-1)) );
-		def   = defIn*( (int)Math.pow(1.15,(lvl-1)) );
-		mat   = matIn*( (int)Math.pow(1.15,(lvl-1)) );
-		mdf   = mdfIn*( (int)Math.pow(1.15,(lvl-1)) );
-		spd   = spdIn*( (int)Math.pow(1.15,(lvl-1)) );
-		maxhp = hpIn*( (int)Math.pow(1.15,(lvl-1)) );
+		atk   = (int) Math.round((double) atkIn*(Math.pow(1.15,(lvl-1))) );
+		def   = (int) Math.round((double) defIn*(Math.pow(1.15,(lvl-1))) );
+		mat   = (int) Math.round((double) matIn*(Math.pow(1.15,(lvl-1))) );
+		mdf   = (int) Math.round((double) mdfIn*(Math.pow(1.15,(lvl-1))) );
+		spd   = (int) Math.round((double) spdIn*(Math.pow(1.15,(lvl-1))) );
+		maxhp = (int) Math.round((double) hpIn*(Math.pow(1.15,(lvl-1))));
 		maxsp = spIn + (lvl-1) * 20;
 		maxmp = mpIn + (lvl-1) * 20;
 		updateFinalStats();
