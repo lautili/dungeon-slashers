@@ -40,16 +40,13 @@ public class Floor {
 		return q;
 	}
 	public void generateNewLayout() {
-		do {
-			if(!exists(Room.ROOM_BOSS) || countRooms() < maxRooms) {
-				cleanLayout();
-				generateLayout();
-				generateBossRoom();
-				showDebugLayout();
-				continue;
-			}
-			return;
-		}while(true);
+	    do {
+	        cleanLayout();
+	        generateLayout();
+	        generateBossRoom();
+	        showDebugLayout();
+	        
+	    } while (!exists(Room.ROOM_BOSS) || countRooms() < minRooms || countRooms() > maxRooms);
 	}
 	private void cleanLayout() {
 		for(int i = 0; i < layout.length; i++) {

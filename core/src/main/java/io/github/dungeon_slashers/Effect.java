@@ -158,7 +158,7 @@ public class Effect {
 			a.modSP(- (int) (a.getSP() * 0.1));
 			break;
 		case "ENC":
-			a.modHP(- (int) (a.getHP() * 0.1));
+			a.modMP(- (int) (a.getMP() * 0.1));
 			break;
 		case "BEN":
 			a.modHP((int) (a.getHP() * 0.15));
