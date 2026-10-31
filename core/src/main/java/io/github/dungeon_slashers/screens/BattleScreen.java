@@ -112,6 +112,7 @@ public class BattleScreen implements Screen {
 
 	@Override
     public void show() {
+		Main.player.currScreen = "BATTLE_SCREEN";
 		heroes = Main.player.getCharacters();
 		camera = new OrthographicCamera();
 		viewport = game.viewport;
@@ -1226,14 +1227,14 @@ public class BattleScreen implements Screen {
 			case 3: // to Ally
 				antsel = sel[2];
 				sel[2] = InputMan.scrollInt(MenuScrollType.HORIZONTAL, heroes.length, sel[2], Menu.MenuMove);
-				if (!check || antsel == 0 && sel[2] == heroes.length - 1) {
+				if (antsel == 0 && sel[2] == heroes.length - 1) {
 				    haciaAdelante = false;
 				} else if (antsel == heroes.length - 1 && sel[2] == 0) {
 				    haciaAdelante = true;
 				} else {
 				    haciaAdelante = sel[2] > antsel;
 				}
-				while(!check && heroes[sel[2]].hp <= 0 || heroes[sel[2]].hasState("DWN")) {
+				while(!check && (heroes[sel[2]].hp <= 0 || heroes[sel[2]].hasState("DWN"))) {
 					if (haciaAdelante) {
 				        sel[2]++;
 				        if (sel[2] >= heroes.length) {

@@ -23,27 +23,59 @@ public class Flags {
 		switch(flag) {
 		case FLAG_FIRSTBOSS_DEFEATED:
 			if(Main.player.flags[FLAG_FIRSTBOSS_DEFEATED]) {
-				Store.addItems();
+				Store.addItems(
+					Main.getItem("bigHPot"),
+					Main.getItem("bigMPot"),
+					Main.getItem("bigSPot"),
+					Main.getItem("steelSword"),
+					Main.getItem("poisonDaggers"),
+					Main.getItem("hunterBow"),
+					Main.getItem("chainMail"),
+					Main.getItem("bronzeCuirass"),
+					Main.getItem("combatRobes"),
+					Main.getItem("noviceMantle")
+				);
 			}
 			break;
 		case FLAG_SECONDBOSS_DEFEATED:
 			if(Main.player.flags[FLAG_SECONDBOSS_DEFEATED]) {
-				Store.addItems();
+				Store.addItems(
+					Main.getItem("knightGreatsword"),
+					Main.getItem("shadowDaggers"),
+					Main.getItem("compositeBow"),
+					Main.getItem("steelPlateArmor"),
+					Main.getItem("heavyMail"),
+					Main.getItem("reinforcedLeather"),
+					Main.getItem("sageRobes"),
+					Main.getItem("mysticVestments")
+				);
 			}
 			break;
 		case FLAG_THIRDBOSS_DEFEATED:
 			if(Main.player.flags[FLAG_THIRDBOSS_DEFEATED]) {
-				Store.addItems();
+				Store.addItems(
+					Main.getItem("battleblade"),
+					Main.getItem("assassinBlades"),
+					Main.getItem("stormBow"),
+					Main.getItem("ebonyArmor"),
+					Main.getItem("gildedPlate"),
+					Main.getItem("agileLeather"),
+					Main.getItem("etherealRobes"),
+					Main.getItem("astralMantle")
+				);
 			}
 			break;
 		case FLAG_FOURTHBOSS_DEFEATED:
 			if(Main.player.flags[FLAG_FOURTHBOSS_DEFEATED]) {
-				Store.addItems();
-			}
-			break;
-		case FLAG_FIFTHBOSS_DEFEATED:
-			if(Main.player.flags[FLAG_FIFTHBOSS_DEFEATED]) {
-				Store.addItems();
+				Store.addItems(
+					Main.getItem("omegaBlade"),
+					Main.getItem("eclipseDaggers"),
+					Main.getItem("celestialStaff"),
+					Main.getItem("divineArmor"),
+					Main.getItem("godlyPlate"),
+					Main.getItem("supremeRobes"),
+					Main.getItem("voidVestments")
+				);
 			}
 			break;
 		case FLAG_FIRSTBOSS_DIALOGUE:

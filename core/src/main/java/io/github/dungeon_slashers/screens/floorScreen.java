@@ -37,6 +37,7 @@ public class floorScreen implements Screen {
     private float[] y;
     private Texture background;
     private int firstSteps;
+    private int totSteps;
     private int steps;
     private int level;
     private float timer;
@@ -122,7 +123,8 @@ public class floorScreen implements Screen {
     public void show() {
         // Prepare your screen here.
 		this.resume();
-		if(Main.player.currScreen != "BATTLE_SCREEN" && Main.player.currScreen != "MENU_SCREEN") {
+		if(Main.player.currScreen != "BATTLE_SCREEN" 
+				&& Main.player.currScreen != "MENU_SCREEN") {
 			currPosition = floor.getRoomPosition(Room.ROOM_START);
 			x[0] = 150;
 			y[0] = 20;
@@ -130,6 +132,7 @@ public class floorScreen implements Screen {
 		timer = 0;
 		steps = 0;
 		firstSteps = 0;
+		totSteps = 0;
 		if(Main.player.currScreen != "MENU_SCREEN") {
 			Main.player.state = PlayerState.WAITING;
 		}
@@ -217,9 +220,14 @@ public class floorScreen implements Screen {
 	            	if(steps < 60) {
 	            		steps++;
 	            	}else {
-	            		if(rand.nextInt(100) < 5) {
+	            		if(rand.nextInt(100) < 8) {
 	            			game.setScreen(battle);
 	            			battle.lastScreen = this;
+	            			totSteps++;
+	            			if(totSteps > 100) {
+	            				game.setScreen(battle);
+	            				battle.lastScreen = this;
+	            			}
 	            		}else {
 	            			steps = 0;
 	            		}

@@ -17,7 +17,7 @@ public class Floor {
 	public int maxGld;
 	private Random rand = new Random();
 	
-	public Floor(int x, int y, int maxRooms, int minRooms, BattleScreen battle, BattleScreen bossBattle, int floorType, int maxGld, Item...items) {
+	public Floor(int x, int y, int minRooms, int maxRooms, BattleScreen battle, BattleScreen bossBattle, int floorType, int maxGld, Item...items) {
 		layout = new Room[x][y];
 		this.floorType = floorType;
 		this.battle = battle;
@@ -44,9 +44,8 @@ public class Floor {
 	        cleanLayout();
 	        generateLayout();
 	        generateBossRoom();
-	        showDebugLayout();
-	        
 	    } while (!exists(Room.ROOM_BOSS) || countRooms() < minRooms || countRooms() > maxRooms);
+	    showDebugLayout();
 	}
 	private void cleanLayout() {
 		for(int i = 0; i < layout.length; i++) {

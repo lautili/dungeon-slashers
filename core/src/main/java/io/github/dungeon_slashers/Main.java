@@ -193,33 +193,41 @@ public class Main extends Game {
     	
     	fifthFloor = new Floor(25, 25, 200, 300, defBattle5Screen, fifthBossFight, 1, 25,
     			getItem("minHPot"), getItem("minMPot"), getItem("minSPot"),
-    			getItem("minHPven"), getItem("minSPven"), getItem("minMPven"),
+    			getItem("bigHPot"), getItem("bigMPot"), getItem("bigSPot"),
+    			getItem("elixirOfLife"), getItem("manaCrystal"), getItem("staminaPill"),
+    			getItem("bigHPven"), getItem("bigSPven"), getItem("bigMPven"),
+    			getItem("bandages"), getItem("ammoniumChloride"), getItem("scrollOfUnsilencing"), getItem("definitiveAntidote"), getItem("goldenApple"),
     			
-    			getItem("ironSword"), getItem("woodenStaff"),
+    			getItem("godslayerSword"), getItem("omegaBlade"), getItem("phantomDaggers"), getItem("eclipseDaggers"), getItem("prismaticStaff"), getItem("celestialStaff"), getItem("apocalypseBow"),
     			
-    			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"),
+    			getItem("divineArmor"), getItem("godlyPlate"), getItem("supremeRobes"), getItem("voidVestments"),
     			
     			getItem("gold"));
     	fifthFloorScreen = new floorScreen(this, fifthFloor, finalScreen, firstScreen, Flags.FLAG_FIFTHBOSS_DIALOGUE);
     	
     	fourthFloor = new Floor(25, 25, 200, 250, defBattle4Screen, fourthBossFight, 1, 25,
     			getItem("minHPot"), getItem("minMPot"), getItem("minSPot"),
+    			getItem("bigHPot"), getItem("bigMPot"), getItem("bigSPot"),
+    			getItem("elixirOfLife"), getItem("manaCrystal"),
     			getItem("minHPven"), getItem("minSPven"), getItem("minMPven"),
+    			getItem("bandages"), getItem("antidote"), getItem("snack"), getItem("goldenApple"),
     			
-    			getItem("ironSword"), getItem("woodenStaff"),
+    			getItem("battleblade"), getItem("thunderBlade"), getItem("assassinBlades"), getItem("galeBlades"), getItem("archmageStaff"), getItem("abyssStaff"), getItem("divineCenser"), getItem("stormBow"),
     			
-    			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"),
+    			getItem("ebonyArmor"), getItem("gildedPlate"), getItem("agileLeather"), getItem("etherealRobes"), getItem("astralMantle"),
     			
     			getItem("gold"));
     	fourthFloorScreen = new floorScreen(this, fourthFloor, fifthFloorScreen, firstScreen, Flags.FLAG_FOURTHBOSS_DIALOGUE);
     	
     	thirdFloor = new Floor(20, 20, 150, 200, defBattle3Screen, thirdBossFight, 1, 25,
     			getItem("minHPot"), getItem("minMPot"), getItem("minSPot"),
+    			getItem("bigHPot"), getItem("bigMPot"), getItem("bigSPot"),
     			getItem("minHPven"), getItem("minSPven"), getItem("minMPven"),
+    			getItem("bandages"), getItem("antidote"), getItem("disenchantingOcarina"),
     			
-    			getItem("ironSword"), getItem("woodenStaff"),
+    			getItem("knightGreatsword"), getItem("magmaBlade"), getItem("shadowDaggers"), getItem("stormDaggers"), getItem("flameStaff"), getItem("quakeStaff"), getItem("sageHarpStaff"), getItem("compositeBow"), getItem("frostBow"),
     			
-    			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"),
+    			getItem("steelPlateArmor"), getItem("heavyMail"), getItem("reinforcedLeather"), getItem("sageRobes"), getItem("mysticVestments"),
     			
     			getItem("gold"));
     	thirdFloorScreen = new floorScreen(this, thirdFloor, fourthFloorScreen, firstScreen, Flags.FLAG_THIRDBOSS_DIALOGUE);
@@ -227,10 +235,11 @@ public class Main extends Game {
     	secondFloor = new Floor(20, 20, 50, 100, defBattle2Screen, secondBossFight, 1, 25,
     			getItem("minHPot"), getItem("minMPot"), getItem("minSPot"),
     			getItem("minHPven"), getItem("minSPven"), getItem("minMPven"),
+    			getItem("antidote"), getItem("snack"), getItem("ammoniumChloride"),
     			
-    			getItem("ironSword"), getItem("woodenStaff"),
+    			getItem("steelSword"), getItem("aquaticBlade"), getItem("poisonDaggers"), getItem("galeDaggers"), getItem("reinforcedStaff"), getItem("earthStaff"), getItem("holyWand"), getItem("hunterBow"), getItem("iceBow"),
     			
-    			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"),
+    			getItem("chainMail"), getItem("bronzeCuirass"), getItem("combatRobes"), getItem("noviceMantle"), getItem("ironArmor"),
     			
     			getItem("gold"));
     	secondFloorScreen = new floorScreen(this, secondFloor, thirdFloorScreen, firstScreen, Flags.FLAG_SECONDBOSS_DIALOGUE);
@@ -238,11 +247,11 @@ public class Main extends Game {
     	firstFloor = new Floor(15, 15, 25, 50, defBattleScreen, firstBossFight, 1, 25,
     			getItem("minHPot"), getItem("minMPot"), getItem("minSPot"),
     			getItem("minHPven"), getItem("minSPven"), getItem("minMPven"),
+    			getItem("bandages"), getItem("antidote"), getItem("snack"),
     			
-    			getItem("ironSword"), getItem("woodenStaff"), getItem("bow"), getItem("daggers"),
-    			getItem("encBow"), getItem("curStaff"),
+    			getItem("ironSword"), getItem("flameSword"), getItem("woodenStaff"), getItem("waterStaff"), getItem("curStaff"), getItem("bow"), getItem("daggers"), getItem("windDaggers"), getItem("encBow"),
     			
-    			getItem("leatherArmor"), getItem("ironArmor"), getItem("wizardRobes"),
+    			getItem("leatherArmor"), getItem("lightTunic"), getItem("ironArmor"), getItem("wizardRobes"),
     			
     			getItem("gold"));
     	firstFloorScreen = new floorScreen(this, firstFloor, secondFloorScreen, firstScreen, Flags.FLAG_FIRSTBOSS_DIALOGUE);
@@ -272,7 +281,7 @@ public class Main extends Game {
 		invFont.dispose();
 	}
 
-    public Item getItem(String IDname) {
+    public static Item getItem(String IDname) {
     	for(Item item : items) {
     		if (item.getIDName().equals(IDname)) {
     			return item;
@@ -284,44 +293,147 @@ public class Main extends Game {
 
 	private void initializeGame() {
 		//initialize armas
-				Weapon dullSword = new Weapon("Espada Desafilada", "dullSword", "Espada antigua y desafilada.", null, 0, 0, 0, 15, "Warrior");
-				Weapon dullDaggers = new Weapon("Dagas Desgastadas", "dullDaggers", "Un par de dagas desgastadas.", null, 0, 0, 0, 15, "Thief");
-				Weapon brokenStaff = new Weapon("Baculo Roto", "brokenStaff", "Un baculo que apenas funciona.", null, 0, 0, 0, 15, "Mage", "Sage");
-				Weapon oldBow = new Weapon("Arco Viejo", "oldBow", "Un arco que ya tiene sus años.", null, 0, 0, 0, 15, "Explorer");
+		Weapon dullSword = new Weapon("Espada Desafilada", "dullSword", "Espada antigua y desafilada.", null, 0, 0, 0, 15, "Warrior");
+		Weapon dullDaggers = new Weapon("Dagas Desgastadas", "dullDaggers", "Un par de dagas desgastadas.", null, 0, 0, 0, 15, "Thief");
+		Weapon brokenStaff = new Weapon("Baculo Roto", "brokenStaff", "Un baculo que apenas funciona.", null, 0, 0, 0, 15, "Mage", "Sage");
+		Weapon oldBow = new Weapon("Arco Viejo", "oldBow", "Un arco que ya tiene sus años.", null, 0, 0, 0, 15, "Explorer");
+		
+		//piso 1
+		Weapon ironSword = new Weapon("Espada de Hierro", "ironSword", "Espada comun de hierro.", "PHY", 6, 0, 0, 60, "Warrior");
+		Weapon flameSword = new Weapon("Espada Ignea", "flameSword", "Espada templada con fuego leve.", "FIR", 4, 2, 0, 85, "Warrior");
+		Weapon daggers = new Weapon("Dagas de Hierro", "daggers", "Dagas en buen estado.", "PHY", 4, 0, 4, 65, "Thief");
+		Weapon windDaggers = new Weapon("Dagas de Céfiro", "windDaggers", "Ligeras cuchillas sopladas por el viento.", "WIN", 3, 0, 8, 90, "Thief");
+		Weapon woodenStaff = new Weapon("Baston de Roble", "woodenStaff", "Baston de practica arcana.", "FIR", 0, 6, 0, 65, "Mage", "Sage");
+		Weapon waterStaff = new Weapon("Baston de Manantial", "waterStaff", "Baston imbuido con esencia acuosa.", "WAT", 0, 4, 0, 80, "Mage", "Sage");
+		Weapon curStaff = new Weapon("Baston Curativo", "curStaff", "Baston rústico con propiedades sagradas.", "CUR", 0, 3, 0, 90, "Sage");
+		Weapon bow = new Weapon("Arco de Madera", "bow", "Arco de roble comun.", "RAN", 5, 0, 2, 70, "Explorer");
+		Weapon encBow = new Weapon("Arco de Fuego", "encBow", "Arco con madera ignifuga.", "FIR", 4, 3, 0, 100, "Explorer");
 
-				Weapon ironSword = new Weapon("Espada de Hierro", "ironSword", "Una espada comun de hierro. no destaca en nada.", "PHY", 5, 0, 0, 70, "Warrior");
-				Weapon woodenStaff = new Weapon("Baston de Madera", "woodenStaff", "Un baston de roble de segunda mano.", "FIR", 0, 5, 0, 70, "Mage", "Sage");
-				Weapon bow = new Weapon("Arco de madera", "bow", "Un arco de madera de roble comun.", "RAN", 5, 0, 0, 70, "Explorer");
-				Weapon daggers = new Weapon("Dagas de hierro", "daggers", "Un par de dagas en un buen estado.", "PHY", 2, 0, 5, 70, "Thief");
-				Weapon encBow = new Weapon("Arco de Fuego", "encBow", "Un arco creado a partir de una madera ignifiuga.", "FIR", 0, 5, 0, 100, "Explorer");
-				Weapon curStaff = new Weapon("Baston curativo", "curStaff", "Un baston con propiedades curativas.", "CUR", 0, 2, 0, 100, "Sage");
-				
-				
-				//initialize armaduras
-				Armor rags = new Armor("Harapos", "rags", "Ropas viejas.", 0, 0, 0, 0, 0, 5);
-				Armor leatherArmor = new Armor("Armadura de Cuero", "leatherArmor", "Armadura de cuero. Da algo de resistencia.", 0, 0, 5, 0, 0, 60);
-				Armor ironArmor = new Armor("Armadura de Hierro", "ironArmor", "Armadura de hierro. Resistente, pero lenta.", 0, 0, 10, 0, -5, 90);
-				Armor wizRobes = new Armor("Bata de Mago", "wizRobes", "Una bata de mago. Da resistencia magica.", 0, 0, 0, 5, 0, 100);
+		// Piso 2
+		Weapon steelSword = new Weapon("Espada de Acero", "steelSword", "Espada de acero resistente.", "PHY", 12, 0, 1, 130, "Warrior");
+		Weapon aquaticBlade = new Weapon("Hoja de Marea", "aquaticBlade", "Espada fluida como el agua.", "WAT", 9, 4, 2, 150, "Warrior");
+		Weapon poisonDaggers = new Weapon("Dagas Envenenadas", "poisonDaggers", "Filo preparado para toxinas.", "PHY", 8, 0, 10, 140, "Thief");
+		Weapon galeDaggers = new Weapon("Cuchillas de Viento", "galeDaggers", "Cortan el aire a velocidad pasmosa.", "WIN", 6, 0, 15, 160, "Thief");
+		Weapon reinforcedStaff = new Weapon("Baston Reforzado", "reinforcedStaff", "Conduce energia elemental basica.", "FIR", 0, 14, 0, 140, "Mage", "Sage");
+		Weapon earthStaff = new Weapon("Baston Terroso", "earthStaff", "Densidad de roca pura.", "EAR", 0, 12, -2, 145, "Mage");
+		Weapon holyWand = new Weapon("Vara Sagrada", "holyWand", "Canalizador menor de milagros.", "CUR", 0, 8, 2, 170, "Sage");
+		Weapon hunterBow = new Weapon("Arco de Cazador", "hunterBow", "Arco flexible y preciso.", "RAN", 11, 0, 5, 135, "Explorer");
+		Weapon iceBow = new Weapon("Arco Glacial", "iceBow", "Dispara flechas con escarcha.", "WAT", 8, 5, 4, 155, "Explorer");
 
+		// Piso 3
+		Weapon knightGreatsword = new Weapon("Gran Espada de Caballero", "knightGreatsword", "Pesada espada de honor.", "PHY", 21, 0, -2, 240, "Warrior");
+		Weapon magmaBlade = new Weapon("Espada de Magma", "magmaBlade", "Funde las defensas fisicas.", "FIR", 17, 8, -1, 280, "Warrior");
+		Weapon shadowDaggers = new Weapon("Dagas Sombrias", "shadowDaggers", "Se deslizan en la penumbra.", "PHY", 15, 0, 18, 250, "Thief");
+		Weapon stormDaggers = new Weapon("Dagas de Tormenta", "stormDaggers", "Electrizantes y rapidas.", "WIN", 13, 5, 22, 290, "Thief");
+		Weapon flameStaff = new Weapon("Baston Igneo", "flameStaff", "Emana calor abrasador.", "FIR", 0, 24, 0, 250, "Mage");
+		Weapon quakeStaff = new Weapon("Baston de Terremoto", "quakeStaff", "Provoca temblores arcanos.", "EAR", 0, 22, -3, 260, "Mage");
+		Weapon sageHarpStaff = new Weapon("Baston Coral", "sageHarpStaff", "Ondas de sanacion profunda.", "CUR", 0, 15, 5, 310, "Sage");
+		Weapon compositeBow = new Weapon("Arco Compuesto", "compositeBow", "Alta tension mecanica.", "RAN", 19, 0, 6, 250, "Explorer");
+		Weapon frostBow = new Weapon("Arco Escarchado", "frostBow", "Congela al impacto.", "WAT", 16, 8, 5, 280, "Explorer");
 
-				//initialize items
-				Item minHPot = new Item("Pocion menor de salud", "minHPot", "Cura poca cantidad de salud.", 20, 5, 3, false, Item.USE_BOTH, false);
-				Item minMPot = new Item("Pocion menor de mana", "minMPot", "Cura una poca cantidad de mana.", 20, 5, 3, false, Item.USE_BOTH, false);
-				Item minSPot = new Item("Pocion menor de stamina", "minSPot", "Cura una poca cantidad de stamina.", 20, 5, 3, false, Item.USE_BOTH, false);
-				Item minHPven = new Item("Veneno menor de salud", "minHPven", "Quita una poca cantidad de salud.", 50, 3, 1, false, Item.USE_BATTLE, false);
-				Item minSPven = new Item("Veneno menor de stamina", "minSPven", "Quita una poca cantidad de stamina.", 50, 2, 1, false, Item.USE_BATTLE, false);
-				Item minMPven = new Item("Veneno menor de mana", "minMPven", "Quita una poca cantidad de mana.", 50, 2, 1, false, Item.USE_BATTLE, false);
-				Item gold = new Item("Ladrillo de oro de 20 kilates", "gold", "Pesa bastante.", 180, 1, -1, false, Item.USE_NONE, false);
-				initItems(dullSword, dullDaggers, brokenStaff, oldBow, ironSword, woodenStaff, bow, daggers, 
-						encBow, curStaff,
+		// Piso 4
+		Weapon battleblade = new Weapon("Hoja de Batalla", "battleblade", "Filo pesado de combate avanzado.", "PHY", 30, 0, 5, 420, "Warrior");
+		Weapon thunderBlade = new Weapon("Hoja de Rayo", "thunderBlade", "Corta con velocidad electrica.", "WIN", 26, 10, 12, 450, "Warrior");
+		Weapon assassinBlades = new Weapon("Cuchillas de Asesino", "assassinBlades", "Letales y sigilosas.", "PHY", 24, 0, 26, 430, "Thief");
+		Weapon galeBlades = new Weapon("Cuchillas del Huracan", "galeBlades", "Doble aspa de viento puro.", "WIN", 20, 12, 30, 470, "Thief");
+		Weapon archmageStaff = new Weapon("Baston de Archimago", "archmageStaff", "Poder elemental desatado.", "WIN", 0, 36, 0, 440, "Mage", "Sage");
+		Weapon abyssStaff = new Weapon("Baston Abismal", "abyssStaff", "Magia oscura de las profundidades.", "EAR", 0, 38, -2, 460, "Mage");
+		Weapon divineCenser = new Weapon("Incensario Divino", "divineCenser", "Emite auras de curacion masiva.", "CUR", 0, 24, 10, 500, "Sage");
+		Weapon stormBow = new Weapon("Arco de Tormenta", "stormBow", "Flechas con carga ionica.", "WIN", 28, 12, 14, 450, "Explorer");
 
-						rags, leatherArmor, ironArmor, wizRobes,
+		// Piso 5
+		Weapon godslayerSword = new Weapon("Matadioses", "godslayerSword", "Espada universal que ignora cualquier tipo de debilidad o fortaleza.", "UNI", 48, 20, 10, 2500, "Warrior");
+		Weapon omegaBlade = new Weapon("Espada Omega", "omegaBlade", "El pinaculo del combate fisico.", "PHY", 52, 0, 4, 900, "Warrior");
+		Weapon phantomDaggers = new Weapon("Dagas Fantasmales", "phantomDaggers", "Cuchillas universales que atraviesan la materia.", "UNI", 42, 18, 35, 2400, "Thief");
+		Weapon eclipseDaggers = new Weapon("Cuchillas de Eclipse", "eclipseDaggers", "Sombra y filo absoluto.", "PHY", 45, 0, 30, 920, "Thief");
+		Weapon prismaticStaff = new Weapon("Baston Prismatico", "prismaticStaff", "Baston universal que canaliza todo el espectro.", "UNI", 0, 52, 0, 2600, "Mage", "Sage");
+		Weapon celestialStaff = new Weapon("Baston Celestial", "celestialStaff", "Milagros de restauracion infinita.", "CUR", 0, 35, 15, 950, "Sage");
+		Weapon apocalypseBow = new Weapon("Arco del Apocalipsis", "apocalypseBow", "Arco universal de fatalidad ineludible.", "UNI", 46, 18, 20, 2550, "Explorer");		
+		
+		//initialize armaduras
+		Armor rags = new Armor("Harapos", "rags", "Ropas viejas.", 0, 0, 0, 0, 0, 5);
+		Armor leatherArmor = new Armor("Armadura de Cuero", "leatherArmor", "Cuero basico.", 0, 0, 6, 2, 0, 60);
+		Armor lightTunic = new Armor("Tunica Ligera", "lightTunic", "Facilita la movilidad.", 0, 1, 3, 3, 4, 70);
+		Armor ironArmor = new Armor("Armadura de Hierro", "ironArmor", "Resistente pero pesada.", 0, 0, 12, 4, -4, 90);
+		Armor wizardRobes = new Armor("Bata de Mago", "wizardRobes", "Resistencia arcana basica.", 0, 2, 2, 8, 0, 100);
 
-						minHPot, minMPot, minSPot, minHPven, minSPven, minMPven,
-						
-						gold);
+		// Piso 2
+		Armor chainMail = new Armor("Cota de Malla", "chainMail", "Acero entrelazado flexible.", 0, 0, 16, 6, -2, 150);
+		Armor bronzeCuirass = new Armor("Coraza de Bronce", "bronzeCuirass", "Solida proteccion frontal.", 0, 0, 19, 5, -3, 170);
+		Armor combatRobes = new Armor("Tunicas de Combate", "combatRobes", "Optimizadas para lanzadores.", 0, 6, 8, 14, 2, 160);
+		Armor noviceMantle = new Armor("Manto de Novicio", "noviceMantle", "Manto ligero con proteccion elemental.", 0, 4, 5, 12, 3, 150);
 
-				Store.addItems(minHPot, minMPot, minSPot, minHPven, ironSword, woodenStaff, leatherArmor, ironArmor, wizRobes);
+		// Piso 3
+		Armor steelPlateArmor = new Armor("Placas de Acero", "steelPlateArmor", "Proteccion pesada completa.", 0, 0, 26, 10, -5, 300);
+		Armor heavyMail = new Armor("Malla Pesada de Batalla", "heavyMail", "Malla reforzada contra impactos.", 0, 0, 30, 8, -6, 320);
+		Armor reinforcedLeather = new Armor("Cuero Endurecido", "reinforcedLeather", "Optimizado para agilidad defensiva.", 0, 0, 16, 8, 10, 280);
+		Armor sageRobes = new Armor("Tunicas de Sabio", "sageRobes", "Proteccion magica avanzada.", 0, 12, 12, 24, 0, 300);
+		Armor mysticVestments = new Armor("Vestimentas Misticas", "mysticVestments", "Canalizan energia defensiva.", 0, 14, 10, 26, 2, 310);
+
+		// Piso 4
+		Armor ebonyArmor = new Armor("Armadura de Ebano", "ebonyArmor", "Oscura y sumamente resistente.", 0, 0, 38, 18, -3, 500);
+		Armor gildedPlate = new Armor("Placas Doradas", "gildedPlate", "Aleacion real de alta durabilidad.", 0, 2, 42, 15, -4, 540);
+		Armor agileLeather = new Armor("Cuero de Sombra", "agileLeather", "Cuero especial que no frena los reflejos.", 0, 0, 24, 14, 14, 480);
+		Armor etherealRobes = new Armor("Tunicas Etereas", "etherealRobes", "Tejidas con hilos astrales.", 0, 20, 20, 36, 4, 500);
+		Armor astralMantle = new Armor("Manto Astral", "astralMantle", "Absorbe las ondas hostiles.", 0, 22, 18, 40, 5, 520);
+
+		// Piso 5
+		Armor divineArmor = new Armor("Armadura Divina", "divineArmor", "Bendecida por los dioses.", 0, 0, 55, 30, 4, 900);
+		Armor godlyPlate = new Armor("Placas del Titán", "godlyPlate", "Impenetrable ante cualquier fuerza.", 0, 0, 62, 25, 0, 950);
+		Armor supremeRobes = new Armor("Tunicas Supremas", "supremeRobes", "Maxima expresion de sabiduria y defensa.", 0, 32, 28, 50, 8, 900);
+		Armor voidVestments = new Armor("Vestimentas del Vacío", "voidVestments", "Proteccion absoluta contra el absurdo.", 0, 35, 30, 55, 10, 960);
+
+		//initialize items
+		Item minHPot = new Item("Pocion menor de salud", "minHPot", "Cura poca cantidad de salud.", 20, 5, 3, false, Item.USE_BOTH, false);
+		Item minMPot = new Item("Pocion menor de mana", "minMPot", "Cura una poca cantidad de mana.", 20, 5, 3, false, Item.USE_BOTH, false);
+		Item minSPot = new Item("Pocion menor de stamina", "minSPot", "Cura una poca cantidad de stamina.", 20, 5, 3, false, Item.USE_BOTH, false);
+		Item minHPven = new Item("Veneno menor de salud", "minHPven", "Quita una poca cantidad de salud.", 50, 3, 1, false, Item.USE_BATTLE, false);
+		Item minSPven = new Item("Veneno menor de stamina", "minSPven", "Quita una poca cantidad de stamina.", 50, 2, 1, false, Item.USE_BATTLE, false);
+		Item minMPven = new Item("Veneno menor de mana", "minMPven", "Quita una poca cantidad de mana.", 50, 2, 1, false, Item.USE_BATTLE, false);
+
+		// Nuevos items consumibles y de utilidad
+		Item bigHPot = new Item("Pocion grande de salud", "bigHPot", "Cura gran cantidad de salud.", 70, 3, 3, false, Item.USE_BOTH, false);
+		Item bigMPot = new Item("Pocion grande de mana", "bigMPot", "Cura gran cantidad de mana.", 70, 3, 3, false, Item.USE_BOTH, false);
+		Item bigSPot = new Item("Pocion grande de stamina", "bigSPot", "Cura gran cantidad de stamina.", 70, 3, 3, false, Item.USE_BOTH, false);
+
+		Item elixirOfLife = new Item("Elixir de Vida", "elixirOfLife", "Restaura por completo la salud.", 200, 2, 3, false, Item.USE_BOTH, false);
+		Item manaCrystal = new Item("Cristal de Mana", "manaCrystal", "Restaura por completo el mana.", 200, 2, 3, false, Item.USE_BOTH, false);
+		Item staminaPill = new Item("Pastilla Energetica", "staminaPill", "Restaura por completo la stamina.", 180, 2, 3, false, Item.USE_BOTH, false);
+
+		Item bigHPven = new Item("Veneno potente de salud", "bigHPven", "Daña severamente la salud.", 120, 2, 1, false, Item.USE_BATTLE, false);
+		Item bigMPven = new Item("Veneno potente de mana", "bigMPven", "Drena severamente el mana.", 120, 2, 1, false, Item.USE_BATTLE, false);
+		Item bigSPven = new Item("Veneno potente de stamina", "bigSPven", "Drena severamente la stamina.", 120, 2, 1, false, Item.USE_BATTLE, false);
+
+		Item bandages = new Item("Vendas", "bandages", "Elimina el sangrado.", 30, 4, 3, false, Item.USE_BOTH, false);
+		Item ammoniumChloride = new Item("Cloruro de amonio", "ammoniumChloride", "Despierta a un aliado dormido.", 30, 4, 3, false, Item.USE_BOTH, false);
+		Item scrollOfUnsilencing = new Item("Pergamino de voz", "scrollOfUnsilencing", "Elimina el silencio.", 40, 3, 3, false, Item.USE_BOTH, false);
+		Item disenchantingOcarina = new Item("Ocarina de disencanto", "disenchantingOcarina", "Elimina el encantamiento.", 50, 2, 3, false, Item.USE_BOTH, false);
+		Item antidote = new Item("Antidoto", "antidote", "Cura el envenenamiento.", 35, 4, 3, false, Item.USE_BOTH, false);
+		Item snack = new Item("Snack energetico", "snack", "Elimina el cansancio.", 30, 4, 3, false, Item.USE_BOTH, false);
+		Item definitiveAntidote = new Item("Panacea", "definitiveAntidote", "Purifica todos los efectos negativos.", 160, 1, 3, false, Item.USE_BOTH, false);
+
+		Item goldenApple = new Item("Manzana Dorada", "goldenApple", "Fruta legendaria que revitaliza el cuerpo y el alma.", 300, 1, 3, false, Item.USE_BOTH, false);
+		Item gold = new Item("Ladrillo de oro de 20 kilates", "gold", "Pesa bastante.", 180, 1, -1, false, Item.USE_NONE, false);
+		
+		initItems(
+				dullSword, dullDaggers, brokenStaff, oldBow, ironSword, flameSword, daggers, windDaggers, woodenStaff, waterStaff, curStaff, bow, encBow,
+				steelSword, aquaticBlade, poisonDaggers, galeDaggers, reinforcedStaff, earthStaff, holyWand, hunterBow, iceBow,
+				knightGreatsword, magmaBlade, shadowDaggers, stormDaggers, flameStaff, quakeStaff, sageHarpStaff, compositeBow, frostBow,
+				battleblade, thunderBlade, assassinBlades, galeBlades, archmageStaff, abyssStaff, divineCenser, stormBow,
+				godslayerSword, omegaBlade, phantomDaggers, eclipseDaggers, prismaticStaff, celestialStaff, apocalypseBow,
+				rags, leatherArmor, lightTunic, ironArmor, wizardRobes,
+				chainMail, bronzeCuirass, combatRobes, noviceMantle,
+				steelPlateArmor, heavyMail, reinforcedLeather, sageRobes, mysticVestments,
+				ebonyArmor, gildedPlate, agileLeather, etherealRobes, astralMantle,
+				divineArmor, godlyPlate, supremeRobes, voidVestments,
+				minHPot, minMPot, minSPot, minHPven, minSPven, minMPven,
+				bigHPot, bigMPot, bigSPot, elixirOfLife, manaCrystal, staminaPill,
+				bigHPven, bigMPven, bigSPven,
+				bandages, ammoniumChloride, scrollOfUnsilencing, disenchantingOcarina, antidote, snack, definitiveAntidote,
+				goldenApple, gold
+			);
+
+				Store.addItems(minHPot, minMPot, minSPot, minHPven, ironSword, woodenStaff, leatherArmor, ironArmor, wizardRobes);
 
 				//initialize habilidades
 				Skill defAtt = new Skill("defAtt", "Ataque comun", "Un ataque fisico basico.", null, " ataca a ", 1, 0, false, 1);
