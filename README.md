@@ -9,14 +9,15 @@ Un simple RPG por turnos donde 4 heroes descenderán a una mazmorra para complet
 
 # Tecnologias utilizadas:
 - LibGDX
-- Computadoras con Sistema Windows
+- Computadoras con Sistema Windows, Linux y Mac
 - Gradle
 - EclipseIDE
 
 # Instrucciones:
-1. Clonar el repo
-2. Tener un método para ejecutar .JAR
-3. Ejecutar el .JAR
+1. Ir a releases/lastest
+2. Descargar el .zip de la ultima versión para el sistema que esta usando
+3. Ejecutar el juego
+4. disfrutar
 
 # Estado actual:
-Mayormente las clases fueron terminadas, pero falta adaptarlas para que puedan ser utilizadas en el espacio de LibGDX
+Falta principalmente terminar el apartado artístico y agregar items
