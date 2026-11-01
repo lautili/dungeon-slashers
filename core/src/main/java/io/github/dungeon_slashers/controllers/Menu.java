@@ -77,6 +77,7 @@ public static void showHeroStats(Main game, Hero entity) {
 	game.mainFont.draw(game.batch, "DEF " + entity.atkF + showDEF, 320, 0, 50, Align.left, true);
 	game.mainFont.draw(game.batch, "MDF " + entity.matF + showMDF, 405, 0, 50, Align.left, true);
 	game.mainFont.draw(game.batch, "SPD " + entity.matF + showSPD, 353, -30, 50, Align.left, true);
+	game.invFont.draw(game.batch, "NV: " + entity.getLVL(), 280, -76);
 	game.invFont.draw(game.batch, entity.getXPleft() + " XP para el proximo nivel", 280, -62);
 	game.invFont.getData().setScale(0.35f);
 	game.invFont.draw(game.batch, "Arma: \n" + entity.getWeapon().getName(), 190, 30, 120, Align.center, true);

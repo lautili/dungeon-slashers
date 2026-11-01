@@ -575,7 +575,7 @@ public class Main extends Game {
 				Skill vitalTheft = new Skill("vitalTheft", "Hurto Vital", "Roba un 10% de la vitalidad y la stamina del enemigo.", "NONE",
 						" le roba la escencia vital y estamina a ",
 						1, 0, false, 1, 90, 0, 5);
-				Skill bladeSweep = new Skill("bladeSweep", "Barrido de Cuchillas", "Inflinge daño medio a todos los enemigos y ataca 3 veces con"
+				Skill bladeSweep = new Skill("bladeSweep", "Barrido de Cuchillas", "Inflinge daño bajo a todos los enemigos y ataca 3 veces con"
 						+ "chances muy bajas de aplicar sangrado.", "PHY",
 						" barre con sus cuchillas a los enemigos!",
 						2, 15, false, 3, 50, 110, 6);
@@ -853,7 +853,7 @@ public class Main extends Game {
 
 				Boss headless = new Boss("Jinete sin Cabeza", "headless", "PHY",
 						1800, 80, 300,
-						50, 42, 30, 36, 28,
+						45, 42, 30, 36, 28,
 						350, 250, 0,
 						0.5, 1.0, 0.75, 0.75, 1.5, 1.5,
 						defAtt, defend, Flags.FLAG_SECONDBOSS_DEFEATED);

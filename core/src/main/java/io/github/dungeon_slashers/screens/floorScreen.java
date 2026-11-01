@@ -452,37 +452,37 @@ public class floorScreen implements Screen {
 					}
 					Item lastItem = null;
 					for(int i = 1; i <= n2; i++) {
-						if(!msg.equals("")) {
-							if(i < n2) {
-								msg += ", ";
-							}else {
-								msg += " y ";
-							}
-						}
-						Item item = floor.getRandomItem();
-						if (!item.unique) {
-							if(!item.getIDName().equals(lastItem.getIDName())) {
-								int q = rand.nextInt(item.maxQ) + 1;
-								if(q > 1) {
-									msg += q + " ";
-								}
-								Main.player.addItems(item, q);
-							}else {
-								i--;
-								continue;
-							}
-						}else {
-							floor.removeFromPool(item);
-							if (item instanceof Armor) {
-								Main.player.addArmors((Armor) item);
-							}else if(item instanceof Weapon){
-								Main.player.addWeapons((Weapon) item);
-							}else {
-								Main.player.addItems(item);
-							}
-						}
-						lastItem = item;
-						msg += item.getName();
+					    if(!msg.equals("")) {
+					        if(i < n2) {
+					            msg += ", ";
+					        }else {
+					            msg += " y ";
+					        }
+					    }
+					    Item item = floor.getRandomItem();
+					    if (!item.unique) {
+					        if(lastItem == null || !item.getIDName().equals(lastItem.getIDName())) {
+					            int q = rand.nextInt(item.maxQ) + 1;
+					            if(q > 1) {
+					                msg += q + " ";
+					            }
+					            Main.player.addItems(item, q);
+					        }else {
+					            i--;
+					            continue;
+					        }
+					    }else {
+					        floor.removeFromPool(item);
+					        if (item instanceof Armor) {
+					            Main.player.addArmors((Armor) item);
+					        }else if(item instanceof Weapon){
+					            Main.player.addWeapons((Weapon) item);
+					        }else {
+					            Main.player.addItems(item);
+					        }
+					    }
+					    lastItem = item;
+					    msg += item.getName();
 					}
 				}
 				msg += ".";

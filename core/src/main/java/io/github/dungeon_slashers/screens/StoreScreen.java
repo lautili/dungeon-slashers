@@ -64,10 +64,12 @@ public class StoreScreen implements Screen {
     		break;
     	}
     	
-    	if(pos[1] >= itemArray.length) {
-    		pos[1] = (pos[1] <= 0) ? 0 : pos[1] - 1;
+    	if(itemArray.length  > 0) {
+	    	if(pos[1] >= itemArray.length) {
+	    		pos[1] = (pos[1] <= 0) ? 0 : pos[1] - 1;
+	    	}
+	    	currItem = itemArray[pos[1]];
     	}
-    	currItem = itemArray[pos[1]];
     	game.viewport.apply();
     	game.batch.setProjectionMatrix(game.viewport.getCamera().combined);
     	

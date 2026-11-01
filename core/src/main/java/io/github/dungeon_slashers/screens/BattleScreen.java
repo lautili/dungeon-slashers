@@ -349,7 +349,9 @@ public class BattleScreen implements Screen {
     		System.out.println("Turno empieza: " + turn);
     		currentBossEvent = null;
     		if(battle.isBoss) {
-    			currentBossEvent = ((Boss) enemies[0]).checkEvents(game, turn, delta);
+    			if(!enemies[0].hasState("SLE")) {
+    				currentBossEvent = ((Boss) enemies[0]).checkEvents(game, turn, delta);
+    			}
     		}
     		int count = (currentBossEvent != null) ? currentBossEvent.getMsgs().length : 0;
 			updateEntities();
@@ -1414,6 +1416,13 @@ public class BattleScreen implements Screen {
     @Override
     public void hide() {
     	Main.updateArrays();
+    	for(int i = 0; i < heroes.length; i++) {
+			heroes[i].lastOpt = 0;
+			heroes[i].clearEffects();
+			if(heroes[i].hp <= 0) {
+				heroes[i].hp++;
+			}
+		}
     	Save.save();
     	game.lastScreen = this;
     }

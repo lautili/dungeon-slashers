@@ -683,7 +683,7 @@ public class Skill {
 					count = b[i].setEffect(new Effect("BLE"), count);
 					break;
 				case "bladeSweep":
-					dmg = ((a.getATK()*6) / ( (b[i].getDEF() / 10) + 1 )) / b[i].prot ;
+					dmg = ((a.getATK()*4) / ( (b[i].getDEF() / 10) + 2)) / b[i].prot ;
 					dmg *= mul;
 					b[i].modHP(-dmg);
 					if(rand.nextInt(100) < 5)
