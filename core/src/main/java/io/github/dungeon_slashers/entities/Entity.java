@@ -128,7 +128,14 @@ public abstract class Entity {
 	public Effect[] getEffects() {
 		return this.effects;
 	}
-	
+	public Effect getEffect(String string) {
+		for(Effect effect : effects) {
+			if(effect.getShortName().equals(string)) {
+				return effect;
+			}
+		}
+		return null;
+	}
 	//limpiar los efectos y poner efectos nuevos
 	public void clearEffects() {
 		for(int i = 0; i < effects.length; i++) {
@@ -159,8 +166,10 @@ public abstract class Entity {
 				if(cont == 6) {
 					effects[0] = effect;
 				}
+				if(count != -1) {
 				DialMan.addBDialogue(count, count+1, name + effect.getMSG());
 				count++;
+				}
 			}
 			return count;
 		}
@@ -196,10 +205,10 @@ public abstract class Entity {
 						effects[i] = null; //limpia el efecto
 					}else { //si no termino
 						int hpBeforeEffect = hp;
-						effect.use(this); //aplica el efecto antes de construir el mensaje para poder medir el daño real
+						effect.use(this);
 						int hpLost = hpBeforeEffect - hp;
 						String turnMsg = effect.getTurnMsg();
-						if(turnMsg != null || (this instanceof Enemy && hpLost > 0)) {
+						if(turnMsg != null || (hpLost > 0)) {
 							String message = name + (turnMsg != null ? turnMsg : " sufre daño por " + effect.getName().toLowerCase() + ".");
 							if(this instanceof Enemy && hpLost > 0) {
 								message += " Pierde " + hpLost + " HP.";
@@ -247,8 +256,9 @@ public abstract class Entity {
 				if(hp > maxhp) {
 					hp = maxhp;
 				}
-				if(hp < 0) {
+				if(hp <= 0) {
 					hp = 0;
+					setEffect(new Effect("DWN"), -1);
 				}
 			}
 			public void modMP(int num) {

@@ -346,7 +346,6 @@ public class BattleScreen implements Screen {
     		break;
 
     	case BSTATE_TURN_START:
-    		System.out.println("Turno empieza: " + turn);
     		currentBossEvent = null;
     		if(battle.isBoss) {
     			if(!enemies[0].hasState("SLE")) {
@@ -443,7 +442,6 @@ public class BattleScreen implements Screen {
     		break;
 
     	case BSTATE_TURN_END:
-    		System.out.println("Turno termina: " + turn);
     		tried = false;
     		currentAttacker = null;
     		currentTarget = null;
@@ -458,7 +456,7 @@ public class BattleScreen implements Screen {
 			
 			int defeatedEnemies = 0;
 			for(int i = 0; i < enemies.length; i++) {
-				if(enemies[i].hp <= 0 && !enemies[i].hasState("DWN")) {
+				if(enemies[i].hp <= 0 && (!heroes[i].hasState("DWN") || heroes[i].getEffect("DWN").turn == 0)) {
 					enemies[i].setEffect(new Effect("DWN"), dialCont);
 				}
 				if(enemies[i].hp <= 0) {
@@ -506,7 +504,7 @@ public class BattleScreen implements Screen {
 			
 			int defeatedHeroes = 0;
 			for(int i = 0; i < heroes.length; i++) {
-				if(heroes[i].hp <= 0 && !heroes[i].hasState("DWN")) {
+				if(heroes[i].hp <= 0 && (!heroes[i].hasState("DWN") || heroes[i].getEffect("DWN").turn == 0)) {
 					heroes[i].setEffect(new Effect("DWN"), dialCont);
 				}
 				if(heroes[i].hasState("DWN")) {
@@ -801,7 +799,7 @@ public class BattleScreen implements Screen {
 
 		Skill skill = actions[currAct];
 		if(actionsItem[currAct] == null) {
-			if (skill != null && actionsObj[currAct][0].hp > 0) {
+			if (skill != null && actionsObj[currAct][0].hp > 0 && !actionsObj[currAct][0].hasState("SLE")) {
 				if (skill.getSkillType() == 1) {
 				    Entity target = actionsObj[currAct][1];
 				    
@@ -910,7 +908,7 @@ public class BattleScreen implements Screen {
 				currAct++;
 			}
 		} else {
-			if (actionsObj[currAct][0].hp > 0 && actionsObj[currAct][1] != null && actionsObj[currAct][1].hp > 0) {
+			if (actionsObj[currAct][0].hp > 0 && !actionsObj[currAct][0].hasState("SLE") && actionsObj[currAct][1] != null && actionsObj[currAct][1].hp > 0) {
 		        skill.setType(actionsItem[currAct].getType());
 		        skill.use(actionsObj[currAct][0], actionsObj[currAct][1], Main.player, actionsItem[currAct]);
 		    } else {

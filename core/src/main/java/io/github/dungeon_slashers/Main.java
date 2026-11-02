@@ -579,7 +579,7 @@ public class Main extends Game {
 						+ "chances muy bajas de aplicar sangrado.", "PHY",
 						" barre con sus cuchillas a los enemigos!",
 						2, 15, false, 3, 50, 110, 6);
-				Skill sleepPll = new Skill("sleepPll", "Somnifero", "Duerme a un enemigo.", "PHY",
+				Skill sleepPll = new Skill("sleepPll", "Somnifero", "Duerme a un enemigo.", "NONE",
 						" duerme a ",
 						1, 0, false, 1, 80, 50, 6);
 				Skill finisher = new Skill("finisher", "Remate", "Ataque de daño elevado que hace un 50% mas de daño si el objetivo sangra.", "PHY",

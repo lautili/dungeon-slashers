@@ -119,7 +119,22 @@ public class DialMan {
 					Dialogue dial = (Dialogue) event;
 					Menu.showDialogue(game, dial);
 					if(!InputMan.checkKey(Main.config.key_interact, null)){
-						if(!dial.currMsg.equals(dial.msg) && time > (dial.time / 1000)) {
+						if(InputMan.checkHold(Main.config.key_back, null, 0.2f)) {
+							if(!dial.currMsg.equals(dial.msg)) {
+								dial.currMsg = dial.msg;
+							}else {
+								if(events.length > 1) {
+									next = dial.next;
+								}else {
+									next = -1;
+								}
+								if(next <= 0) {
+									return -1;
+								}
+								i = getEvent(next);
+								return i;
+							}
+						} else if(!dial.currMsg.equals(dial.msg) && time > (dial.time / 1000)) {
 							dial.currMsg += dial.msg.charAt(dial.nextChar);
 							dial.nextChar++;
 							time = 0;
@@ -127,6 +142,7 @@ public class DialMan {
 						}
 						return next;	
 					}else {
+						
 						if(dial.currMsg.length() < 1) {
 							return next;
 						}
@@ -145,7 +161,9 @@ public class DialMan {
 					Choice choice = (Choice) event;
 					Menu.showChoice(game, choice);
 					if(!InputMan.checkKey(Main.config.key_interact, null)){
-						if(!choice.currMsg.equals(choice.msg) && time > (choice.time / 1000)) {
+						if(InputMan.checkHold(Main.config.key_back, null, 0.2f)) {
+							choice.currMsg = choice.msg;
+						} else if(!choice.currMsg.equals(choice.msg) && time > (choice.time / 1000)) {
 							choice.currMsg += choice.msg.charAt(choice.nextChar);
 							choice.nextChar++;
 							time = 0;
@@ -206,9 +224,9 @@ public class DialMan {
 					        time = 0;
 					        event.snd.play(Main.config.volume * Main.config.volSFX * 0.5f);
 					    } else if (dial.currMsg.equals(dial.msg)) {
-					        // El texto ya se escribió, empieza a contar el timer de lectura
+					        
 					        dial.displayTimer -= delta; 
-					        if(dial.displayTimer <= 0) { // Permite skipearlo rápido si el jugador quiere
+					        if(dial.displayTimer <= 0) {
 					        	if(dial.next <= 0) {
 									return -1;
 								}
@@ -216,7 +234,8 @@ public class DialMan {
 					        	return i;
 					        }
 					    }
-					    if(InputMan.checkKey(Main.config.key_interact, null)) {
+					    if(InputMan.checkKey(Main.config.key_interact, null) 
+					    		|| InputMan.checkHold(Main.config.key_back, null, 0.2f)) {
 					    	if(dial.next <= 0) {
 								return -1;
 							}
@@ -226,7 +245,22 @@ public class DialMan {
 					    return n;
 					} else {
 						if(!InputMan.checkKey(Main.config.key_interact, null)){
-							if(!dial.currMsg.equals(dial.msg) && time > (dial.time / 1000)) {
+							if(InputMan.checkHold(Main.config.key_back, null, 0.2f)) {
+								if(!dial.currMsg.equals(dial.msg)) {
+									dial.currMsg = dial.msg;
+								}else {
+									if(events.length > 1) {
+										n = dial.next;
+									}else {
+										n = -1;
+									}
+									if(n <= 0) {
+										return -1;
+									}
+									i = getEvent(n);
+									return i;
+								}
+							} else if(!dial.currMsg.equals(dial.msg) && time > (dial.time / 1000)) {
 								dial.currMsg += dial.msg.charAt(dial.nextChar);
 								dial.nextChar++;
 								time = 0;

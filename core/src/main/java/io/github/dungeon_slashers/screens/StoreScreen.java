@@ -79,7 +79,11 @@ public class StoreScreen implements Screen {
 	    Menu.showItemsStore(game, -100, 220, 10, pos, itemArray);
 	    if(itemArray.length > 0) {
 	    	try {
-	    		Menu.showItemStats(game, itemArray[pos[1]]);
+	    		if(pos[0] == 0) {
+	    			Menu.showItemStats(game, itemArray[pos[1]], Main.player.getCharacters());
+	    		}else {
+	    			Menu.showItemStats(game, itemArray[pos[1]]);
+	    		}
 	    	}catch(Exception e) {
 	    		pos[1] = (pos[1] <= 0) ? 0 : pos[1] - 1;
 	    	}

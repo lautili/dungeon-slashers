@@ -49,30 +49,31 @@ public class InputMan {
 	}
 	public static int scrollInt(MenuScrollType type, int max, int curr, Sound sound) {
 		max--;
+		float time = 0.5f;
 		switch(type) {
 		case VERTICAL:
-			if(Gdx.input.isKeyJustPressed(getKey(Main.config.key_up))) {
+			if(checkHold(Main.config.key_up, null, time) || checkKey(Main.config.key_up, null)) {
 				curr--;
 				sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
-			}else if (Gdx.input.isKeyJustPressed(getKey(Main.config.key_down))) {
+			}else if (checkHold(Main.config.key_down, null, time) || checkKey(Main.config.key_down, null)) {
 				curr++;
 				sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
 			}
 			break;
 		case VERTICAL_INVERTED:
-			if(Gdx.input.isKeyJustPressed(getKey(Main.config.key_up))) {
+			if(checkHold(Main.config.key_up, null, time) || checkKey(Main.config.key_up, null)) {
 				curr++;
 				sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
-			}else if (Gdx.input.isKeyJustPressed(getKey(Main.config.key_down))) {
+			}else if (checkHold(Main.config.key_down, null, time) || checkKey(Main.config.key_down, null)) {
 				curr--;
 				sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
 			}
 			break;
 		case HORIZONTAL:
-			if(Gdx.input.isKeyJustPressed(getKey(Main.config.key_left))) {
+			if(checkHold(Main.config.key_left, null, time) || checkKey(Main.config.key_left, null)) {
 				curr--;
 				sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
-			}else if (Gdx.input.isKeyJustPressed(getKey(Main.config.key_right))) {
+			}else if (checkHold(Main.config.key_right, null, time) || checkKey(Main.config.key_right, null)) {
 				curr++;
 				sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
 			}
@@ -89,18 +90,19 @@ public class InputMan {
 	public static int[] scrollInt(int maxi, int maxj, int[] pos, Sound sound) {
 		maxi--;
 		maxj--;
-		if(Gdx.input.isKeyJustPressed(getKey(Main.config.key_left))) {
+		float time = 0.5f;
+		if(checkHold(Main.config.key_left, null, time) || checkKey(Main.config.key_left, null)) {
 			pos[0]--;
 			pos[1] = 0;
 			sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
-		}else if (Gdx.input.isKeyJustPressed(getKey(Main.config.key_right))) {
+		}else if (checkHold(Main.config.key_right, null, time) || checkKey(Main.config.key_right, null)) {
 			pos[0]++;
 			pos[1] = 0;
 			sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
-		}else if(Gdx.input.isKeyJustPressed(getKey(Main.config.key_up))) {
+		}else if(checkHold(Main.config.key_up, null, time) || checkKey(Main.config.key_up, null)) {
 			pos[1]--;
 			sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
-		}else if (Gdx.input.isKeyJustPressed(getKey(Main.config.key_down))) {
+		}else if (checkHold(Main.config.key_down, null, time) || checkKey(Main.config.key_down, null)) {
 			pos[1]++;
 			sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
 		}
@@ -122,6 +124,7 @@ public class InputMan {
 		maxi--;
 		maxj--;
 		maxk--;
+		float time = 0.5f;
 		if(Gdx.input.isKeyJustPressed(getKey(Main.config.key_left))) {
 			pos[0]--;
 			pos[1] = 0;
@@ -130,10 +133,10 @@ public class InputMan {
 			pos[0]++;
 			pos[1] = 0;
 			sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
-		}else if(Gdx.input.isKeyJustPressed(getKey(Main.config.key_up))) {
+		}else if(checkHold(Main.config.key_up, null, time) || checkKey(Main.config.key_up, null)) {
 			pos[1]--;
 			sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
-		}else if (Gdx.input.isKeyJustPressed(getKey(Main.config.key_down))) {
+		}else if (checkHold(Main.config.key_down, null, time) || checkKey(Main.config.key_down, null)) {
 			pos[1]++;
 			sound.play(Main.config.volume * Main.config.volSFX * 0.5f);
 		}else if(Gdx.input.isKeyJustPressed(getKey(Main.config.key_left2))) {

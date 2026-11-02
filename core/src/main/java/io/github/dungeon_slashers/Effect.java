@@ -21,7 +21,7 @@ public class Effect {
 	private int minTurns; //los turnos minimos que durarñ
 	private int maxTurns; //los turnos maximos que durarñ
 	private transient Random rand = new Random();
-	int turn; //los turnos que lleva activo
+	public int turn; //los turnos que lleva activo
 	
 	//constructor
 	public Effect(String shortName) {

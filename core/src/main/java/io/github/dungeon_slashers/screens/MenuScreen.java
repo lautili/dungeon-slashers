@@ -32,7 +32,7 @@ public class MenuScreen implements Screen {
     private Skill selSkill;
     public Screen lastScreen;
     private Config initialConfigCopy;
-    private int[] pos = new int[3];
+    private int[] pos;
 	public MenuScreen(Main game) {
 		this.game = game;
 		
@@ -42,6 +42,7 @@ public class MenuScreen implements Screen {
         // Prepare your screen here.
 		chars = Main.player.getCharacters();
 		camera = new OrthographicCamera();
+		pos = new int[3];
 		Main.player.currScreen = "MENU_SCREEN";
 		viewport = game.viewport;
 		viewport.setCamera(camera);
@@ -100,17 +101,16 @@ public class MenuScreen implements Screen {
     			}
     		}
     	}else if(pos[0] == 5) {
-            // Mostrar panel de configuración utilizando un sub-índice en pos[1]
             Menu.showConfigOptions(game, -100, 220, 20, pos[1], Main.config);
         } else if(pos[0] != 3) {
-	    	Menu.showItems(game, -100, 220, 10, pos[1], itemArray);
+	    	Menu.showItems(game, -100, 220, 0.3f, 20, 200, 10, pos[1], itemArray);
 	    	if(itemArray.length > 0) {
 	    		if(itemArray[pos[1]] != null) {
-	    			Menu.showItemStats(game, itemArray[pos[1]]);
+	    			Menu.showItemStats(game, itemArray[pos[1]], chars[pos[2]]);
 	    		}
 	    	}
     	} else {
-    		Menu.showSkills(game, -100, 220, 10, pos[1], skillArray);
+    		Menu.showSkills(game, -100, 220, 0.3f, 30, 200, 10, pos[1], skillArray, chars[pos[2]]);
 	    	if(skillArray.length > 0) {
 	    		Menu.showSkillStats(game, skillArray[pos[1]]);
 	    	}

@@ -239,6 +239,7 @@ public class Skill {
 			//ataque normal magico
 			case "defMat":
 				if(dmgType.equals("CUR")) {
+					snd = HEAL;
 					Hero hero = (Hero) a;
 					dmg = (hero.getWeapon().getMAT() * 10) + (int) (hero.getMAT() * 0.1);
 					b.modHP(dmg);

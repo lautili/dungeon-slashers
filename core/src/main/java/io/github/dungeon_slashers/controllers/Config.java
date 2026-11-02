@@ -6,7 +6,7 @@ public class Config {
 	public static transient final int RES_640480   = 0;
 	public static transient final int RES_800600   = 1;
 	public static transient final int RES_1024768  = 2;
-	public static transient final int RES_1280720   = 3;
+	public static transient final int RES_1280720  = 3;
 	public static transient final int RES_1280800  = 4;
 	public static transient final int RES_1366768  = 5;
 	public static transient final int RES_1440900  = 6;
@@ -16,7 +16,7 @@ public class Config {
 	public static transient final int RES_25601440 = 10;
 	
 	public static transient final int KEYS_ARROWS = 0;
-	public static transient final int KEYS_WASD = 1;
+	public static transient final int KEYS_WASD   = 1;
 	
 	public float volume = 1.0f;
 	public float volSFX = 1.0f;
@@ -26,15 +26,15 @@ public class Config {
 	public transient int resX = 1280;
 	public transient int resY = 720;
 	public int keyConfig = KEYS_ARROWS;
-	public transient String key_interact = "Z";
-	public transient  String key_back = "X";
-	public transient  String key_alt = "C";
-	public transient  String key_up = "UP";
-	public transient  String key_down = "DOWN";
-	public transient  String key_left = "LEFT";
-	public transient  String key_right = "RIGHT";
-	public transient  String key_left2 = "A";
-	public transient  String key_right2 = "D";
+	public transient  String key_interact = "Z";
+	public transient  String key_back     = "X";
+	public transient  String key_alt      = "C";
+	public transient  String key_up       = "UP";
+	public transient  String key_down     = "DOWN";
+	public transient  String key_left     = "LEFT";
+	public transient  String key_right    = "RIGHT";
+	public transient  String key_left2    = "A";
+	public transient  String key_right2   = "D";
 	
 	public Config(int res) {
 		currRes = res;

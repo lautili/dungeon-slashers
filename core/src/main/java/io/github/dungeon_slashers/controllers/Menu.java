@@ -80,7 +80,9 @@ public static void showHeroStats(Main game, Hero entity) {
 	game.invFont.draw(game.batch, "NV: " + entity.getLVL(), 280, -76);
 	game.invFont.draw(game.batch, entity.getXPleft() + " XP para el proximo nivel", 280, -62);
 	game.invFont.getData().setScale(0.35f);
-	game.invFont.draw(game.batch, "Arma: \n" + entity.getWeapon().getName(), 190, 30, 120, Align.center, true);
+	game.invFont.draw(game.batch, "Arma: \n" + entity.getWeapon().getName() + "\n" + 
+			"tipo: " + 
+			(entity.getWeapon().getBaseType() != null ? entity.getWeapon().getBaseType() : entity.getBaseType()), 190, 30, 120, Align.center, true);
 	game.invFont.draw(game.batch, "Armadura: \n" + entity.getArmor().getName(), 190, -20, 120, Align.center, true);
 }
 //mostrar stats de un item
@@ -89,6 +91,7 @@ public static void showItemStats(Main game, Item i) {
 	GlyphLayout layout = new GlyphLayout();
 	game.invFont.getData().setScale(0.5f);
 	game.invFont.draw(game.batch, i.getName(), 140, 222, 200, Align.left, true);
+	int x = 140;
 	if(i.getClass() == Weapon.class) {
 		game.invFont.getData().setScale(0.4f);
 		Weapon w = (Weapon) i;
@@ -118,6 +121,360 @@ public static void showItemStats(Main game, Item i) {
 		game.invFont.draw(game.batch, "DEF " + a.getDEF(), 350, 180);
 		game.invFont.draw(game.batch, "MDF " + a.getMDF(), 420, 180);
 		game.invFont.draw(game.batch, "SPD " + a.getSPD(), 390, 160);
+	}
+	game.invFont.getData().setScale(0.4f);
+	game.invFont.draw(game.batch, i.getCost() + "G", 420, 224, 100, Align.left, true);
+	game.invFont.getData().setScale(0.35f);
+	layout.setText(
+		    game.invFont,
+		    i.getDesc(),
+		    Color.WHITE,
+		    200,      // ancho máximo de la caja
+		    Align.left,
+		    true      // wrap
+		);
+	game.invFont.draw(game.batch, layout, 150, 160);
+}
+public static void showItemStats(Main game, Item i, Hero hero) {
+	int x = 320;
+	int y = 180;
+	game.invFont.setColor(1, 1, 1, 1);
+	GlyphLayout layout = new GlyphLayout();
+	game.invFont.getData().setScale(0.5f);
+	game.invFont.draw(game.batch, i.getName(), 140, 222, 200, Align.left, true);
+	String msg = "";
+	if(i.getClass() == Weapon.class) {
+		game.invFont.getData().setScale(0.4f);
+		game.mainFont.getData().setScale(0.3f);
+		Weapon w = (Weapon) i;
+		Weapon weapon = hero.getWeapon();
+		boolean check = false;
+		for(String classes : w.getclassName()) {
+			if(classes.equals(hero.getclassName())) {
+				check = true;
+			}
+		}
+		if(!check) {
+			game.mainFont.setColor(0.6f, 0.6f, 0.6f, 1);
+			msg = " (-)";
+		}
+		game.invFont.draw(game.batch, "TIPO: " + (w.getBaseType() == null ? "NONE" : w.getBaseType()), 360, 150);
+		if(check) {
+			if(weapon.getATK() > w.getATK()) {
+				game.mainFont.setColor(1f, 0.6f, 0.6f, 1f);
+				msg = " (-" + (Math.abs(w.getATK() - weapon.getATK())) + ")";
+			}else if (weapon.getATK() < w.getATK()) {
+				game.mainFont.setColor(0.6f, 1f, 0.6f, 1f);
+				msg = " (+" + (Math.abs(weapon.getATK() - w.getATK())) + ")";
+			}else {
+				game.mainFont.setColor(1, 1, 1, 1);
+				msg = " (0)";
+			}
+		}
+		game.mainFont.draw(game.batch, "ATK " + w.getATK() + msg, x, y);
+		if(check) {
+			if(weapon.getMAT() > w.getMAT()) {
+				game.mainFont.setColor(1f, 0.6f, 0.6f, 1f);
+				msg = " (-" + (Math.abs(w.getMAT() - weapon.getMAT())) + ")";
+			}else if (weapon.getMAT() < w.getMAT()) {
+				game.mainFont.setColor(0.6f, 1f, 0.6f, 1f);
+				msg = " (+" + (Math.abs(weapon.getMAT() - w.getMAT())) + ")";
+			}else {
+				game.mainFont.setColor(1, 1, 1, 1);
+				msg = " (0)";
+			}
+		}
+		game.mainFont.draw(game.batch, "MAT " + w.getMAT() + msg, x + 80, y);
+		if(check) {
+			if(weapon.getSPD() > w.getSPD()) {
+				game.mainFont.setColor(1f, 0.6f, 0.6f, 1f);
+				msg = " (-" + (Math.abs(w.getSPD() - weapon.getSPD())) + ")";
+			}else if (weapon.getSPD() < w.getSPD()) {
+				game.mainFont.setColor(0.6f, 1f, 0.6f, 1f);
+				msg = " (+" + (Math.abs(weapon.getSPD() - w.getSPD())) + ")";
+			}else {
+				game.mainFont.setColor(1, 1, 1, 1);
+				msg = " (0)";
+			}
+		}
+		game.mainFont.draw(game.batch, "SPD " + w.getSPD() + msg, x + 40, y - 20);
+		game.mainFont.getData().setScale(0.3f);
+		msg = "";
+		for(int j = 0; j < w.getclassName().length; j++) {
+			
+			msg += (w.getclassName()[j]);
+			if(j== (w.getclassName().length - 2)) {
+				msg += (" y ");
+			}else if(j == (w.getclassName().length - 1)){
+				msg+=("");
+			}else {
+				msg+=(", ");
+			}
+		}
+		game.invFont.draw(game.batch, msg, 350, 220, 60, Align.center, true);
+		game.mainFont.setColor(1, 1, 1, 1);
+	}else if(i.getClass() == Armor.class){
+		game.invFont.getData().setScale(0.4f);
+		game.mainFont.getData().setScale(0.3f);
+		Armor a = (Armor) i;
+		Armor armor = hero.getArmor();
+		if(armor.getATK() > a.getATK()) {
+			game.mainFont.setColor(1f, 0.6f, 0.6f, 1f);
+			msg = " (-" + (Math.abs(a.getATK() - armor.getATK())) + ")";
+		}else if (armor.getATK() < a.getATK()) {
+			game.mainFont.setColor(0.6f, 1f, 0.6f, 1f);
+			msg = " (+" + (Math.abs(armor.getATK() - a.getATK())) + ")";
+		}else {
+			game.mainFont.setColor(1, 1, 1, 1);
+			msg = " (0)";
+		}
+		game.mainFont.draw(game.batch, "ATK " + a.getATK() + msg, x, y);
+		
+		if(armor.getMAT() > a.getMAT()) {
+			game.mainFont.setColor(1f, 0.6f, 0.6f, 1f);
+			msg = " (-" + (Math.abs(a.getMAT() - armor.getMAT())) + ")";
+		}else if (armor.getMAT() < a.getMAT()) {
+			game.mainFont.setColor(0.6f, 1f, 0.6f, 1f);
+			msg = " (+" + (Math.abs(armor.getMAT() - a.getMAT())) + ")";
+		}else {
+			game.mainFont.setColor(1, 1, 1, 1);
+			msg = " (0)";
+		}
+		game.mainFont.draw(game.batch, "MAT " + a.getMAT() + msg, x + 80, y);
+		
+		if(armor.getDEF() > a.getDEF()) {
+			game.mainFont.setColor(1f, 0.6f, 0.6f, 1f);
+			msg = " (-" + (Math.abs(a.getDEF() - armor.getDEF())) + ")";
+		}else if (armor.getDEF() < a.getDEF()) {
+			game.mainFont.setColor(0.6f, 1f, 0.6f, 1f);
+			msg = " (+" + (Math.abs(armor.getDEF() - a.getDEF())) + ")";
+		}else {
+			game.mainFont.setColor(1, 1, 1, 1);
+			msg = " (0)";
+		}
+		game.mainFont.draw(game.batch, "DEF " + a.getDEF() + msg, x, y - 20);
+		
+		if(armor.getMDF() > a.getMDF()) {
+			game.mainFont.setColor(1f, 0.6f, 0.6f, 1f);
+			msg = " (-" + (Math.abs(a.getMDF() - armor.getMDF())) + ")";
+		}else if (armor.getMDF() < a.getMDF()) {
+			game.mainFont.setColor(0.6f, 1f, 0.6f, 1f);
+			msg = " (+" + (Math.abs(armor.getMDF() - a.getMDF())) + ")";
+		}else {
+			game.mainFont.setColor(1, 1, 1, 1);
+			msg = " (0)";
+		}
+		game.mainFont.draw(game.batch, "MDF " + a.getMDF() + msg, x + 80, y - 20);
+		
+		if(armor.getSPD() > a.getSPD()) {
+			game.mainFont.setColor(1f, 0.6f, 0.6f, 1f);
+			msg = " (-" + (Math.abs(a.getSPD() - armor.getSPD())) + ")";
+		}else if (armor.getSPD() < a.getSPD()) {
+			game.mainFont.setColor(0.6f, 1f, 0.6f, 1f);
+			msg = " (+" + (Math.abs(armor.getSPD() - a.getSPD())) + ")";
+		}else {
+			game.mainFont.setColor(1, 1, 1, 1);
+			msg = " (0)";
+		}
+		game.mainFont.draw(game.batch, "SPD " + a.getSPD() + msg, x + 40, y - 40);
+	}
+	game.mainFont.setColor(1, 1, 1, 1);
+	game.invFont.getData().setScale(0.4f);
+	game.invFont.draw(game.batch, i.getCost() + "G", 420, 224, 100, Align.left, true);
+	game.invFont.getData().setScale(0.35f);
+	layout.setText(
+		    game.invFont,
+		    i.getDesc(),
+		    Color.WHITE,
+		    200,      // ancho máximo de la caja
+		    Align.left,
+		    true      // wrap
+		);
+	game.invFont.draw(game.batch, layout, 150, 160);
+}
+
+public static void showItemStats(Main game, Item i, Hero[] chars) {
+	game.invFont.setColor(1, 1, 1, 1);
+	GlyphLayout layout = new GlyphLayout();
+	game.invFont.getData().setScale(0.5f);
+	game.invFont.draw(game.batch, i.getName(), 140, 222, 200, Align.left, true);
+	int x = 150;
+	int y = 50;
+	int cont = 0;
+	if(i.getClass() == Weapon.class) {
+		game.invFont.getData().setScale(0.4f);
+		Weapon w = (Weapon) i;
+		String msg = "";
+		game.invFont.draw(game.batch, "TIPO: " + (w.getBaseType() == null ? "NONE" : w.getBaseType()), 360, 150);
+		game.invFont.draw(game.batch, "ATK " + w.getATK(), 350, 200);
+		game.invFont.draw(game.batch, "MAT " + w.getMAT(), 420, 200);
+		game.invFont.draw(game.batch, "SPD " + w.getSPD(), 390, 180);
+		game.invFont.getData().setScale(0.3f);
+		for(int j = 0; j < w.getclassName().length; j++) {
+			
+			msg += (w.getclassName()[j]);
+			if(j== (w.getclassName().length - 2)) {
+				msg += (" y ");
+			}else if(j == (w.getclassName().length - 1)){
+				msg+=("");
+			}else {
+				msg+=(", ");
+			}
+		}
+		game.invFont.draw(game.batch, msg, 350, 220, 60, Align.center, true);
+		game.mainFont.getData().setScale(0.2f);
+		for(Hero hero : chars) {
+			Weapon weapon = hero.getWeapon();
+			boolean check = false;
+			for(String className : w.getclassName()) {
+				if(className.equals(hero.getclassName())) {
+					check = true;
+					break;
+				}
+			}
+			if(check) {
+				game.mainFont.draw(game.batch, 
+						"TIPO: " + (weapon.getBaseType() == null ? "NONE" : weapon.getBaseType()),
+						x, y+50);
+				if(weapon.getATK() > w.getATK()) {
+					game.mainFont.setColor(1f, 0.6f, 0.6f, 1f);
+					msg = " (-" + (Math.abs(w.getATK() - weapon.getATK())) + ")";
+				}else if (weapon.getATK() < w.getATK()) {
+					game.mainFont.setColor(0.6f, 1f, 0.6f, 1f);
+					msg = " (+" + (Math.abs(weapon.getATK() - w.getATK())) + ")";
+				}else {
+					game.mainFont.setColor(1, 1, 1, 1);
+					msg = " (0)";
+				}
+				game.mainFont.draw(game.batch, "ATK " + weapon.getATK() + msg, x, y+40);
+				
+				if(weapon.getMAT() > w.getMAT()) {
+					game.mainFont.setColor(1f, 0.6f, 0.6f, 1f);
+					msg = " (-" + (Math.abs(w.getMAT() - weapon.getMAT())) + ")";
+				}else if (weapon.getMAT() < w.getMAT()) {
+					game.mainFont.setColor(0.6f, 1f, 0.6f, 1f);
+					msg = " (+" + (Math.abs(weapon.getMAT() - w.getMAT())) + ")";
+				}else {
+					game.mainFont.setColor(1, 1, 1, 1);
+					msg = " (0)";
+				}
+				game.mainFont.draw(game.batch, "MAT " + weapon.getMAT() + msg, x + 60, y+40);
+				
+				if(weapon.getSPD() > w.getSPD()) {
+					game.mainFont.setColor(1f, 0.6f, 0.6f, 1f);
+					msg = " (-" + (Math.abs(w.getSPD() - weapon.getSPD())) + ")";
+				}else if (weapon.getSPD() < w.getSPD()) {
+					game.mainFont.setColor(0.6f, 1f, 0.6f, 1f);
+					msg = " (+" + (Math.abs(weapon.getSPD() - w.getSPD())) + ")";
+				}else {
+					game.mainFont.setColor(1, 1, 1, 1);
+					msg = " (0)";
+				}
+				game.mainFont.draw(game.batch, "SPD " + weapon.getSPD() + msg, x + 30, y+30);
+			}else {
+				game.mainFont.setColor(0.6f, 0.6f, 0.6f, 1f);
+				game.mainFont.draw(game.batch, 
+						"TIPO: " + (weapon.getBaseType() == null ? "NONE" : weapon.getBaseType()),
+						x, y+50);
+				game.mainFont.draw(game.batch, "ATK " + weapon.getATK() + " (-)", x, y+40);
+				game.mainFont.draw(game.batch, "MAT " + weapon.getMAT() + " (-)", x + 60, y+40);
+				game.mainFont.draw(game.batch, "SPD " + weapon.getSPD() + " (-)", x + 30, y+30);
+				game.mainFont.draw(game.batch, weapon.getName(), x, y+25);
+			}
+				game.mainFont.setColor(1f, 1f, 1f, 1f);
+				game.mainFont.draw(game.batch, weapon.getName(), x, y+25);
+				game.mainFont.draw(game.batch, hero.getName(), x, y+15);
+				game.mainFont.draw(game.batch, hero.getclassName(), x, y+10);
+			x += 200;
+			if(cont == 1) {
+				y -= 80;
+				x-= 400;
+			}
+			cont++;
+		}
+	}else if(i.getClass() == Armor.class){
+		game.invFont.getData().setScale(0.4f);
+		Armor a = (Armor) i;
+		game.invFont.draw(game.batch, "ATK " + a.getATK(), 350, 200);
+		game.invFont.draw(game.batch, "MAT " + a.getMAT(), 420, 200);
+		game.invFont.draw(game.batch, "DEF " + a.getDEF(), 350, 180);
+		game.invFont.draw(game.batch, "MDF " + a.getMDF(), 420, 180);
+		game.invFont.draw(game.batch, "SPD " + a.getSPD(), 390, 160);
+		
+		game.mainFont.getData().setScale(0.2f);
+		for(Hero hero : chars) {
+			Armor armor = hero.getArmor();
+			String msg;
+			if(armor.getATK() > a.getATK()) {
+				game.mainFont.setColor(1f, 0.6f, 0.6f, 1f);
+				msg = " (-" + (Math.abs(a.getATK() - armor.getATK())) + ")";
+			}else if (armor.getATK() < a.getATK()) {
+				game.mainFont.setColor(0.6f, 1f, 0.6f, 1f);
+				msg = " (+" + (Math.abs(armor.getATK() - a.getATK())) + ")";
+			}else {
+				game.mainFont.setColor(1, 1, 1, 1);
+				msg = " (0)";
+			}
+			game.mainFont.draw(game.batch, "ATK " + armor.getATK() + msg, x, y+50);
+			
+			if(armor.getMAT() > a.getMAT()) {
+				game.mainFont.setColor(1f, 0.6f, 0.6f, 1f);
+				msg = " (-" + (Math.abs(a.getMAT() - armor.getMAT())) + ")";
+			}else if (armor.getMAT() < a.getMAT()) {
+				game.mainFont.setColor(0.6f, 1f, 0.6f, 1f);
+				msg = " (+" + (Math.abs(armor.getMAT() - a.getMAT())) + ")";
+			}else {
+				game.mainFont.setColor(1, 1, 1, 1);
+				msg = " (0)";
+			}
+			game.mainFont.draw(game.batch, "MAT " + armor.getMAT() + msg, x + 60, y+50);
+			
+			if(armor.getDEF() > a.getDEF()) {
+				game.mainFont.setColor(1f, 0.6f, 0.6f, 1f);
+				msg = " (-" + (Math.abs(a.getDEF() - armor.getDEF())) + ")";
+			}else if (armor.getDEF() < a.getDEF()) {
+				game.mainFont.setColor(0.6f, 1f, 0.6f, 1f);
+				msg = " (+" + (Math.abs(armor.getDEF() - a.getDEF())) + ")";
+			}else {
+				game.mainFont.setColor(1, 1, 1, 1);
+				msg = " (0)";
+			}
+			game.mainFont.draw(game.batch, "DEF " + armor.getDEF() + msg, x, y+40);
+			
+			if(armor.getMDF() > a.getMDF()) {
+				game.mainFont.setColor(1f, 0.6f, 0.6f, 1f);
+				msg = " (-" + (Math.abs(a.getMDF() - armor.getMDF())) + ")";
+			}else if (armor.getMDF() < a.getMDF()) {
+				game.mainFont.setColor(0.6f, 1f, 0.6f, 1f);
+				msg = " (+" + (Math.abs(armor.getMDF() - a.getMDF())) + ")";
+			}else {
+				game.mainFont.setColor(1, 1, 1, 1);
+				msg = " (0)";
+			}
+			game.mainFont.draw(game.batch, "MDF " + armor.getMDF() + msg, x + 60, y+40);
+			
+			if(armor.getSPD() > a.getSPD()) {
+				game.mainFont.setColor(1f, 0.6f, 0.6f, 1f);
+				msg = " (-" + (Math.abs(a.getSPD() - armor.getSPD())) + ")";
+			}else if (armor.getSPD() < a.getSPD()) {
+				game.mainFont.setColor(0.6f, 1f, 0.6f, 1f);
+				msg = " (+" + (Math.abs(armor.getSPD() - a.getSPD())) + ")";
+			}else {
+				game.mainFont.setColor(1, 1, 1, 1);
+				msg = " (0)";
+			}
+			game.mainFont.draw(game.batch, "SPD " + armor.getSPD() + msg, x + 30, y+30);
+			game.mainFont.setColor(1f, 1f, 1f, 1f);
+			game.mainFont.draw(game.batch, armor.getName(), x, y+25);
+			game.mainFont.draw(game.batch, hero.getName(), x, y+15);
+			game.mainFont.draw(game.batch, hero.getclassName(), x, y+10);
+			x += 200;
+			if(cont == 1) {
+				y -= 80;
+				x-= 400;
+			}
+			cont++;
+		}
 	}
 	game.invFont.getData().setScale(0.4f);
 	game.invFont.draw(game.batch, i.getCost() + "G", 420, 224, 100, Align.left, true);
@@ -243,12 +600,12 @@ public static void showItemStats(Main game, Item i) {
 				msg = items[i].getName();
 				game.invFont.draw(game.batch, msg, x, y);
 				msg = (items[i].q > 1) ? "x" + items[i].q : "";
-				game.invFont.draw(game.batch, msg, x + 220, y);
+				game.invFont.draw(game.batch, msg, x + 210, y);
 				y -= dif;
 			}
 		}
 	}
-	public static void showItems(Main game, int x, int y, float scale, int length, int dif, int sel, Item[] items) {
+	public static void showItems(Main game, int x, int y, float scale, int length, int dist, int dif, int sel, Item[] items) {
 		if (items == null || items.length == 0 || length <= 0) return;
 		
 		sel = Math.max(0, Math.min(sel, items.length - 1));
@@ -275,7 +632,7 @@ public static void showItemStats(Main game, Item i) {
 	            if (item.q > 1) {
 	                String qtyMsg = "x" + item.q;
 	                
-	                game.invFont.draw(game.batch, qtyMsg, x + 150, currentY); 
+	                game.invFont.draw(game.batch, qtyMsg, x + dist, currentY); 
 	            }
 
 	            currentY -= dif;
@@ -394,27 +751,41 @@ public static void showItemStats(Main game, Item i) {
 	}
 
 	public static void showItemsStore(Main game, float x, float y, float dif, int[] pos, Item[] items) {
-		for(int i = 0; i < items.length; i++) {
-			if(items[i] != null) {
-				String msg;
-				game.invFont.setColor(1, 1, 1, 1);
-				game.invFont.getData().setScale(0.3f);
-				if(i == pos[1]) {
-					game.mainFont.getData().setScale(0.3f);
-					game.mainFont.draw(game.batch, ">", x-10, y);
-				}
-				if(pos[0] == 0) {
+		
+		int length = 30;
+		if (items == null || items.length == 0 || length <= 0) return;
+		int sel = pos[1];
+		sel = Math.max(0, Math.min(sel, items.length - 1));
+		
+		int startIndex = 0;
+	    if (items.length > length) {
+	        startIndex = Math.max(0, Math.min(sel - length / 2, items.length - length));
+	    }
+	    
+		float currentY = y;
+	    int visibleCount = Math.min(length, items.length);
+		for (int i = 0; i < visibleCount; i++) {
+	        int itemIndex = startIndex + i;
+	        Item item = items[itemIndex];
+
+	        if (item != null) {
+	        	
+	            if (itemIndex == sel) {
+	                game.mainFont.draw(game.batch, ">", x - 10, currentY);
+	            }
+	            if(pos[0] == 0) {
 					if(items[i].getCost() > Main.player.gold) {
 						game.invFont.setColor(0.6f, 0.6f, 0.6f, 1);
 					}
 				}
-				msg = items[i].getName();
-				game.invFont.draw(game.batch, msg, x, y);
-				msg = (pos[0] != 1) ? items[i].getCost() + "G" : (items[i].q > 1) ? "x" + items[i].q : "";
-				game.invFont.draw(game.batch, msg, x + 210, y);
-				y -= dif;
-			}
-		}
+				String msg = item.getName();
+				game.invFont.draw(game.batch, msg, x, currentY);
+				msg = (pos[0] != 1) ? item.getCost() + " G" : (item.q > 1) ? "x" + item.q : "";
+				game.invFont.draw(game.batch, msg, x + 210, currentY);
+
+	            currentY -= dif;
+	        }
+	    }
 	}
 
 	public static void showBattleBars(Main game, Hero hero) {
@@ -444,7 +815,7 @@ public static void showItemStats(Main game, Item i) {
 	}
 
 	public static void showBInventory(Main game, int pos, Item[] items) {
-		showItems(game, 10, 170, 0.25f, 5, 20, pos, items);
+		showItems(game, 10, 170, 0.25f, 5, 150, 20, pos, items);
 		Item item = items[pos];
 		showItemBStats(game, item);
 	}
@@ -468,12 +839,12 @@ public static void showItemStats(Main game, Item i) {
 	}
 
 	public static void showBSkills(Main game, int pos, Skill[] skills, Hero hero) {
-		showSkills(game, 10, 170, 0.25f, 8, 10, pos, skills, hero);
+		showSkills(game, 10, 170, 0.25f, 8, 150, 10, pos, skills, hero);
 		Skill skill = skills[pos];
 		showSkillBStats(game, skill);
 	}
 
-	public static void showSkills(Main game, int x, int y, float scale, int length, int dif, int sel, Skill[] skills, Hero hero) {
+	public static void showSkills(Main game, int x, int y, float scale, int length, int dist, int dif, int sel, Skill[] skills, Hero hero) {
 	    if (skills == null || skills.length == 0 || length <= 0) return;
 
 	    sel = Math.max(0, Math.min(sel, skills.length - 1));
@@ -491,7 +862,7 @@ public static void showItemStats(Main game, Item i) {
 	        Skill skill = skills[skillIndex];
 
 	        if (skill != null) {
-	            int x1 = 150;
+	            int x1 = dist;
 
 	            if (skillIndex == sel) {
 	                game.mainFont.getData().setScale(scale);
@@ -582,9 +953,12 @@ public static void showItemStats(Main game, Item i) {
 				}
 				if(isSelected(selCharacters, characters[i])) {
 					font.setColor(1f, 1f, 1f, 1f);
+					font.getData().setScale(fontSize - 0.1f);
+					font.draw(game.batch, charPos(selCharacters, characters[i]), x, y + 10);
 				}else {
 					font.setColor(0.5f, 0.5f, 0.5f, 1f);
 				}
+				font.getData().setScale(fontSize);
 				msg1 = name.toUpperCase();
 				font.draw(game.batch, msg1, x, y);
 				font.setColor(1f, 1f, 1f, 1f);
@@ -593,6 +967,23 @@ public static void showItemStats(Main game, Item i) {
 		}
 	}
 
+	private static String charPos(Hero[] selCharacters, Hero hero) {
+		for(int i = 0; i < selCharacters.length; i++) {
+			if(selCharacters[i] == hero) {
+				switch(i) {
+				case 0:
+					return "LIDER (1)";
+				case 1:
+					return "CO-LIDER (2)";
+				case 2:
+					return "ESPECIALISTA (3)";
+				case 3:
+					return "APOYO (4)";
+				}
+			}
+		}
+		return null;
+	}
 	private static boolean isSelected(Hero[] selCharacters, Hero hero) {
 		for(Hero selHero : selCharacters) {
 			if(selHero == hero) {
@@ -710,4 +1101,5 @@ public static void showItemStats(Main game, Item i) {
 		        y -= dif;
 		    }
 		}
+		
 }
