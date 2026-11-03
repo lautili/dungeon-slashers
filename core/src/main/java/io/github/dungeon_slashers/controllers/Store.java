@@ -89,14 +89,14 @@ public class Store {
 	public static void sell(Item item) {
 		
 			player.gold += item.getCost();
-			if (item instanceof Weapon) {
-				player.subWeapons((Weapon) item);
-			}else if(item instanceof Armor){
-				player.subArmors((Armor) item);
-			}else {
-				player.removeItems(item);
-			}
 		if(item.unique) addItems(item);
+		if (item instanceof Weapon) {
+			player.subWeapons((Weapon) item);
+		}else if(item instanceof Armor){
+			player.subArmors((Armor) item);
+		}else {
+			player.removeItems(item);
+		}
 	}
 	
 	public static void sell(Item item, int q) {

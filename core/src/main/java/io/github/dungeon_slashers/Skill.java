@@ -393,7 +393,9 @@ public class Skill {
 				snd = HEAL;
 				break;
 			case "sleepPll":
-				count = b.setEffect(new Effect("SLE"), count);
+				if(rand.nextInt(100) < 70) {
+					count = b.setEffect(new Effect("SLE"), count);
+				}
 				snd = SMOKE_BOMB;
 				break;
 			case "finisher":
@@ -747,6 +749,7 @@ public class Skill {
 					snd = HEAL;
 					break;
 				case "sleepGas":
+					if(rand.nextInt(100) < 70)
 					count = b[i].setEffect(new Effect("SLE"), count);
 					snd = SMOKE_BOMB;
 					break;
@@ -865,7 +868,7 @@ public class Skill {
 		String msg = null;
 		String msg2 = null;
 		DialMan.addDialogue(0, 1);
-		if(item.q >= 0) {
+		if(item.q > 0) {
 			if(a == b) {
 				msg = (a.getName() + " usa " + item.getName() +"!");
 				msg2 = item.Use(b, player, true);

@@ -42,12 +42,12 @@ public class Effect {
 			msg = " esta sangrando!";
 			turnMsg = " sufre por desangrarse.";
 			endMsg = " ya no esta sangrando.";
-			minTurns = 4;
-			maxTurns = 7;
+			minTurns = 2;
+			maxTurns = 6;
 		break;
 		case "RAG":
 			name = "Ira";
-			msg = " esta cegado por la ira!";
+			msg = " sufre una ceguera por la ira!";
 			turnMsg = " ataca a cualquiera por su ira!";
 			endMsg = " deja de estar enojado.";
 			minTurns = 3;
@@ -55,7 +55,7 @@ public class Effect {
 			break;
 		case "CON":
 			name = "Confusion";
-			msg = " esta confundido! quizas se ataque a si mismo!";
+			msg = " se confunde! quizas se ataque a si mismo!";
 			turnMsg = " se ve afectado por la confusion...";
 			endMsg = " ya no esta confundido!";
 			minTurns = 3;
@@ -63,30 +63,30 @@ public class Effect {
 			break;
 		case "SLE":
 			name = "Sueño";
-			msg = " se quedo dormido!";
+			msg = " se durmio!";
 			turnMsg = " duerme...";
 			endMsg = " desperto!";
-			minTurns = 4;
-			maxTurns = 6;
+			minTurns = 1;
+			maxTurns = 2;
 			break;
 		case "SIL":
 			name = "Silencio";
-			msg = " esta silenciado! no puede usar habilidades!";
+			msg = " llamo al silencio! no puede usar habilidades!";
 			endMsg = " rompio el silencio!";
 			minTurns = 3;
 			maxTurns = 5;
 			break;
 		case "POI":
 			name = "Envenenamiento";
-			msg = " esta envenenado!";
+			msg = " recibio veneno!";
 			turnMsg = " sufre daños por el veneno...";
 			endMsg = " se curo del veneno!";
-			minTurns = 5;
+			minTurns = 3;
 			maxTurns = 9;
 			break;
 		case "TIR":
 			name = "Cansancio";
-			msg = " esta cansado...";
+			msg = " sufre de cansancio...";
 			turnMsg = " pierde estamina por el cansancio!";
 			endMsg = " no esta mas cansado!";
 			minTurns = 4;
@@ -94,7 +94,7 @@ public class Effect {
 			break;
 		case "ENC":
 			name = "Encantacion";
-			msg = " fue encantado!";
+			msg = " padece un encantamiento!";
 			turnMsg = " pierde mana por el hechizo...";
 			endMsg = " dejo de estar hechizado!";
 			minTurns = 4;
@@ -102,7 +102,7 @@ public class Effect {
 			break;
 		case "BEN":
 			name = "Bendicion";
-			msg = " fue bendecido!";
+			msg = " recibe una bendicion!";
 			turnMsg = " siente los efectos del cariño de los Dioses.";
 			endMsg = " perdio sus beneficios divinos!";
 			minTurns = 4;
@@ -137,7 +137,7 @@ public class Effect {
 	public boolean checkTurns() {
 		turn++;
 		if(turn > minTurns) {
-			if(rand.nextInt(50) < 40) {
+			if(rand.nextInt(50) < 50) {
 				return true;
 			}else if(turn == maxTurns){
 				return true;
@@ -149,10 +149,10 @@ public class Effect {
 	public void use(Entity a) {
 		switch(shortName) {
 		case "BLE":
-			a.modHP(- (int) (a.getHP() * 0.08));
+			a.modHP(- (int) (a.getHP() * 0.05));
 		break;
 		case "POI":
-			a.modHP(- (int) (a.getHP() * 0.05));
+			a.modHP(- (int) (a.getHP() * 0.03));
 			break;
 		case "TIR":
 			a.modSP(- (int) (a.getSP() * 0.1));

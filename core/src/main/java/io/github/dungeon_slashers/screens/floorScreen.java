@@ -27,7 +27,6 @@ import io.github.dungeon_slashers.item.Armor;
 import io.github.dungeon_slashers.item.Item;
 import io.github.dungeon_slashers.item.Weapon;
 
-/** Primera sala. */
 public class floorScreen implements Screen {
 	Hero[] chars;
     private OrthographicCamera camera;
@@ -53,6 +52,10 @@ public class floorScreen implements Screen {
     private Rectangle bossBattleActivation;
     private Rectangle treasure;
     
+    private boolean isTransitioning = false;
+    private float transitionTimer = 0f;
+    private BattleScreen targetBattleScreen;
+    
     private final int WALL_DOWN = 0;
     private final int WALL_UP = 1;
     private final int WALL_LEFT = 2;
@@ -64,12 +67,8 @@ public class floorScreen implements Screen {
     Rectangle playerCol;
     Rectangle[] collisions;
     Rectangle[] doors;
-    private Array<Vector2> posHistory; // Breadcrumb. un array de posiciones que se irá guardando
-    								   // cada vez que el jugador se mueva y hará que el resto de 
-    								   // personajes sigan al principal
-    			//Array es una lista mejor que ArrayList
-    			//Vector 2 es una clase que guarda dos posiciones x e y
-    private int followDelay = 15; //el delay con el que lo seguiran
+    private Array<Vector2> posHistory;
+    private int followDelay = 15;
     
 	public floorScreen(Main game, Floor floor, Screen nextScreen, Screen prevScreen, int dialogueFlag) {
 		this.game = game;
@@ -121,7 +120,6 @@ public class floorScreen implements Screen {
 	}
 	@Override
     public void show() {
-        // Prepare your screen here.
 		this.resume();
 		if(Main.player.currScreen != "BATTLE_SCREEN" 
 				&& Main.player.currScreen != "MENU_SCREEN") {
@@ -133,6 +131,9 @@ public class floorScreen implements Screen {
 		steps = 0;
 		firstSteps = 0;
 		totSteps = 0;
+		isTransitioning = false;
+		transitionTimer = 0f;
+		targetBattleScreen = null;
 		if(Main.player.currScreen != "MENU_SCREEN") {
 			Main.player.state = PlayerState.WAITING;
 		}
@@ -146,16 +147,14 @@ public class floorScreen implements Screen {
 		camera.zoom = 1f;
 		checkRoomBooleans();
 		if(Main.player.state == PlayerState.WAITING) {
-			posHistory = new Array<>(); // inicializa el ArrayList
+			posHistory = new Array<>();
 			for(int i = 0; i < (chars.length * followDelay) + 5; i++) {
-				//mientras que i sea menor a la length de chars * la cantidad de frames...
-	            posHistory.add(new Vector2(x[0], y[0])); //añade un nuevo vector2 con las posiciones
-	            										 // del primer personaje
+	            posHistory.add(new Vector2(x[0], y[0]));
 	        }
 			for(int i = 1; i < chars.length; i++) {
-	            x[i] = x[0];	//pone las posiciones de cada personaje en 0
+	            x[i] = x[0];
 	            y[i] = y[0];	
-	            chars[i].direction = chars[0].direction; //pone a todos en la misma direccion
+	            chars[i].direction = chars[0].direction;
 	        }
 		}
 		if(Main.player.flags[dialogueFlag]) {
@@ -165,7 +164,6 @@ public class floorScreen implements Screen {
 	@Override
     public void render(float delta) {
 		Room room = floor.layout[currPosition[0]][currPosition[1]];
-        // Draw your screen here. "delta" is the time since last render in seconds.
 		if(Main.player.state == PlayerState.WAITING) {
     		timer += delta;
     		if(timer >= game.roomDelay) {
@@ -206,30 +204,29 @@ public class floorScreen implements Screen {
         }
         playerCol.y = y[0];
         
-        if (moved) { //si el personaje principal se movió
-            posHistory.insert(0, new Vector2(x[0], y[0])); //inserta la posicion del chars[0]
-            											   // en la posicion 0 del vector2
+        if (moved) {
+            posHistory.insert(0, new Vector2(x[0], y[0]));
             if (posHistory.size > chars.length * followDelay + 5) {
-                posHistory.pop(); //evita que la lista siga creando posiciones cuando
-                				  //ya creó todos los fotogramas que necesitaba
+                posHistory.pop();
             }
             if(room.roomType != Room.ROOM_START && room.roomType != Room.ROOM_BOSS) {
-	            if(firstSteps <= 100) {
-	            	firstSteps++;
-	            }else {
-	            	if(steps < 60) {
-	            		steps++;
+	            if(!isTransitioning) {
+	            	if(firstSteps <= 100) {
+	            		firstSteps++;
 	            	}else {
-	            		if(rand.nextInt(100) < 8) {
-	            			game.setScreen(battle);
-	            			battle.lastScreen = this;
-	            			totSteps++;
-	            			if(totSteps > 100) {
-	            				game.setScreen(battle);
-	            				battle.lastScreen = this;
-	            			}
+	            		if(steps < 60) {
+	            			steps++;
 	            		}else {
-	            			steps = 0;
+	            			totSteps++;
+	            			if(rand.nextInt(100) < 8 || totSteps > 100) {
+	            				isTransitioning = true;
+	            				transitionTimer = 0f;
+	            				targetBattleScreen = battle;
+	            				targetBattleScreen.battle.initEnemies();
+	            				Main.player.state = PlayerState.BUSY;
+	            			}else {
+	            				steps = 0;
+	            			}
 	            		}
 	            	}
 	            }
@@ -239,21 +236,16 @@ public class floorScreen implements Screen {
         chars[0].aniManager(floats, delta);
         
         for (int i = 1; i < chars.length; i++) {
-            int target = i * followDelay; // que el target dependa de la ubicacion a la que va 
-            							// a ir cada personaje. El personaje 2
-            							// tiene que ir a la posicion donde estaba el 1
-            							// hace 15 frames, el 3 hace 30, etc.
+            int target = i * followDelay;
             
-            if (target < posHistory.size) { //si no se pasa
-                Vector2 targetPos = posHistory.get(target); //busca el vector que se guardó
-                											// en target.
+            if (target < posHistory.size) {
+                Vector2 targetPos = posHistory.get(target);
                 
                 float[] followerFloats = new float[2]; 
                 if (moved) {
                     followerFloats[0] = targetPos.x - x[i]; 
                     followerFloats[1] = targetPos.y - y[i]; 
                 }
-                //la parte de arriba es para saber a donde se mueve y llevarlo allí
                 
                 x[i] = targetPos.x;
                 y[i] = targetPos.y;
@@ -286,13 +278,16 @@ public class floorScreen implements Screen {
     			showMap = false;
     			Main.player.state = PlayerState.IDLE;
     		}else {
-    			showMap = true;
-    			Main.player.state = PlayerState.BUSY;
+    			if(Main.player.state == PlayerState.IDLE) {
+    				showMap = true;
+	    			Main.player.state = PlayerState.BUSY;
+    			}
     		}
     	}
     	checkDoors(playerCol);
     	
-    	ScreenUtils.clear(0, 0, 0, 1); //limpia el buffer de colores
+    	ScreenUtils.clear(0, 0, 0, 1);
+    	game.viewport.apply();
     	camera.update();
     	game.batch.setProjectionMatrix(camera.combined);
     	game.batch.begin();
@@ -352,13 +347,43 @@ public class floorScreen implements Screen {
     	int resp = DialMan.showDialogues(game, delta);
     	switch(resp) {
     	case 100:
-    		game.setScreen(bossBattle);
-    		bossBattle.lastScreen = this;
+    		isTransitioning = true;
+    		transitionTimer = 0f;
+    		targetBattleScreen = bossBattle;
+    		targetBattleScreen.battle.initEnemies();
+    		Main.player.state = PlayerState.BUSY;
+    		break;
     	}
     	
+    	if(isTransitioning) {
+    		transitionTimer += delta;
+    		
+    		if(transitionTimer < 0.5f) {
+    			float alpha = transitionTimer / 0.5f;
+    			game.batch.setColor(1, 1, 1, alpha);
+    			game.batch.draw(game.black, 0, 0, 320, 180);
+    		} else if(transitionTimer < 1.1f) {
+    			game.batch.setColor(1, 1, 1, 1);
+    			game.batch.draw(game.black, 0, 0, 320, 180);
+    			
+    			float bgAlpha = (transitionTimer - 0.5f) / 0.6f;
+    			Texture bgTex = targetBattleScreen.background;
+    			if(bgTex != null) {
+    				game.batch.setColor(1, 1, 1, bgAlpha);
+    				game.batch.draw(bgTex, 0, 0, 320, 180);
+    			}
+    		} else {
+    			game.batch.setColor(1, 1, 1, 1);
+    			isTransitioning = false;
+    			game.setScreen(targetBattleScreen);
+    			targetBattleScreen.lastScreen = this;
+    			game.batch.end();
+    			return;
+    		}
+    		game.batch.setColor(1, 1, 1, 1);
+    	}
     	
     	if(showMap) {
-    		
     		showMap();
     	}
     	
@@ -411,9 +436,6 @@ public class floorScreen implements Screen {
                         case Room.ROOM_TREASURE:
                         	game.batch.draw(game.roomTreasure, roomX, roomY, roomSize, roomSize);
                         	break;
-                     /* case Room.ROOM_SECRET:
-                        	game.batch.draw(game.roomSecret, roomX, roomY, roomSize, roomSize);
-                        	break; */
                         case Room.ROOM_BOSS:
                         	game.batch.draw(game.roomBoss, roomX, roomY, roomSize, roomSize);
                         	break;
@@ -494,10 +516,9 @@ public class floorScreen implements Screen {
 		}
 		return false;
 	}
-	//para evitar colisiones
     private boolean checkCollision(Rectangle player) {
 
-        for (Rectangle col : collisions) { //usamos este metodo de for para mayor comodidad
+        for (Rectangle col : collisions) {
 
             if (col != null && player.overlaps(col)) {
             	return true;
@@ -529,7 +550,7 @@ public class floorScreen implements Screen {
     	if(Main.player.state != PlayerState.IDLE) {
     		return false;
     	}
-        for (Rectangle col : doors) { //usamos este metodo de for para mayor comodidad
+        for (Rectangle col : doors) {
 
             if (col != null && player.overlaps(col)) {
             	if(col == doors[WALL_LEFT]) {
@@ -557,16 +578,14 @@ public class floorScreen implements Screen {
             		x[0] = doors[WALL_LEFT].x + 20;
             	}
             	floor.layout[currPosition[0]][currPosition[1]].discovered = Room.DISC_TOTAL;
-            	posHistory = new Array<>(); // inicializa el ArrayList
+            	posHistory = new Array<>();
         		for(int i = 0; i < (chars.length * followDelay) + 5; i++) {
-        			//mientras que i sea menor a la length de chars * la cantidad de frames...
-                    posHistory.add(new Vector2(x[0], y[0])); //añade un nuevo vector2 con las posiciones
-                    										 // del primer personaje
+                    posHistory.add(new Vector2(x[0], y[0]));
                 }
         		for(int i = 1; i < chars.length; i++) {
-                    x[i] = x[0];	//pone las posiciones de cada personaje en 0
+                    x[i] = x[0];
                     y[i] = y[0];	
-                    chars[i].direction = chars[0].direction; //pone a todos en la misma direccion
+                    chars[i].direction = chars[0].direction;
                 }
         		checkRoomBooleans();
             	return true;
@@ -592,7 +611,6 @@ public class floorScreen implements Screen {
     }
     
     private void checkRoomBooleans() {
-    	//arriba
 		if(currPosition[0] - 1 < 0 || floor.layout[currPosition[0]-1][currPosition[1]] == null) {
 			wallBooleans[WALL_UP] = true;
 		}else {
@@ -600,7 +618,6 @@ public class floorScreen implements Screen {
 				floor.layout[currPosition[0]-1][currPosition[1]].discovered = Room.DISC_PART;
 			wallBooleans[WALL_UP] = false;
 		}
-		//abajo
 		if(currPosition[0] + 1 >= floor.layout.length || floor.layout[currPosition[0]+1][currPosition[1]] == null) {
 			wallBooleans[WALL_DOWN] = true;
 		}else {
@@ -608,7 +625,6 @@ public class floorScreen implements Screen {
 				floor.layout[currPosition[0]+1][currPosition[1]].discovered = Room.DISC_PART;
 			wallBooleans[WALL_DOWN] = false;
 		}
-		//izquierda
 		if(currPosition[1] - 1 < 0 || floor.layout[currPosition[0]][currPosition[1]-1] == null) {
 			wallBooleans[WALL_LEFT] = true;
 		}else {
@@ -616,7 +632,6 @@ public class floorScreen implements Screen {
 				floor.layout[currPosition[0]][currPosition[1]-1].discovered = Room.DISC_PART;
 			wallBooleans[WALL_LEFT] = false;
 		}
-		//derecha
 		if(currPosition[1] + 1 >= floor.layout[0].length || floor.layout[currPosition[0]][currPosition[1]+1] == null) {
 			wallBooleans[WALL_RIGHT] = true;
 		}else {
@@ -628,33 +643,23 @@ public class floorScreen implements Screen {
     
     @Override
     public void resize(int width, int height) {
-        // If the window is minimized on a desktop (LWJGL3) platform, width and height are 0, which causes problems.
-        // In that case, we don't resize anything, and wait for the window to be a normal size before updating.
         if(width <= 0 || height <= 0) return;
-        
-        // Resize your screen here. The parameters represent the new window size.
         viewport.update(width, height);
     }
 
     @Override
-    public void pause() {
-        // Invoked when your application is paused.
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-        // Invoked when your application is resumed after pause.
-    }
+    public void resume() {}
 
     @Override
     public void hide() {
-        // This method is called when another screen replaces this one.
     	game.lastScreen = this;
     }
 
     @Override
     public void dispose() {
-        // Destroy screen's assets here.
     	game.lastScreen = this;
     }
     

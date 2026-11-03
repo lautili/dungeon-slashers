@@ -908,7 +908,10 @@ public class BattleScreen implements Screen {
 				currAct++;
 			}
 		} else {
-			if (actionsObj[currAct][0].hp > 0 && !actionsObj[currAct][0].hasState("SLE") && actionsObj[currAct][1] != null && actionsObj[currAct][1].hp > 0) {
+			if (actionsObj[currAct][0].hp > 0 
+					&& !actionsObj[currAct][0].hasState("SLE") 
+					&& actionsObj[currAct][1] != null 
+					&& actionsObj[currAct][1].hp > 0) {
 		        skill.setType(actionsItem[currAct].getType());
 		        skill.use(actionsObj[currAct][0], actionsObj[currAct][1], Main.player, actionsItem[currAct]);
 		    } else {

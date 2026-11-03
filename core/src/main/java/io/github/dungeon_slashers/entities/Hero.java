@@ -142,10 +142,10 @@ public class Hero extends Entity{
 			lvl++;
 			DialMan.addDialogue(cont, cont+1, null, null, name + " ha subido al nivel " + lvl + "!", 2, null);
 			cont++;
-			this.updateStats();
 			hp = maxhp;
 			mp = maxmp;
 			sp = maxsp;
+			this.updateStats();
 			cont = updateSkills(cont);
 			nextXp = (int) (100*lvl+(100*lvl*(0.1*lvl)));
 		};

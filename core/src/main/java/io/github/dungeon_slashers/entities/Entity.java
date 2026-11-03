@@ -208,9 +208,9 @@ public abstract class Entity {
 						effect.use(this);
 						int hpLost = hpBeforeEffect - hp;
 						String turnMsg = effect.getTurnMsg();
-						if(turnMsg != null || (hpLost > 0)) {
+						if(turnMsg != null || hpLost > 0) {
 							String message = name + (turnMsg != null ? turnMsg : " sufre daño por " + effect.getName().toLowerCase() + ".");
-							if(this instanceof Enemy && hpLost > 0) {
+							if(hpLost > 0) {
 								message += " Pierde " + hpLost + " HP.";
 							}
 							DialMan.addDialogue(cont, cont+1, null, null, message, 20, null);

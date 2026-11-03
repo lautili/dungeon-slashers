@@ -63,6 +63,7 @@ public class Main extends Game {
 	public Texture roomBoss;
 	public Texture roomSecret;
 	public Texture mapBackground;
+	public Texture black;
 
 	public Texture battleBar;
 	public Texture HPbar;
@@ -174,7 +175,8 @@ public class Main extends Game {
     	currentChar = new Texture("ui/currentCharBox.png");
     	selection = new Texture("ui/selection.png");
     	battleMenu = new Texture("ui/battle-menu.png");
-
+    	black = new Texture("sprites/background/background_black.jpg");
+    	
     	dialogueBox = new Texture("ui/box-dialogue.png");
     	dialogueBBox = new Texture("ui/box-battle-dialogue.png");
     	nameBox = new Texture("ui/box-name.png");
@@ -302,10 +304,10 @@ public class Main extends Game {
 		Weapon ironSword = new Weapon("Espada de Hierro", "ironSword", "Espada comun de hierro.", "PHY", 6, 0, 0, 60, "Warrior");
 		Weapon flameSword = new Weapon("Espada Ignea", "flameSword", "Espada templada con fuego leve.", "FIR", 4, 2, 0, 85, "Warrior");
 		Weapon daggers = new Weapon("Dagas de Hierro", "daggers", "Dagas en buen estado.", "PHY", 4, 0, 4, 65, "Thief");
-		Weapon windDaggers = new Weapon("Dagas de Céfiro", "windDaggers", "Ligeras cuchillas sopladas por el viento.", "WIN", 3, 0, 8, 90, "Thief");
+		Weapon windDaggers = new Weapon("Dagas de Cefiro", "windDaggers", "Ligeras cuchillas sopladas por el viento.", "WIN", 3, 0, 8, 90, "Thief");
 		Weapon woodenStaff = new Weapon("Baston de Roble", "woodenStaff", "Baston de practica arcana.", "FIR", 0, 6, 0, 65, "Mage", "Sage");
 		Weapon waterStaff = new Weapon("Baston de Manantial", "waterStaff", "Baston imbuido con esencia acuosa.", "WAT", 0, 4, 0, 80, "Mage", "Sage");
-		Weapon curStaff = new Weapon("Baston Curativo", "curStaff", "Baston rústico con propiedades sagradas.", "CUR", 0, 3, 0, 90, "Sage");
+		Weapon curStaff = new Weapon("Baston Curativo", "curStaff", "Baston rustico con propiedades sagradas.", "CUR", 0, 3, 0, 90, "Sage");
 		Weapon bow = new Weapon("Arco de Madera", "bow", "Arco de roble comun.", "RAN", 5, 0, 2, 70, "Explorer");
 		Weapon encBow = new Weapon("Arco de Fuego", "encBow", "Arco con madera ignifuga.", "FIR", 4, 3, 0, 100, "Explorer");
 
@@ -327,7 +329,7 @@ public class Main extends Game {
 		Weapon stormDaggers = new Weapon("Dagas de Tormenta", "stormDaggers", "Electrizantes y rapidas.", "WIN", 13, 5, 22, 290, "Thief");
 		Weapon flameStaff = new Weapon("Baston Igneo", "flameStaff", "Emana calor abrasador.", "FIR", 0, 24, 0, 250, "Mage");
 		Weapon quakeStaff = new Weapon("Baston de Terremoto", "quakeStaff", "Provoca temblores arcanos.", "EAR", 0, 22, -3, 260, "Mage");
-		Weapon sageHarpStaff = new Weapon("Baston Coral", "sageHarpStaff", "Ondas de sanacion profunda.", "CUR", 0, 15, 5, 310, "Sage");
+		Weapon sageHarpStaff = new Weapon("Baston Coral", "sageHarpStaff", "Ondas de sanacion profunda.", "CUR", 0, 9, 5, 310, "Sage");
 		Weapon compositeBow = new Weapon("Arco Compuesto", "compositeBow", "Alta tension mecanica.", "RAN", 19, 0, 6, 250, "Explorer");
 		Weapon frostBow = new Weapon("Arco Escarchado", "frostBow", "Congela al impacto.", "WAT", 16, 8, 5, 280, "Explorer");
 
@@ -338,7 +340,7 @@ public class Main extends Game {
 		Weapon galeBlades = new Weapon("Cuchillas del Huracan", "galeBlades", "Doble aspa de viento puro.", "WIN", 20, 12, 30, 470, "Thief");
 		Weapon archmageStaff = new Weapon("Baston de Archimago", "archmageStaff", "Poder elemental desatado.", "WIN", 0, 36, 0, 440, "Mage", "Sage");
 		Weapon abyssStaff = new Weapon("Baston Abismal", "abyssStaff", "Magia oscura de las profundidades.", "EAR", 0, 38, -2, 460, "Mage");
-		Weapon divineCenser = new Weapon("Incensario Divino", "divineCenser", "Emite auras de curacion masiva.", "CUR", 0, 24, 10, 500, "Sage");
+		Weapon divineCenser = new Weapon("Incensario Divino", "divineCenser", "Emite auras de curacion masiva.", "CUR", 0, 15, 10, 500, "Sage");
 		Weapon stormBow = new Weapon("Arco de Tormenta", "stormBow", "Flechas con carga ionica.", "WIN", 28, 12, 14, 450, "Explorer");
 
 		// Piso 5
@@ -347,7 +349,7 @@ public class Main extends Game {
 		Weapon phantomDaggers = new Weapon("Dagas Fantasmales", "phantomDaggers", "Cuchillas universales que atraviesan la materia.", "UNI", 42, 18, 35, 2400, "Thief");
 		Weapon eclipseDaggers = new Weapon("Cuchillas de Eclipse", "eclipseDaggers", "Sombra y filo absoluto.", "PHY", 45, 0, 30, 920, "Thief");
 		Weapon prismaticStaff = new Weapon("Baston Prismatico", "prismaticStaff", "Baston universal que canaliza todo el espectro.", "UNI", 0, 52, 0, 2600, "Mage", "Sage");
-		Weapon celestialStaff = new Weapon("Baston Celestial", "celestialStaff", "Milagros de restauracion infinita.", "CUR", 0, 35, 15, 950, "Sage");
+		Weapon celestialStaff = new Weapon("Baston Celestial", "celestialStaff", "Milagros de restauracion infinita.", "CUR", 0, 25, 15, 950, "Sage");
 		Weapon apocalypseBow = new Weapon("Arco del Apocalipsis", "apocalypseBow", "Arco universal de fatalidad ineludible.", "UNI", 46, 18, 20, 2550, "Explorer");		
 		
 		//initialize armaduras
@@ -379,9 +381,9 @@ public class Main extends Game {
 
 		// Piso 5
 		Armor divineArmor = new Armor("Armadura Divina", "divineArmor", "Bendecida por los dioses.", 0, 0, 55, 30, 4, 900);
-		Armor godlyPlate = new Armor("Placas del Titán", "godlyPlate", "Impenetrable ante cualquier fuerza.", 0, 0, 62, 25, 0, 950);
+		Armor godlyPlate = new Armor("Placas del Titan", "godlyPlate", "Impenetrable ante cualquier fuerza.", 0, 0, 62, 25, 0, 950);
 		Armor supremeRobes = new Armor("Tunicas Supremas", "supremeRobes", "Maxima expresion de sabiduria y defensa.", 0, 32, 28, 50, 8, 900);
-		Armor voidVestments = new Armor("Vestimentas del Vacío", "voidVestments", "Proteccion absoluta contra el absurdo.", 0, 35, 30, 55, 10, 960);
+		Armor voidVestments = new Armor("Vestimentas del Vacio", "voidVestments", "Proteccion absoluta contra el absurdo.", 0, 35, 30, 55, 10, 960);
 
 		//initialize items
 		Item minHPot = new Item("Pocion menor de salud", "minHPot", "Cura poca cantidad de salud.", 20, 5, 3, false, Item.USE_BOTH, false);
@@ -579,12 +581,12 @@ public class Main extends Game {
 						+ "chances muy bajas de aplicar sangrado.", "PHY",
 						" barre con sus cuchillas a los enemigos!",
 						2, 15, false, 3, 50, 110, 6);
-				Skill sleepPll = new Skill("sleepPll", "Somnifero", "Duerme a un enemigo.", "NONE",
+				Skill sleepPll = new Skill("sleepPll", "Somnifero", "Duerme con altas chances a un enemigo.", "NONE",
 						" duerme a ",
-						1, 0, false, 1, 80, 50, 6);
+						1, 0, false, 1, 120, 160, 6);
 				Skill finisher = new Skill("finisher", "Remate", "Ataque de daño elevado que hace un 50% mas de daño si el objetivo sangra.", "PHY",
 						" reabre las heridas de ",
-						1, 0, false, 1, 60, 120, 7);
+						1, 0, false, 1, 80, 140, 7);
 				Skill bladeTornado = new Skill("bladeTornado", "Tornado de cuchillas", "Inflinge daño medio a todos los enemigos, "
 						+ "ataca 2 veces y altas probabilidades de aplicar sangrado.", "PHY",
 						" desata una furia de cuchillas",
@@ -638,7 +640,7 @@ public class Main extends Game {
 				Skill worldRevolving = new Skill("worldRevolving", "Girando el mundo", "Aplica Ira a todos los enemigos. ", "NONE",
 						" hace que caigan los escombros.",
 						2, 0, false, 1, 125, 150, 7);
-				Skill sleepGas = new Skill("sleepGas", "Gas Somnifero", "Aplica el estado Sue o a todos los enemigos. ", "NONE",
+				Skill sleepGas = new Skill("sleepGas", "Gas Somnifero", "Aplica con altas chances el estado Sueño a todos los enemigos. ", "NONE",
 						" duerme a todo el mundo. Buenas noches!",
 						2, 0, false, 1, 180, 200, 8);
 				Skill allyTotem = new Skill("allyTotem", "Totem Aliado", "Bendice a un aliado. ", "NONE",

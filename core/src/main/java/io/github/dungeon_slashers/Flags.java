@@ -126,15 +126,15 @@ public class Flags {
 			break;
 		case FLAG_FOURTHBOSS_DIALOGUE:
 			DialMan.addDialogue(0, 1, "???", null, "Detenganse.", 50, null);
-			DialMan.addDialogue(1, 2, entity.getName(), null, "He observado su avance desde que entraron.", 50, null);
-			DialMan.addDialogue(2, 3, entity.getName(), null, "Han cambiado su forma de pelear desde el inicio.", 50, null);
-			DialMan.addDialogue(3, 4, Main.player.getCharacters()[0].getName(), Main.player.getCharacters()[0].getTexture(), 
+			DialMan.addDialogue(1, 2, "Caballero", null, "He observado su avance desde que entraron.", 50, null);
+			DialMan.addDialogue(2, 3, "Caballero", null, "Han cambiado su forma de pelear desde el inicio.", 50, null);
+			DialMan.addDialogue(3, 4, Main.player.getCharacters()[0].getName(), Main.player.getCharacters()[0].getPortrait(), 
 					"No perdimos el tiempo.", 20, null);;
-			DialMan.addDialogue(4, 5, entity.getName(), null, "Eso es lo que diferencia a un grupo de mercenarios de un verdadero equipo.", 50, null);
-			DialMan.addDialogue(5, 6, entity.getName(), null, "Pero un equipo tambien puede ser desarmado.", 50, null);
-			DialMan.addDialogue(6, 7, entity.getName(), null, "Voy a demostrarles como.", 50, null);
-			DialMan.addDialogue(7, 100, entity.getName(), null, "Preparen sus armas.", 50, null);
-			DialMan.addDialogue(100, -1, entity.getName(), null, "Veamos si realmente aprendieron algo.", 50, null);
+			DialMan.addDialogue(4, 5, "Caballero", null, "Eso es lo que diferencia a un grupo de mercenarios de un verdadero equipo.", 50, null);
+			DialMan.addDialogue(5, 6, "Caballero", null, "Pero un equipo tambien puede ser desarmado.", 50, null);
+			DialMan.addDialogue(6, 7, "Caballero", null, "Voy a demostrarles como.", 50, null);
+			DialMan.addDialogue(7, 100, "Caballero", null, "Preparen sus armas.", 50, null);
+			DialMan.addDialogue(100, -1, "Caballero", null, "Veamos si realmente aprendieron algo.", 50, null);
 			break;
 		case FLAG_FIFTHBOSS_DIALOGUE:
 			DialMan.addDialogue(0, 1, "???", null, "...", 60, null);
@@ -145,7 +145,7 @@ public class Flags {
 			DialMan.addDialogue(5, 6, entity.getName(), null, "No importa.", 40, null);
 			DialMan.addDialogue(6, 7, entity.getName(), null, "Ya estan aqui.", 40, null);
 			DialMan.addDialogue(7, 8, entity.getName(), null, "Y yo tambien.", 40, null);
-			DialMan.addDialogue(8, 9, Main.player.getCharacters()[0].getName(), Main.player.getCharacters()[0].getTexture(),
+			DialMan.addDialogue(8, 9, Main.player.getCharacters()[0].getName(), Main.player.getCharacters()[0].getPortrait(),
 					"Antes de luchar, queremos respuestas... Por que fuimos enviados aqui?", 20, null);
 			DialMan.addDialogue(9, 10, entity.getName(), null, "Oh, por que?", 40, null);
 			DialMan.addDialogue(10, 11, entity.getName(), null, "Veras...", 40, null);
@@ -153,7 +153,7 @@ public class Flags {
 			DialMan.addDialogue(12, 13, entity.getName(), null, "Funciona conmigo o sin mi, ni siquiera soy el rango mas alto del organismo.", 40, null);
 			DialMan.addDialogue(13, 14, entity.getName(), null, "Fui designado a esta mazmorra porque contenia algo muy importante...", 40, null);
 			DialMan.addDialogue(14, 15, entity.getName(), null, "Una Raiz Dorada.", 40, null);
-			DialMan.addDialogue(15, 16, Main.player.getCharacters()[2].getName(), Main.player.getCharacters()[2].getTexture(),
+			DialMan.addDialogue(15, 16, Main.player.getCharacters()[2].getName(), Main.player.getCharacters()[2].getPortrait(),
 					"Raiz dorada?", 20, null);
 			DialMan.addDialogue(16, 17, entity.getName(), null, "Si, exactamente. una Raiz dorada.", 40, null);
 			DialMan.addDialogue(17, 18, entity.getName(), null, "Esta... cosa... que se encuentra en la habitacion detras de mi.", 40, null);
@@ -161,12 +161,12 @@ public class Flags {
 			DialMan.addDialogue(19, 20, entity.getName(), null, "Parte de la raiz se encuentra en su lider. su Manager. Ese bonito reloj dorado.", 40, null);
 			DialMan.addDialogue(20, 21, entity.getName(), null, "Es lo que permite que ustedes puedan revivir sin ningun tipo de "
 					+ "consecuencia como las de un hechizo de necromancia.", 40, null);
-			DialMan.addDialogue(21, 22, Main.player.getCharacters()[1].getName(), Main.player.getCharacters()[1].getTexture(),
+			DialMan.addDialogue(21, 22, Main.player.getCharacters()[1].getName(), Main.player.getCharacters()[1].getPortrait(),
 					"Dante...?", 20, null);
 			DialMan.addDialogue(22, 23, entity.getName(), null, "Ustedes estan bajo contrato de nuestra organizacion.", 40, null);
 			DialMan.addDialogue(23, 24, entity.getName(), null, "Pense que seria obvio... siendo que esta mazmorra no se comporta de forma"
 					+ " comun.", 40, null);
-			DialMan.addDialogue(24, 26, Main.player.getCharacters()[2].getName(), Main.player.getCharacters()[2].getTexture(),
+			DialMan.addDialogue(24, 26, Main.player.getCharacters()[2].getName(), Main.player.getCharacters()[2].getPortrait(),
 					"Pero...", 40, null);
 			DialMan.addDialogue(26, 27, entity.getName(), null, "Necesitabamos ver los efectos bajo sujetos no informados sobre las propiedades "
 					+ "de la raiz.", 40, null);

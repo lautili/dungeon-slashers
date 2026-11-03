@@ -95,34 +95,39 @@ public class Player {
 		}
 		weapons[length] = weapon;
 	}
+	
+	private int findWeaponIndex(Weapon weapon) {
+		if(weapon == null) {
+			return -1;
+		}
+		for(int i = 0; i < weapons.length; i++) {
+			if(weapons[i] == weapon) {
+				return i;
+			}
+		}
+		for(int i = 0; i < weapons.length; i++) {
+			if(weapons[i] != null && weapons[i].getIDName().equals(weapon.getIDName())) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	public void subWeapons(Weapon weapon) {
 		if(weapons.length > 0) {
-			boolean proceed = false;
-			//chequea que el arma se encuentre en el inventario
-			for(int i = 0; i < weapons.length; i++) {
-				if(weapons[i] == weapon) {
-					proceed = true;
-					break;
-				}
+			int index = findWeaponIndex(weapon);
+			if(index < 0) {
+				return;
 			}
-			if(proceed) {
-				//Crea un nuevo array con un espacio menos 
-				int length = this.weapons.length;
-				Weapon[] temp = this.weapons;
-				boolean check = false;
-				this.weapons = new Weapon[length-1];
-				int k = 0;
-				for(int i = 0; i < temp.length; i++) {
-					if(temp[i] != weapon || !check) {
-						//Siempre y cuando k no sea mayor a la length del array, 
-						//y el espacio no este ocupado por el arma a eliminar, 
-						//	pasara las armas del viejo array al nuevo
-						if(k < this.weapons.length) {
-							this.weapons[k] = temp[i];
-							k++;
-						}
-					}else {
-						check = true;
+			int length = this.weapons.length;
+			Weapon[] temp = this.weapons;
+			this.weapons = new Weapon[length - 1];
+			int k = 0;
+			for(int i = 0; i < temp.length; i++) {
+				if(i != index) {
+					if(k < this.weapons.length) {
+						this.weapons[k] = temp[i];
+						k++;
 					}
 				}
 			}
@@ -140,34 +145,38 @@ public class Player {
 		}
 		armors[length] = armor;
 	}
+	private int findArmorIndex(Armor armor) {
+		if(armor == null) {
+			return -1;
+		}
+		for(int i = 0; i < armors.length; i++) {
+			if(armors[i] == armor) {
+				return i;
+			}
+		}
+		for(int i = 0; i < armors.length; i++) {
+			if(armors[i] != null && armors[i].getIDName().equals(armor.getIDName())) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	public void subArmors(Armor armor) {
 		if(armors.length > 0) {
-			boolean proceed = false;
-			//chequea que la armadura se encuentre en el inventario
-			for(int i = 0; i < armors.length; i++) {
-				if(armors[i] == armor) {
-					proceed = true;
-					break;
-				}
+			int index = findArmorIndex(armor);
+			if(index < 0) {
+				return;
 			}
-			if(proceed) {
-				//Crea un nuevo array con un espacio menos 
-				int length = armors.length;
-				Armor[] temp = armors;
-				boolean check = false;
-				armors = new Armor[length-1];
-				int k = 0;
-				for(int i = 0; i < temp.length; i++) {
-					if(temp[i] != armor || !check) {
-						//Siempre y cuando k no sea mayor a la length del array, 
-						//y el espacio no este ocupado por la armadura a eliminar, 
-						//	pasara las armaduras del viejo array al nuevo
-						if(k < armors.length) {
-							armors[k] = temp[i];
-							k++;
-						}
-					}else {
-						check = true;
+			int length = armors.length;
+			Armor[] temp = armors;
+			armors = new Armor[length - 1];
+			int k = 0;
+			for(int i = 0; i < temp.length; i++) {
+				if(i != index) {
+					if(k < armors.length) {
+						armors[k] = temp[i];
+						k++;
 					}
 				}
 			}
