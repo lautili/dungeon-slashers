@@ -1203,13 +1203,13 @@ public class Main extends Game {
 		        + "Y si no fue revivido... entonces tenemos otro problema.");
 				grandMaster.addSkills(warCry, backhand);
 
-				Boss nameless = new Boss("El Innombrable", "nameless", "PHY",
+				Boss nameless = new Boss("Lo Innombrable", "nameless", "PHY",
 						9500, 500, 500,
 						125, 110, 120, 115, 90,
 						2000, 2500, 0,
 						0.5, 0.25, 0.5, 0.25, 0.5, 0.25,
 						defAtt, defend, Flags.FLAG_FIFTHBOSS_DEFEATED);
-				nameless.setDesc("El 'Jefe'... y sin nombre.\n"
+				nameless.setDesc("La 'Jefa'... y sin nombre.\n"
 		        + "Solo lleva una designacion que aparece repetida en los registros destruidos que encontramos durante la bajada.\n"
 		        + "Nadie del equipo consigue describirlo de la misma manera dos veces. Yo tampoco.\n"
 		        + "Lo unico constante es que parece ser la razon por la que la dungeon sigue funcionando. Bueno, seguia.\n"
@@ -1256,7 +1256,7 @@ public class Main extends Game {
 		                        "E-Esto... no deberia... de...",
 		                        "...",
 		                        "E-Esta bien...",
-		                        "Antes que... un mercenario... soy un luchador...",
+		                        "Antes que... una mercenaria... soy un luchador...",
 		                        "Un... luchador?",
 		                        "Soy... un arma?",
 		                        "Eso soy...?",

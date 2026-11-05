@@ -190,7 +190,6 @@ public class BattleScreen implements Screen {
     		// Marcador si es el objetivo activo en BSTATE_ACT
     		try {
 	    		if (BState == BSTATE_ACT && enemy.attacked) {
-	    			if(currentSkill == null || !currentSkill.getID().equals("defend")) {
 	    				game.mainFont.getData().setScale(0.3f);
 	    				if(enemy.lastDamageTaken > 0) {
 	    					if(currentTarget != null) {
@@ -198,7 +197,14 @@ public class BattleScreen implements Screen {
 	    					}
 		    				String temp;
 		    				temp = (enemy.lastIsDamage) ? "-" : "+";
+		    				String skillId = (currentSkill.getID() != null) ? currentSkill.getID() : "";
 		    				String dmgText = "";
+		    				if(skillId.equals("defend")) {
+	    						dmgText += temp + (int) Math.max(10,heroes[i].getMP() * 0.1) + "\n";
+	    						dmgText += temp + (int) Math.max(10,heroes[i].getSP() * 0.1) + "\n";
+	    					}else if (skillId.equals("itemUse")) {
+	    						dmgText += temp + enemy.lastDamageTaken + "\n";
+	    					} else
 		    				if(currentSkill != null) {
 		    					for(int k = 0; k < currentSkill.getAtkTimes(); k++) {
 		    						dmgText += temp + enemy.lastDamageTaken + "\n";
@@ -239,7 +245,6 @@ public class BattleScreen implements Screen {
 		    				game.mainFont.setColor(1f, 1f, 1f, 1f);
 	    				}
 	    			}
-	    		}
     		}catch(Exception e) {
     			
     		}
@@ -285,7 +290,6 @@ public class BattleScreen implements Screen {
 
     			try {
 	    			if (BState == BSTATE_ACT && heroes[i].attacked) {
-	    				if(currentSkill == null || !currentSkill.getID().equals("defend")) {
 	    					game.mainFont.getData().setScale(0.3f);
 	    					if(heroes[i].lastDamageTaken > 0) {
 	    						if(currentTarget != null) {
@@ -294,6 +298,13 @@ public class BattleScreen implements Screen {
 		    					String temp;
 		    					temp = (heroes[i].lastIsDamage) ? "-" : "+";
 		    					String dmgText = "";
+		    					String skillId = (currentSkill.getID() != null) ? currentSkill.getID() : "";
+		    					if(skillId.equals("defend")) {
+		    						dmgText += temp + (int) Math.max(10,heroes[i].getMP() * 0.1) + "\n";
+		    						dmgText += temp + (int) Math.max(10,heroes[i].getSP() * 0.1) + "\n";
+		    					}else if (skillId.equals("itemUse")) {
+		    						dmgText += temp + heroes[i].lastDamageTaken + "\n";
+		    					} else
 		    					if(currentSkill != null) {
 		    						for(int k = 0; k < currentSkill.getAtkTimes(); k++) {
 		    							dmgText += temp + heroes[i].lastDamageTaken + "\n";
@@ -334,7 +345,6 @@ public class BattleScreen implements Screen {
 		        				game.mainFont.setColor(1f, 1f, 1f, 1f);
 	    					}
 	        			}
-	    			}
     			}catch(Exception e) {
     				
     			}
@@ -547,7 +557,9 @@ public class BattleScreen implements Screen {
     		for(Entity entity : entities) {
     			if(entity.hp <= 0 && entity instanceof Enemy) {
         			Enemy enemy = (Enemy) entity;
-        			enemy.draw = false;
+        			if(!(entity instanceof Boss)) {
+        				enemy.draw = false;
+        			}
         		}
     			entity.attacked = false;
     		}

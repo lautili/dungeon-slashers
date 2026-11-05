@@ -22,7 +22,6 @@ public class Flags {
 	public static void DialogueFlag(int flag, Entity entity) {
 		switch(flag) {
 		case FLAG_FIRSTBOSS_DEFEATED:
-			if(Main.player.flags[FLAG_FIRSTBOSS_DEFEATED]) {
 				Store.addItems(
 					Main.getItem("bigHPot"),
 					Main.getItem("bigMPot"),
@@ -35,10 +34,8 @@ public class Flags {
 					Main.getItem("combatRobes"),
 					Main.getItem("noviceMantle")
 				);
-			}
 			break;
 		case FLAG_SECONDBOSS_DEFEATED:
-			if(Main.player.flags[FLAG_SECONDBOSS_DEFEATED]) {
 				Store.addItems(
 					Main.getItem("knightGreatsword"),
 					Main.getItem("shadowDaggers"),
@@ -49,10 +46,8 @@ public class Flags {
 					Main.getItem("sageRobes"),
 					Main.getItem("mysticVestments")
 				);
-			}
 			break;
 		case FLAG_THIRDBOSS_DEFEATED:
-			if(Main.player.flags[FLAG_THIRDBOSS_DEFEATED]) {
 				Store.addItems(
 					Main.getItem("battleblade"),
 					Main.getItem("assassinBlades"),
@@ -63,10 +58,8 @@ public class Flags {
 					Main.getItem("etherealRobes"),
 					Main.getItem("astralMantle")
 				);
-			}
 			break;
 		case FLAG_FOURTHBOSS_DEFEATED:
-			if(Main.player.flags[FLAG_FOURTHBOSS_DEFEATED]) {
 				Store.addItems(
 					Main.getItem("omegaBlade"),
 					Main.getItem("eclipseDaggers"),
@@ -76,7 +69,6 @@ public class Flags {
 					Main.getItem("supremeRobes"),
 					Main.getItem("voidVestments")
 				);
-			}
 			break;
 		case FLAG_FIRSTBOSS_DIALOGUE:
 			DialMan.addDialogue(0, 1, "???", null, "Hola...", 20, null);

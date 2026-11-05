@@ -80,7 +80,9 @@ public class Skill {
 	
 	//para uso de items
 	public Skill(int SPD) {
+		this.shortName = "itemUse";
 		this.SPD = SPD;
+		this.atkTimes = 1;
 	}
 	//esto se hace para usar items en el combate, ya que las acciones son manejadas como skills.
 	
@@ -164,6 +166,14 @@ public class Skill {
 		case "defend":
 			//Protegerse
 			a.prot = 2;
+			a.attacked = true;
+			a.lastDamageTaken = 0;
+			int dmg = (int) Math.max(10, a.getMP() * 0.1);
+			a.modMP(dmg);
+			a.lastDamageTaken += dmg;
+			dmg = (int) Math.max(10, a.getSP() * 0.1);
+			a.modSP(dmg);
+			a.lastDamageTaken += dmg;
 			snd = SHIELD;
 			break;
 		}
@@ -868,6 +878,8 @@ public class Skill {
 		String msg = null;
 		String msg2 = null;
 		DialMan.addDialogue(0, 1);
+		b.attacked = true;
+		b.lastDamageTaken = 0;
 		if(item.q > 0) {
 			if(a == b) {
 				msg = (a.getName() + " usa " + item.getName() +"!");
@@ -877,7 +889,7 @@ public class Skill {
 				msg2 = item.Use(b, player, true);
 			}
 		}else {
-			msg = (a.getName() + " no pudo usar" + item.getName() + " porque se termino.\n");
+			msg = (a.getName() + " no pudo usar " + item.getName() + ".\n");
 		}
 		DialMan.addBDialogue(1, BattleScreen.DIAL_BACTION, msg);
 		DialMan.addBDialogue(BattleScreen.DIAL_BACTION, -1, msg2);

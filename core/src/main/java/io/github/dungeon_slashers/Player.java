@@ -298,6 +298,7 @@ public class Player {
 	public void loadCharacters() {
 		for(Hero character : characters) {
 			character.loadTextures();
+			character.skills[2] = new Skill(0);
 			character.hp = character.getHP();
 			character.mp = character.getMP();
 			character.sp = character.getSP();

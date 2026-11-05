@@ -775,7 +775,7 @@ public static void showItemStats(Main game, Item i, Hero[] chars) {
 	                game.mainFont.draw(game.batch, ">", x - 10, currentY);
 	            }
 	            if(pos[0] == 0) {
-					if(items[i].getCost() > Main.player.gold) {
+					if(items[i].getCost() >= Main.player.gold) {
 						game.invFont.setColor(0.6f, 0.6f, 0.6f, 1);
 					}
 				}

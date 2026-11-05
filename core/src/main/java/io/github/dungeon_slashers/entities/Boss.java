@@ -78,7 +78,9 @@ public class Boss extends Enemy{
 	}
 
 	public void setDefeat() {
-		Flags.DialogueFlag(bossFlag, null);
+		if(!Main.player.flags[bossFlag]) {
+			Flags.DialogueFlag(bossFlag, null);
+		}
 	}
 
 	public void activateFlag() {

@@ -70,7 +70,7 @@ public abstract class Entity {
 	//efectos de estado
 	protected Effect[] effects = new Effect[6];
 	//habilidades
-	protected Skill[] skills;
+	public Skill[] skills;
 	
 	//getters
 	

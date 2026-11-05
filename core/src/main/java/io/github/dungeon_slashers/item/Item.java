@@ -82,8 +82,6 @@ public class Item {
 		String errMsg = "Placeholder error message"; //esto es en caso de que hayan errores
 		
 		if(isBattle) {
-			a.attacked = true;
-			a.lastDamageTaken = 0;
 			if(this.use == USE_BOTH || this.use == USE_BATTLE) {
 				use = true;
 			}
@@ -133,8 +131,8 @@ public class Item {
 			break;
 		case "minHPven":
 			if(a.hp>0) {
-				dmg =  -(int) (a.getHP() * 0.2 + 10);
-				a.modHP(dmg);
+				dmg =  (int) Math.max(25, a.getHP() * 0.02);
+				a.modHP(-dmg);
 				msg = ( a.getName() + " pierde " + (int) (a.getHP() * 0.2 + 10) + " HP! (" + a.hp + "/" + a.getHP() + ")");				
 			}else {
 			 use = false;
@@ -143,8 +141,8 @@ public class Item {
 			break;
 		case "minMPven":
 			if(a.mp>0) {
-				dmg =  -(int) (a.getMP() * 0.2 + 10);
-				a.modMP(dmg);
+				dmg =  (int) Math.max(50, a.getMP() * 0.2 + 10);
+				a.modMP(-dmg);
 				msg = ( a.getName() + " pierde " + (int) (a.getMP() * 0.2 + 10) + " MP! (" + a.mp + "/" + a.getMP() + ")");				
 			}else {
 			 use = false;
@@ -153,8 +151,8 @@ public class Item {
 			break;
 		case "minSPven":
 			if(a.sp>0) {
-				dmg =  -(int) (a.getSP() * 0.2 + 10);
-				a.modSP(dmg);
+				dmg =  (int)  Math.max(50, a.getSP() * 0.2 + 10);
+				a.modSP(-dmg);
 				msg = ( a.getName() + " pierde " + (int) (a.getSP() * 0.2 + 10) + " HP! (" + a.sp + "/" + a.getSP() + ")");				
 			}else {
 			 use = false;
@@ -229,8 +227,8 @@ public class Item {
 			break;
 		case "bigHPven":
 			if(a.hp>0) {
-				dmg = -(int) (a.getHP() * 0.25 + 25);
-				a.modHP(dmg);
+				dmg = (int)  Math.max(100, a.getHP() * 0.05 + 25);
+				a.modHP(-dmg);
 				msg = ( a.getName() + " pierde " + (-dmg) + " HP por veneno potente! (" + a.hp + "/" + a.getHP() + ")");
 			}else {
 				use = false;
@@ -239,8 +237,8 @@ public class Item {
 			break;
 		case "bigMPven":
 			if(a.mp>0) {
-				dmg = -(int) (a.getMP() * 0.25 + 25);
-				a.modMP(dmg);
+				dmg = (int)  Math.max(100, a.getMP() * 0.25 + 25);
+				a.modMP(-dmg);
 				msg = ( a.getName() + " pierde " + (-dmg) + " MP por veneno potente! (" + a.mp + "/" + a.getMP() + ")");
 			}else {
 				use = false;
@@ -249,8 +247,8 @@ public class Item {
 			break;
 		case "bigSPven":
 			if(a.sp>0) {
-				dmg = -(int) (a.getSP() * 0.25 + 25);
-				a.modSP(dmg);
+				dmg = (int) Math.max(100, a.getSP() * 0.25 + 25);
+				a.modSP(-dmg);
 				msg = ( a.getName() + " pierde " + (-dmg) + " SP por veneno potente! (" + a.sp + "/" + a.getSP() + ")");
 			}else {
 				use = false;
@@ -373,6 +371,7 @@ public class Item {
 		if(use) {
 			if(isBattle) {
 				a.lastDamageTaken += dmg;
+				a.lastDamageWeakness = 1;
 			}
 			player.removeItems(this); //si se puede usar "saca" el item
 			return msg;
