@@ -33,6 +33,9 @@ public class MenuScreen implements Screen {
     public Screen lastScreen;
     private Config initialConfigCopy;
     private int[] pos;
+    private boolean returningToFirstScreen;
+    private float returnTransitionTimer;
+    private static final float RETURN_TRANSITION_DURATION = 0.6f;
 	public MenuScreen(Main game) {
 		this.game = game;
 		
@@ -50,6 +53,8 @@ public class MenuScreen implements Screen {
 		camera.zoom = 2f;
 		batch = game.batch;
 		Main.player.state = PlayerState.MENU;
+		returningToFirstScreen = false;
+		returnTransitionTimer = 0f;
 
 		initialConfigCopy = new Config(Main.config.currRes);
 		initialConfigCopy.volume = Main.config.volume;
@@ -101,7 +106,8 @@ public class MenuScreen implements Screen {
     			}
     		}
     	}else if(pos[0] == 5) {
-            Menu.showConfigOptions(game, -100, 220, 20, pos[1], Main.config);
+            Menu.showConfigOptions(game, -100, 220, 20, pos[1], Main.config,
+                    lastScreen instanceof floorScreen);
         } else if(pos[0] != 3) {
 	    	Menu.showItems(game, -100, 220, 0.3f, 20, 200, 10, pos[1], itemArray);
 	    	if(itemArray.length > 0) {
@@ -123,11 +129,16 @@ public class MenuScreen implements Screen {
     		game.invFont.draw(batch, "Seleccione \nal personaje \ncon el que usara \nel hechizo.", -150, 40);
     	}
     	batch.end();
+
+        if (returningToFirstScreen) {
+            renderReturnTransition(delta);
+            return;
+        }
     	
     	if(Main.player.state == PlayerState.MENU) {
     		int listLength = 0;
     		if(pos[0] == 4) listLength = (bestiaryArray != null) ? bestiaryArray.length : 0;
-    		else if(pos[0] == 5) listLength = 7;
+			else if(pos[0] == 5) listLength = lastScreen instanceof floorScreen ? 8 : 7;
     		else if(pos[0] != 3) listLength = (itemArray != null) ? itemArray.length : 0;
     		else listLength = (skillArray != null) ? skillArray.length : 0;
     		
@@ -185,9 +196,17 @@ public class MenuScreen implements Screen {
                     if (pos[1] == 3) { // Pantalla completa
                         Main.config.fullScreen = !Main.config.fullScreen;
                         game.checkFullscreen();
-                    }else if(pos[1] == 6) {
+                    }else if(pos[1] == (lastScreen instanceof floorScreen ? 7 : 6)) {
                     	Save.saveConfig(Main.config);
                     	Gdx.app.exit();
+                    } else if (pos[1] == 6 && lastScreen instanceof floorScreen) {
+                        if (Main.config.volume != initialConfigCopy.volume ||
+                                Main.config.fullScreen != initialConfigCopy.fullScreen ||
+                                Main.config.currRes != initialConfigCopy.currRes) {
+                            Save.saveConfig(Main.config);
+                        }
+                        returningToFirstScreen = true;
+                        returnTransitionTimer = 0f;
                     }else if(pos[1] == 5) {
                     	if(config.keyConfig == Config.KEYS_ARROWS) {
                     		config.keyConfig = Config.KEYS_WASD;
@@ -227,6 +246,27 @@ public class MenuScreen implements Screen {
     	} else if(InputMan.checkKey(config.key_alt)) {
     		chars[pos[2]].modHP(-20);
     	}
+    }
+
+    private void renderReturnTransition(float delta) {
+        returnTransitionTimer += delta;
+        float alpha = Math.min(returnTransitionTimer / RETURN_TRANSITION_DURATION, 1f);
+
+        game.batch.begin();
+        game.batch.setColor(1, 1, 1, alpha);
+        float width = camera.viewportWidth * camera.zoom;
+        float height = camera.viewportHeight * camera.zoom;
+        game.batch.draw(game.black, camera.position.x - width / 2f, camera.position.y - height / 2f,
+                width, height);
+        game.batch.setColor(1, 1, 1, 1);
+        game.batch.end();
+
+        if (returnTransitionTimer >= RETURN_TRANSITION_DURATION) {
+            Main.player.currScreen = "FLOOR_SCREEN";
+            Main.player.state = PlayerState.WAITING;
+            game.setScreen(game.firstScreen);
+            returningToFirstScreen = false;
+        }
     }
 
     @Override

@@ -23,7 +23,7 @@ public class Save {
 	
 	public static void save() {
 		String json = gson.toJson(Main.player);
-		saveFile.writeString(json, false); // false = sobrescribir
+		saveFile.writeString(json, false);
 		json = gson.toJson(Store.getItems());
 		shopFile.writeString(json, false);
 	}

@@ -4,10 +4,14 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import io.github.dungeon_slashers.controllers.Battle;
 import io.github.dungeon_slashers.controllers.Config;
@@ -84,6 +88,10 @@ public class Main extends Game {
 	public Texture chestClosed;
 	public Texture chestOpen;
 	public Texture workedFireplace;
+	public Music lobbyMusic;
+	public Music dungeonMusic;
+	private Music currentMusic;
+	private final Map<String, Music> musicTracks = new HashMap<>();
 
 	//screens
 	public FirstScreen firstScreen;
@@ -125,7 +133,7 @@ public class Main extends Game {
 
     @Override
     public void create() {
-    	
+    	Gdx.graphics.setSystemCursor(com.badlogic.gdx.graphics.Cursor.SystemCursor.None);
     	batch = new SpriteBatch();
 		mainFont = new BitmapFont(Gdx.files.internal("ui/fonts/main.fnt"));
 		dialFont = new BitmapFont(Gdx.files.internal("ui/fonts/dialogue.fnt"));
@@ -150,6 +158,8 @@ public class Main extends Game {
 		Menu.viewport = viewport;
 		Save.game = this;
 		InputMan.game = this;
+		lobbyMusic = getMusic("music/lobby.wav");
+		dungeonMusic = getMusic("music/dungeon.wav");
 
 		//font has 15pt, but we need to scale it to our viewport by ratio of viewport height to screen height
 		mainFont.setUseIntegerPositions(false);
@@ -193,7 +203,7 @@ public class Main extends Game {
     	storeScreen = new StoreScreen(this);
     	charSelectScreen = new CharSelectScreen(this);
     	
-    	fifthFloor = new Floor(25, 25, 200, 300, defBattle5Screen, fifthBossFight, 1, 25,
+    	fifthFloor = new Floor(25, 25, 200, 300, defBattle5Screen, fifthBossFight, 1, 150,
     			getItem("minHPot"), getItem("minMPot"), getItem("minSPot"),
     			getItem("bigHPot"), getItem("bigMPot"), getItem("bigSPot"),
     			getItem("elixirOfLife"), getItem("manaCrystal"), getItem("staminaPill"),
@@ -207,7 +217,7 @@ public class Main extends Game {
     			getItem("gold"));
     	fifthFloorScreen = new floorScreen(this, fifthFloor, finalScreen, firstScreen, Flags.FLAG_FIFTHBOSS_DIALOGUE);
     	
-    	fourthFloor = new Floor(25, 25, 200, 250, defBattle4Screen, fourthBossFight, 1, 25,
+    	fourthFloor = new Floor(25, 25, 200, 250, defBattle4Screen, fourthBossFight, 1, 100,
     			getItem("minHPot"), getItem("minMPot"), getItem("minSPot"),
     			getItem("bigHPot"), getItem("bigMPot"), getItem("bigSPot"),
     			getItem("elixirOfLife"), getItem("manaCrystal"),
@@ -221,7 +231,7 @@ public class Main extends Game {
     			getItem("gold"));
     	fourthFloorScreen = new floorScreen(this, fourthFloor, fifthFloorScreen, firstScreen, Flags.FLAG_FOURTHBOSS_DIALOGUE);
     	
-    	thirdFloor = new Floor(20, 20, 150, 200, defBattle3Screen, thirdBossFight, 1, 25,
+    	thirdFloor = new Floor(20, 20, 150, 200, defBattle3Screen, thirdBossFight, 1, 80,
     			getItem("minHPot"), getItem("minMPot"), getItem("minSPot"),
     			getItem("bigHPot"), getItem("bigMPot"), getItem("bigSPot"),
     			getItem("minHPven"), getItem("minSPven"), getItem("minMPven"),
@@ -234,7 +244,7 @@ public class Main extends Game {
     			getItem("gold"));
     	thirdFloorScreen = new floorScreen(this, thirdFloor, fourthFloorScreen, firstScreen, Flags.FLAG_THIRDBOSS_DIALOGUE);
     	
-    	secondFloor = new Floor(20, 20, 50, 100, defBattle2Screen, secondBossFight, 1, 25,
+    	secondFloor = new Floor(20, 20, 50, 100, defBattle2Screen, secondBossFight, 1, 40,
     			getItem("minHPot"), getItem("minMPot"), getItem("minSPot"),
     			getItem("minHPven"), getItem("minSPven"), getItem("minMPven"),
     			getItem("antidote"), getItem("snack"), getItem("ammoniumChloride"),
@@ -271,6 +281,7 @@ public class Main extends Game {
     @Override
     public void render() {
     	super.render();
+    	updateMusicVolume();
     	if(InputMan.checkKey("F", null)) {
     		toggleFullscreen();
     	}
@@ -281,6 +292,68 @@ public class Main extends Game {
 		batch.dispose();
 		mainFont.dispose();
 		invFont.dispose();
+		for(Music music : musicTracks.values()) {
+			if(music != null) {
+				music.stop();
+				music.dispose();
+			}
+		}
+	}
+
+	public Music getMusic(String path) {
+		if(musicTracks.containsKey(path)) {
+			return musicTracks.get(path);
+		}
+		Music music = null;
+		if(Gdx.files.internal(path).exists()) {
+			music = Gdx.audio.newMusic(Gdx.files.internal(path));
+		}else {
+			Gdx.app.error("Music", "Music file not found: " + path);
+		}
+		musicTracks.put(path, music);
+		return music;
+	}
+
+	public void playMusic(Music music, boolean restart) {
+		if(music == null) {
+			return;
+		}
+		if(currentMusic != music) {
+			if(currentMusic != null) {
+				currentMusic.pause();
+			}
+			currentMusic = music;
+		}
+		music.setLooping(true);
+		music.setVolume(config.volume * config.volMUSIC);
+		if(restart) {
+			music.stop();
+		}
+		if(!music.isPlaying()) {
+			music.play();
+		}
+	}
+
+	public void stopMusic(Music music) {
+		if(music == null) {
+			return;
+		}
+		music.stop();
+		if(currentMusic == music) {
+			currentMusic = null;
+		}
+	}
+
+	public void pauseMusic(Music music) {
+		if(music != null && music.isPlaying()) {
+			music.pause();
+		}
+	}
+
+	private void updateMusicVolume() {
+		if(currentMusic != null && config != null) {
+			currentMusic.setVolume(config.volume * config.volMUSIC);
+		}
 	}
 
     public static Item getItem(String IDname) {
@@ -415,7 +488,7 @@ public class Main extends Game {
 		Item definitiveAntidote = new Item("Panacea", "definitiveAntidote", "Purifica todos los efectos negativos.", 160, 1, 3, false, Item.USE_BOTH, false);
 
 		Item goldenApple = new Item("Manzana Dorada", "goldenApple", "Fruta legendaria que revitaliza el cuerpo y el alma.", 300, 1, 3, false, Item.USE_BOTH, false);
-		Item gold = new Item("Ladrillo de oro de 20 kilates", "gold", "Pesa bastante.", 180, 1, -1, false, Item.USE_NONE, false);
+		Item gold = new Item("Ladrillo de oro", "gold", "Pesa bastante.", 180, 1, -1, false, Item.USE_NONE, false);
 		
 		initItems(
 				dullSword, dullDaggers, brokenStaff, oldBow, ironSword, flameSword, daggers, windDaggers, woodenStaff, waterStaff, curStaff, bow, encBow,
@@ -582,7 +655,7 @@ public class Main extends Game {
 						" barre con sus cuchillas a los enemigos!",
 						2, 15, false, 3, 50, 110, 6);
 				Skill sleepPll = new Skill("sleepPll", "Somnifero", "Duerme con altas chances a un enemigo.", "NONE",
-						" duerme a ",
+						" intenta dormir a ",
 						1, 0, false, 1, 120, 160, 6);
 				Skill finisher = new Skill("finisher", "Remate", "Ataque de daño elevado que hace un 50% mas de daño si el objetivo sangra.", "PHY",
 						" reabre las heridas de ",
@@ -1321,16 +1394,16 @@ public class Main extends Game {
 						defBattle5, boss5
 				);
 
-				defBattleScreen = new BattleScreen(this, defBattle, new Texture("sprites/background/background_battle_1.jpg"));
-				firstBossFight = new BattleScreen(this, boss1, new Texture("sprites/background/background_battle_boss.jpg"));
-				defBattle2Screen = new BattleScreen(this, defBattle2, new Texture("sprites/background/background_battle_1.jpg"));
-				secondBossFight = new BattleScreen(this, boss2, new Texture("sprites/background/background_battle_boss.jpg"));
-				defBattle3Screen = new BattleScreen(this, defBattle3, new Texture("sprites/background/background_battle_1.jpg"));
-				thirdBossFight = new BattleScreen(this, boss3, new Texture("sprites/background/background_battle_boss.jpg"));
-				defBattle4Screen = new BattleScreen(this, defBattle4, new Texture("sprites/background/background_battle_1.jpg"));
-				fourthBossFight = new BattleScreen(this, boss4, new Texture("sprites/background/background_battle_boss.jpg"));
-				defBattle5Screen = new BattleScreen(this, defBattle5, new Texture("sprites/background/background_battle_1.jpg"));
-				fifthBossFight = new BattleScreen(this, boss5, new Texture("sprites/background/background_battle_boss.jpg"));
+				defBattleScreen = new BattleScreen(this, defBattle, new Texture("sprites/background/background_battle_1.jpg"), getMusic("music/battle.wav"));
+				firstBossFight = new BattleScreen(this, boss1, new Texture("sprites/background/background_battle_boss.jpg"), getMusic("music/boss.wav"));
+				defBattle2Screen = new BattleScreen(this, defBattle2, new Texture("sprites/background/background_battle_1.jpg"), getMusic("music/battle.wav"));
+				secondBossFight = new BattleScreen(this, boss2, new Texture("sprites/background/background_battle_boss.jpg"), getMusic("music/boss.wav"));
+				defBattle3Screen = new BattleScreen(this, defBattle3, new Texture("sprites/background/background_battle_1.jpg"), getMusic("music/battle.wav"));
+				thirdBossFight = new BattleScreen(this, boss3, new Texture("sprites/background/background_battle_boss.jpg"), getMusic("music/boss.wav"));
+				defBattle4Screen = new BattleScreen(this, defBattle4, new Texture("sprites/background/background_battle_1.jpg"), getMusic("music/battle.wav"));
+				fourthBossFight = new BattleScreen(this, boss4, new Texture("sprites/background/background_battle_boss.jpg"), getMusic("music/boss.wav"));
+				defBattle5Screen = new BattleScreen(this, defBattle5, new Texture("sprites/background/background_battle_1.jpg"), getMusic("music/battle.wav"));
+				fifthBossFight = new BattleScreen(this, boss5, new Texture("sprites/background/background_battle_boss.jpg"), getMusic("music/closingSession.wav"));
 
 	}
 	private void initBattles(Battle... battles1) {
@@ -1473,13 +1546,18 @@ public class Main extends Game {
 	public void restartLayouts() {
 		firstFloor.generateNewLayout();
 		firstFloorScreen.floor = firstFloor;
+		firstFloorScreen.resetPosition();
 		secondFloor.generateNewLayout();
 		secondFloorScreen.floor = secondFloor;
+		secondFloorScreen.resetPosition();
 		thirdFloor.generateNewLayout();
 		thirdFloorScreen.floor = thirdFloor;
+		thirdFloorScreen.resetPosition();
 		fourthFloor.generateNewLayout();
 		fourthFloorScreen.floor = fourthFloor;
+		fourthFloorScreen.resetPosition();
 		fifthFloor.generateNewLayout();
 		fifthFloorScreen.floor = fifthFloor;
+		fifthFloorScreen.resetPosition();
 	}
 }

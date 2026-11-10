@@ -21,6 +21,8 @@ import io.github.dungeon_slashers.entities.Hero;
 
 /** Primera sala. */
 public class FirstScreen implements Screen {
+	private static final int DUNGEON_FLOOR_CHOICE_ID = 1000;
+	private static final int DUNGEON_FLOOR_RESPONSE_ID = 1010;
 	Hero[] chars;
     private OrthographicCamera camera;
     private FitViewport viewport;
@@ -69,6 +71,8 @@ public class FirstScreen implements Screen {
     public void show() {
         // Prepare your screen here.
 		this.resume();
+		game.stopMusic(game.dungeonMusic);
+		game.playMusic(game.lobbyMusic, false);
 		timer = 0;
 		chars = Main.player.getCharacters();
 		if(Main.player.currScreen != "MENU_SCREEN") {
@@ -113,7 +117,6 @@ public class FirstScreen implements Screen {
         		chars[i].sp = chars[i].maxsp;
         		chars[i].mp = chars[i].maxmp;
     		}
-			game.restartLayouts();
     		Save.save();
 		}
 		Main.player.currScreen = "FIRST_SCREEN";
@@ -320,7 +323,15 @@ public class FirstScreen implements Screen {
         		chars[i].sp = chars[i].maxsp;
         		chars[i].mp = chars[i].maxmp;
     		}
+    		if(game != null) {
+    			game.restartLayouts();
+    		}
     		Save.save();
+    		break;
+    	default:
+    		if(resp >= DUNGEON_FLOOR_RESPONSE_ID && resp < DUNGEON_FLOOR_RESPONSE_ID + 5) {
+    			enterDungeonFloor(resp - DUNGEON_FLOOR_RESPONSE_ID + 1);
+    		}
     		break;
     	}
     	game.batch.end();
@@ -366,8 +377,15 @@ public class FirstScreen implements Screen {
             		this.pause();
             	}
             	if(col == doors[1]) {
-            		game.setScreen(game.firstFloorScreen);
-            		this.pause();
+            		if(Main.player.state != PlayerState.IDLE) {
+            			return true;
+            		}
+            		int highestUnlockedFloor = getHighestUnlockedFloor();
+            		if(highestUnlockedFloor == 1) {
+            			enterDungeonFloor(1);
+            		}else {
+            			addDungeonFloorChoice(highestUnlockedFloor);
+            		}
             	}
             	return true;
             }
@@ -375,6 +393,62 @@ public class FirstScreen implements Screen {
         }
 
         return false;
+    }
+
+    private int getHighestUnlockedFloor() {
+    	int highestUnlockedFloor = 1;
+    	if(Main.player.flags[Flags.FLAG_FIRSTBOSS_DEFEATED]) {
+    		highestUnlockedFloor = 2;
+    	}
+    	if(highestUnlockedFloor == 2 && Main.player.flags[Flags.FLAG_SECONDBOSS_DEFEATED]) {
+    		highestUnlockedFloor = 3;
+    	}
+    	if(highestUnlockedFloor == 3 && Main.player.flags[Flags.FLAG_THIRDBOSS_DEFEATED]) {
+    		highestUnlockedFloor = 4;
+    	}
+    	if(highestUnlockedFloor == 4 && Main.player.flags[Flags.FLAG_FOURTHBOSS_DEFEATED]) {
+    		highestUnlockedFloor = 5;
+    	}
+    	return highestUnlockedFloor;
+    }
+
+    private void addDungeonFloorChoice(int highestUnlockedFloor) {
+    	String[] choices = new String[highestUnlockedFloor];
+    	int[] responseIds = new int[highestUnlockedFloor];
+    	for(int floor = 1; floor <= highestUnlockedFloor; floor++) {
+    		choices[floor - 1] = "Piso " + floor;
+    		responseIds[floor - 1] = DUNGEON_FLOOR_RESPONSE_ID + floor - 1;
+    	}
+    	DialMan.addChoice(DUNGEON_FLOOR_CHOICE_ID, 20, "A que piso deseas ir?", null,
+    			choices, responseIds);
+    	for(int floor = 1; floor <= highestUnlockedFloor; floor++) {
+    		DialMan.addDialogue(responseIds[floor - 1], -1, null, null,
+    				"Vamos al piso " + floor + ".", 20, null);
+    	}
+    }
+
+    private void enterDungeonFloor(int floor) {
+    	game.stopMusic(game.lobbyMusic);
+    	switch(floor) {
+    	case 1:
+    		game.setScreen(game.firstFloorScreen);
+    		break;
+    	case 2:
+    		game.setScreen(game.secondFloorScreen);
+    		break;
+    	case 3:
+    		game.setScreen(game.thirdFloorScreen);
+    		break;
+    	case 4:
+    		game.setScreen(game.fourthFloorScreen);
+    		break;
+    	case 5:
+    		game.setScreen(game.fifthFloorScreen);
+    		break;
+    	default:
+    		throw new IllegalArgumentException("Invalid dungeon floor: " + floor);
+    	}
+    	this.pause();
     }
     
     @Override

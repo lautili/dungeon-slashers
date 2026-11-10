@@ -3,6 +3,7 @@ package io.github.dungeon_slashers.screens;
 import java.util.Random;
 
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -41,6 +42,7 @@ public class BattleScreen implements Screen {
     private FitViewport viewport;
     private OrthographicCamera camera;
     private Main game;
+    private Music music;
     private Enemy[] enemies; // enemigos que realmente usará la batalla
 	private Entity[] entities; // todas las entidades
 	private Hero[] heroes;
@@ -96,10 +98,11 @@ public class BattleScreen implements Screen {
 	private boolean inspectingEnemy = false;
 	private int inspectEnemyIdx = 0;
 
-	public BattleScreen(Main game, Battle battle, Texture background) {
+	public BattleScreen(Main game, Battle battle, Texture background, Music music) {
 		this.game = game;
 		this.battle = battle;
 		this.background = background;
+		this.music = music;
 	}
 
 	private float getDamageBounceY() {
@@ -112,6 +115,10 @@ public class BattleScreen implements Screen {
 
 	@Override
     public void show() {
+		if(lastScreen instanceof floorScreen) {
+			game.pauseMusic(game.dungeonMusic);
+		}
+		game.playMusic(music, true);
 		Main.player.currScreen = "BATTLE_SCREEN";
 		heroes = Main.player.getCharacters();
 		camera = new OrthographicCamera();
@@ -486,7 +493,6 @@ public class BattleScreen implements Screen {
 					if(boss.finalEvent != null) {
 						boss.finalEvent.checkBossEvent(game, boss, turn, delta);
 						cont2 = boss.finalEvent.getMsgs().length;
-						boss.activateFlag();
 					}
 				}
 				DialMan.addDialogue(cont2, cont2+1, null, null, "Has ganado!", 20, null);
@@ -1428,6 +1434,7 @@ public class BattleScreen implements Screen {
 
     @Override
     public void hide() {
+    	game.stopMusic(music);
     	Main.updateArrays();
     	for(int i = 0; i < heroes.length; i++) {
 			heroes[i].lastOpt = 0;

@@ -176,7 +176,10 @@ public abstract class Entity {
 	}
 	public void clearEffect(String name) {
 		for(int i = 0; i < effects.length; i ++) {
-			if(effects[i].getName() == name) {
+			if(effects[i] == null) {
+				continue;
+			}
+			if(effects[i].getName().equals(name)) {
 				effects[i] = null;
 			}
 		}

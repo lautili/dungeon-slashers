@@ -121,6 +121,7 @@ public class floorScreen implements Screen {
 	@Override
     public void show() {
 		this.resume();
+		game.playMusic(game.dungeonMusic, false);
 		if(Main.player.currScreen != "BATTLE_SCREEN" 
 				&& Main.player.currScreen != "MENU_SCREEN") {
 			currPosition = floor.getRoomPosition(Room.ROOM_START);
@@ -374,11 +375,8 @@ public class floorScreen implements Screen {
     			}
     		} else {
     			game.batch.setColor(1, 1, 1, 1);
-    			isTransitioning = false;
-    			game.setScreen(targetBattleScreen);
     			targetBattleScreen.lastScreen = this;
-    			game.batch.end();
-    			return;
+    			game.setScreen(targetBattleScreen);
     		}
     		game.batch.setColor(1, 1, 1, 1);
     	}
@@ -679,5 +677,11 @@ public class floorScreen implements Screen {
 				}
 			}
 		}
+	}
+
+	public void resetPosition() {
+		currPosition = floor.getRoomPosition(Room.ROOM_START);
+		x[0] = 150;
+		y[0] = 20;
 	}
 }

@@ -162,6 +162,7 @@ public class Skill {
 		Sound snd = null;
 		a.modSP(-SPcost);
 		a.modMP(-MPcost);
+		a.lastDamageWeakness = 1.00;
 		switch(shortName) {
 		case "defend":
 			//Protegerse

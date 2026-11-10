@@ -1082,17 +1082,32 @@ public static void showItemStats(Main game, Item i, Hero[] chars) {
 				default:  return "NUL";
 			}
 		}
-		public static void showConfigOptions(Main game, float x, float y, float dif, int sel, Config config) {
+		public static void showConfigOptions(Main game, float x, float y, float dif, int sel, Config config,
+				boolean showReturnToFirstScreen) {
 		    game.invFont.getData().setScale(0.4f);
-		    String[] options = {
-		        "Volumen general: " + Math.round(config.volume * 100f) + "%",
-		        "Volumen de efectos: " + Math.round(config.volSFX * 100f) + "%",
-		        "Volumen de musica: " + Math.round(config.volMUSIC * 100f) + "%",
-		        "Pantalla Completa: " + (config.fullScreen ? "SI" : "NO"),
-		        "Resolucion: " + config.getRes(),
-		        "Controles: " + (config.keyConfig == Config.KEYS_ARROWS ? "FLECHAS y ZXC" : "WASD y POL"),
-		        "Salir"
-		    };
+		    String[] options;
+		    if (showReturnToFirstScreen) {
+		        options = new String[] {
+		            "Volumen general: " + Math.round(config.volume * 100f) + "%",
+		            "Volumen de efectos: " + Math.round(config.volSFX * 100f) + "%",
+		            "Volumen de musica: " + Math.round(config.volMUSIC * 100f) + "%",
+		            "Pantalla Completa: " + (config.fullScreen ? "SI" : "NO"),
+		            "Resolucion: " + config.getRes(),
+		            "Controles: " + (config.keyConfig == Config.KEYS_ARROWS ? "FLECHAS y ZXC" : "WASD y POL"),
+		            "Volver al lobby",
+		            "Salir"
+		        };
+		    } else {
+		        options = new String[] {
+		            "Volumen general: " + Math.round(config.volume * 100f) + "%",
+		            "Volumen de efectos: " + Math.round(config.volSFX * 100f) + "%",
+		            "Volumen de musica: " + Math.round(config.volMUSIC * 100f) + "%",
+		            "Pantalla Completa: " + (config.fullScreen ? "SI" : "NO"),
+		            "Resolucion: " + config.getRes(),
+		            "Controles: " + (config.keyConfig == Config.KEYS_ARROWS ? "FLECHAS y ZXC" : "WASD y POL"),
+		            "Salir"
+		        };
+		    }
 		    
 		    for(int i = 0; i < options.length; i++) {
 		        if(i == sel) {
