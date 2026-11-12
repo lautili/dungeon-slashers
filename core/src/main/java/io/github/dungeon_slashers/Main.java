@@ -693,7 +693,7 @@ public class Main extends Game {
 						" posiciona una trampa cerca de ",
 						1, 0, false, 1, 30, 30, 2);
 				Skill decoy = new Skill("decoy", "Señuelo", "Aplica el estado confusion a un enemigo. ", "NONE",
-						" enga a con un se uelo a ",
+						" engaña con un señuelo a ",
 						1, 0, false, 1, 40, 40, 3);
 				Skill slimeDust = new Skill("slimeDust", "Polvo de Slime", "Aplica el estado Envenenado a todos los enemigos. ", "NONE",
 						" lanza un polvo de slime a sus enemigos!",

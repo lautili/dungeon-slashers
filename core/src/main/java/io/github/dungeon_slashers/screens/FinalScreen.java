@@ -38,6 +38,7 @@ public class FinalScreen implements Screen {
 		viewport.setCamera(camera);
 		camera.setToOrtho(false, 320, 180);
 		camera.zoom = 1f;
+		chars = Main.player.getCharacters();
     }
 
     @Override
@@ -52,7 +53,7 @@ public class FinalScreen implements Screen {
     	game.batch.setProjectionMatrix(camera.combined);
     	game.batch.begin();
     	if(!check) {
-    		DialMan.addDialogue(0, 1, "Dante", null, "Conque esta es la raiz dorada...", 20, null);
+    		DialMan.addDialogue(0, 1, "Dante", null, "Con que esta es la raiz dorada...", 20, null);
     		DialMan.addDialogue(1, 2, "Dante", null, 
     				"Lo conseguimos."
     				, 20, null);
